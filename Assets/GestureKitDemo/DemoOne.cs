@@ -23,6 +23,19 @@ public class DemoOne : MonoBehaviour
 		}
 		
 		
+		if( GUILayout.Button( "Add Three-Finger Tap Recognizer" ) )
+		{
+			var recognizer = new GKTapRecognizer();
+			recognizer.numberOfTouchesRequired = 3;
+			recognizer.gestureStateChangedEvent += ( r ) =>
+			{
+				if( r.state == GestureRecognizerState.Ended )
+					Debug.Log( "tap recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
 		if( GUILayout.Button( "Add Long Press Recognizer" ) )
 		{
 			var recognizer = new GKLongPressRecognizer();
