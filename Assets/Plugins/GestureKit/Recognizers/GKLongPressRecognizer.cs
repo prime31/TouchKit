@@ -28,7 +28,7 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 		if( Time.time >= endTime )
 		{
 			if( state == GestureRecognizerState.Possible )
-				state = GestureRecognizerState.Began;
+				state = GestureRecognizerState.Recognized;
 		}
 	}
 	
@@ -52,22 +52,13 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesMoved( List<Touch> touches )
 	{
-		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.Changed || state == GestureRecognizerState.Possible )
+		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.Possible )
 		{
-			// did we move to far?
+			// did we move too far?
 			var moveDistance = Vector2.Distance( touches[0].position, _beginLocation );
-			if( moveDistance < allowableMovement )
+			if( moveDistance > allowableMovement )
 			{
-				// if we already began then we change. if we are still possible then we remain possible
-				if( state == GestureRecognizerState.Began )
-					state = GestureRecognizerState.Changed;
-			}
-			else
-			{
-				if( state == GestureRecognizerState.Began )
-					state = GestureRecognizerState.Cancelled;
-				else
-					state = GestureRecognizerState.Failed;
+				state = GestureRecognizerState.Failed;
 				_waiting = false;
 			}
 		}
@@ -76,9 +67,7 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesEnded( List<Touch> touches )
 	{
-		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.Changed )
-			state = GestureRecognizerState.Ended;
-		
+		state = GestureRecognizerState.Failed;	
 		_waiting = false;
 	}
 

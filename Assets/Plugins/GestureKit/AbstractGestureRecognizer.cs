@@ -9,13 +9,8 @@ public enum GestureRecognizerState
 {
 	Possible,
 	Began,
-	Changed,
-	Ended,
-	Cancelled,
-	
 	Failed,
-	
-	Recognized = Ended
+	Recognized
 }
 
 
@@ -24,8 +19,10 @@ public abstract class AbstractGestureRecognizer
 	public event Action<AbstractGestureRecognizer> gestureStateChangedEvent;
 	
 	public bool enabled = true;
-	public bool delayTouchesBegan = false;
-	public bool delayTouchesEnded = true;
+	/// <summary>
+	/// frame that the touch must be within to be recognized. null means full screen
+	/// </summary>
+	public Rect? boundaryFrame = null;
 	public int numberOfTouches
 	{
 		get { return _trackingTouches.Count; }
@@ -37,33 +34,18 @@ public abstract class AbstractGestureRecognizer
 		get { return _state; }
 		set
 		{
-			GestureStateTransition? transition = null;
-			
-			for( var i = 0; i < 9; i++ )
-			{
-				if( _allowedTransitions[i].fromState == _state && _allowedTransitions[i].toState == value )
-				{
-					transition = _allowedTransitions[i];
-					break;
-				}
-			}
-			
-			if( transition == null )
-			{
-				Debug.LogError( "Invalid state transition from: " + _state + " to " + value );
+			if( _state == value )
 				return;
-			}
 			
-			// we have a valid transition
 			_state = value;
 			
-			if( transition.Value.shouldNotify )
+			if( _state == GestureRecognizerState.Recognized )
 			{
 				if( gestureStateChangedEvent != null )
 					gestureStateChangedEvent( this );
 			}
 			
-			if( transition.Value.shouldReset )
+			if( _state == GestureRecognizerState.Recognized || _state == GestureRecognizerState.Failed )
 				reset();
 		}
 	}
@@ -77,52 +59,11 @@ public abstract class AbstractGestureRecognizer
 		{
 			return ( enabled &&
             state != GestureRecognizerState.Failed &&
-            state != GestureRecognizerState.Cancelled && 
-            state != GestureRecognizerState.Ended );
+            state != GestureRecognizerState.Recognized );
 		}
 	}
 	
-	private static GestureStateTransition[] _allowedTransitions;
-	
-	// internal class used to verify state transitions
-	private struct GestureStateTransition
-	{
-		public GestureRecognizerState fromState;
-		public GestureRecognizerState toState;
-		public bool shouldNotify;
-		public bool shouldReset;
-		
-		
-		public GestureStateTransition( GestureRecognizerState fromState, GestureRecognizerState toState, bool shouldNotify, bool shouldReset )
-		{
-			this.fromState = fromState;
-			this.toState = toState;
-			this.shouldNotify = shouldNotify;
-			this.shouldReset = shouldReset;
-		}
-	}
-	
-	
-	#region Constructor
-	
-	static AbstractGestureRecognizer()
-	{
-		// setup the state transitions
-		_allowedTransitions = new GestureStateTransition[9];
-		_allowedTransitions[0] = new GestureStateTransition( GestureRecognizerState.Possible, GestureRecognizerState.Recognized, true, true );
-		_allowedTransitions[1] = new GestureStateTransition( GestureRecognizerState.Possible, GestureRecognizerState.Failed, false, true );
-		_allowedTransitions[2] = new GestureStateTransition( GestureRecognizerState.Possible, GestureRecognizerState.Began, true, false );
-		_allowedTransitions[3] = new GestureStateTransition( GestureRecognizerState.Began, GestureRecognizerState.Changed, true, false );
-		_allowedTransitions[4] = new GestureStateTransition( GestureRecognizerState.Began, GestureRecognizerState.Cancelled, true, true );
-		_allowedTransitions[5] = new GestureStateTransition( GestureRecognizerState.Began, GestureRecognizerState.Ended, true, true );
-		_allowedTransitions[6] = new GestureStateTransition( GestureRecognizerState.Changed, GestureRecognizerState.Changed, true, false );
-		_allowedTransitions[7] = new GestureStateTransition( GestureRecognizerState.Changed, GestureRecognizerState.Cancelled, true, true );
-		_allowedTransitions[8] = new GestureStateTransition( GestureRecognizerState.Changed, GestureRecognizerState.Ended, true, true );
-	}
-	
-	#endregion
-	
-	
+
 	#region Public API
 	
 	public void recognizeTouches( List<Touch> touches )
@@ -135,6 +76,7 @@ public abstract class AbstractGestureRecognizer
 		for( var i = 0; i < touches.Count; i++ )
 		{
 			var touch = touches[i];
+			
 			switch( touch.phase )
 			{
 				case TouchPhase.Began:

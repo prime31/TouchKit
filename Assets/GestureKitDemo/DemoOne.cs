@@ -16,8 +16,7 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new GKTapRecognizer();
 			recognizer.gestureStateChangedEvent += ( r ) =>
 			{
-				if( r.state == GestureRecognizerState.Ended )
-					Debug.Log( "tap recognizer fired: " + r );
+				Debug.Log( "tap recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
@@ -29,8 +28,7 @@ public class DemoOne : MonoBehaviour
 			recognizer.numberOfTouchesRequired = 3;
 			recognizer.gestureStateChangedEvent += ( r ) =>
 			{
-				if( r.state == GestureRecognizerState.Ended )
-					Debug.Log( "tap recognizer fired: " + r );
+				Debug.Log( "tap recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
@@ -42,8 +40,20 @@ public class DemoOne : MonoBehaviour
 			recognizer.gestureStateChangedEvent += ( r ) =>
 			{
 				// when a long press recognizer begins, that means the delay has elapsed
-				if( r.state == GestureRecognizerState.Began )
-					Debug.Log( "long press recognizer fired: " + r );
+				Debug.Log( "long press recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
+		if( GUILayout.Button( "Add Horizontal Swipe Recognizer" ) )
+		{
+			var recognizer = new GKSwipeRecognizer();
+			recognizer.swipesToDetect = GKSwipeDirection.Horizontal;
+			recognizer.gestureStateChangedEvent += ( r ) =>
+			{
+				// when a long press recognizer begins, that means the delay has elapsed
+				Debug.Log( "swipe recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}

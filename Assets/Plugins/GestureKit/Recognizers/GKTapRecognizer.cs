@@ -17,8 +17,6 @@ public class GKTapRecognizer : AbstractGestureRecognizer
 			{
 				if( state == GestureRecognizerState.Possible )
 					state = GestureRecognizerState.Began;
-				else if( state == GestureRecognizerState.Began )
-					state = GestureRecognizerState.Changed;
 			}
 		}
 	}
@@ -26,19 +24,19 @@ public class GKTapRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesMoved( List<Touch> touches )
 	{
-		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.Changed )
+		if( state == GestureRecognizerState.Began )
 		{
 			// did we move?
 			if( touches[0].deltaPosition.sqrMagnitude > 5 )
-				state = GestureRecognizerState.Cancelled;
+				state = GestureRecognizerState.Failed;
 		}
 	}
 	
 	
 	public override void touchesEnded( List<Touch> touches )
 	{
-		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.Changed )
-			state = GestureRecognizerState.Ended;
+		if( state == GestureRecognizerState.Began )
+			state = GestureRecognizerState.Recognized;
 	}
 	
 }
