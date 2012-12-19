@@ -25,7 +25,7 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 		// if our time elapsed it means we were not cancelled
 		if( Time.time >= endTime )
 		{
-			if( state == GestureRecognizerState.Possible )
+			if( state == GestureRecognizerState.Began )
 				state = GestureRecognizerState.Recognized;
 		}
 		

@@ -44,7 +44,7 @@ public class GestureKit : MonoBehaviour
 	
 	private void Awake()
 	{
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 		// we only need one touch on mouse driven platforms
 		maxTouchesToProcess = 1;
 #endif
@@ -63,18 +63,21 @@ public class GestureKit : MonoBehaviour
 		// we only need to process if we have some interesting input this frame
 		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 			_liveTouches.Add( _touchCache[0].populateFromMouse() );
-		
-#else
+
+#endif
 		
 		// get all touches and examine them. only do our touch processing if we have some touches
 		if( Input.touchCount > 0 )
 		{
-			var maxTouchIndexToExamine = Mathf.Max( Input.touches.Length, maxTouchesToProcess );
+			var maxTouchIndexToExamine = Mathf.Min( Input.touches.Length, maxTouchesToProcess );
 			for( var i = 0; i < maxTouchIndexToExamine; i++ )
-				_liveTouches.Add( _touchCache[Input.touches[i].fingerId].populateWithTouch( Input.touches[i] ) );
+			{
+				var touch = Input.touches[i];
+				if( touch.fingerId < maxTouchesToProcess )
+					_liveTouches.Add( _touchCache[touch.fingerId].populateWithTouch( touch ) );
+			}
 		}
-		
-#endif
+
 		
 		// pass on the touches to all the recognizers
 		if( _liveTouches.Count > 0 )
