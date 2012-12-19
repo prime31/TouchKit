@@ -5,13 +5,11 @@ using System.Collections.Generic;
 
 public class GestureKit : MonoBehaviour
 {
-	private List<AbstractGestureRecognizer> _gestureRecognizers = new List<AbstractGestureRecognizer>();
-	private List<Touch> _trackingTouches = new List<Touch>();
+	public static int maxTouchesToProcess = 2;
 	
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-	// used to track mouse movement and fake touches
-	private Vector2? lastMousePosition;
-#endif
+	private List<AbstractGestureRecognizer> _gestureRecognizers = new List<AbstractGestureRecognizer>();
+	private GKTouch[] _touchCache;
+	private List<GKTouch> _liveTouches = new List<GKTouch>();
 	
 	
 	private static GestureKit _instance = null;
@@ -38,39 +36,53 @@ public class GestureKit : MonoBehaviour
 	}
 	
 	
-	private void Update()
+	private void OnApplicationQuit()
 	{
-		_trackingTouches.Clear();
-		
-		// get all touches and examine them
-		// only do our touch processing if we have some touches
-		if( Input.touchCount > 0 )
-		{
-			// send all the touches to the relevant gesture recognizers
-			for( int i = 0; i < Input.touchCount; i++ )
-			{
-				var touch = Input.GetTouch( i );
-				_trackingTouches.Add( touch );
-			}
-		}
+		_instance = null;
+	}
+	
+	
+	private void Awake()
+	{
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-		else
-		{
-			if( Input.GetMouseButtonDown( 0 ) )
-				_trackingTouches.Add( MouseToTouch.createTouchFromInput( GKMouseState.DownThisFrame, ref lastMousePosition ) );
-			else if( Input.GetMouseButtonUp( 0 ) )
-				_trackingTouches.Add( MouseToTouch.createTouchFromInput( GKMouseState.UpThisFrame, ref lastMousePosition ) );
-			else if( Input.GetMouseButton( 0 ) )
-				_trackingTouches.Add( MouseToTouch.createTouchFromInput( GKMouseState.HeldDown, ref lastMousePosition ) );
-		}
+		// we only need one touch on mouse driven platforms
+		maxTouchesToProcess = 1;
 #endif
 		
-		// recognize gestures if we have a touch
-		if( _trackingTouches.Count > 0 )
+		// prep our GKTouch cache so we avoid excessive allocations
+		_touchCache = new GKTouch[maxTouchesToProcess];
+		for( int i = 0; i < maxTouchesToProcess; i++ )
+			_touchCache[i] = new GKTouch( i );
+	}
+	
+	
+	private void Update()
+	{
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+		
+		// we only need to process if we have some interesting input this frame
+		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
+			_liveTouches.Add( _touchCache[0].populateFromMouse() );
+		
+#else
+		
+		// get all touches and examine them. only do our touch processing if we have some touches
+		if( Input.touchCount > 0 )
 		{
-			// get all gesture recognizers filtering for those that are valid for the current Rect
+			var maxTouchIndexToExamine = Mathf.Max( Input.touches.Length, maxTouchesToProcess );
+			for( var i = 0; i < maxTouchIndexToExamine; i++ )
+				_liveTouches.Add( _touchCache[Input.touches[i].fingerId].populateWithTouch( Input.touches[i] ) );
+		}
+		
+#endif
+		
+		// pass on the touches to all the recognizers
+		if( _liveTouches.Count > 0 )
+		{
 			foreach( var recognizer in _gestureRecognizers )
-				recognizer.recognizeTouches( _trackingTouches );
+				recognizer.recognizeTouches( _liveTouches );
+			
+			_liveTouches.Clear();
 		}
 	}
 
@@ -91,6 +103,7 @@ public class GestureKit : MonoBehaviour
 			return;
 		}
 		
+		recognizer.reset();
 		instance._gestureRecognizers.Remove( recognizer );
 	}
 	

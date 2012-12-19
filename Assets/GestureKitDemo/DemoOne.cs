@@ -14,23 +14,10 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
 		{
 			var recognizer = new GKTapRecognizer();
-			recognizer.gestureStateChangedEvent += ( r ) =>
+			recognizer.boundaryFrame = new Rect( 0, 0, 300, 300 );
+			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
-				if( r.state == GestureRecognizerState.Ended )
-					Debug.Log( "tap recognizer fired: " + r );
-			};
-			GestureKit.addGestureRecognizer( recognizer );
-		}
-		
-		
-		if( GUILayout.Button( "Add Three-Finger Tap Recognizer" ) )
-		{
-			var recognizer = new GKTapRecognizer();
-			recognizer.numberOfTouchesRequired = 3;
-			recognizer.gestureStateChangedEvent += ( r ) =>
-			{
-				if( r.state == GestureRecognizerState.Ended )
-					Debug.Log( "tap recognizer fired: " + r );
+				Debug.Log( "tap recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
@@ -39,11 +26,32 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add Long Press Recognizer" ) )
 		{
 			var recognizer = new GKLongPressRecognizer();
-			recognizer.gestureStateChangedEvent += ( r ) =>
+			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
-				// when a long press recognizer begins, that means the delay has elapsed
-				if( r.state == GestureRecognizerState.Began )
-					Debug.Log( "long press recognizer fired: " + r );
+				Debug.Log( "long press recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+
+		if( GUILayout.Button( "Add Pan Recognizer" ) )
+		{
+			var recognizer = new GKPanRecognizer();
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				Debug.Log( "pan recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+
+		
+		if( GUILayout.Button( "Add Horizontal Swipe Recognizer" ) )
+		{
+			var recognizer = new GKSwipeRecognizer();
+			recognizer.swipesToDetect = GKSwipeDirection.Horizontal;
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				Debug.Log( "swipe recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
