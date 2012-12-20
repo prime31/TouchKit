@@ -18,9 +18,9 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 		{
 			if( state == GKGestureRecognizerState.Possible )
 			{
-				state = GKGestureRecognizerState.Began;
 				_trackingTouches.Add( touches[0] );
 				_touchBeganTime = Time.time;
+				state = GKGestureRecognizerState.Began;
 			}
 		}
 	}

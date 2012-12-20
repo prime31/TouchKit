@@ -10,6 +10,7 @@ public class GestureKit : MonoBehaviour
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
 	private GKTouch[] _touchCache;
 	private List<GKTouch> _liveTouches = new List<GKTouch>();
+	private bool _shouldCheckForLostTouches = false; // used to ensure we dont check for lost touches too often
 	
 	
 	private static GestureKit _instance = null;
@@ -39,14 +40,15 @@ public class GestureKit : MonoBehaviour
 	/// <summary>
 	/// Unity often misses the Ended phase of touches so this method will look out for that
 	/// </summary>
-	private void babysitLostTouches()
+	private void addTouchesUnityForgotToEndToLiveTouchesList()
 	{
 		for( int i = 0; i < _touchCache.Length; i++ )
 		{
 			if( _touchCache[i].phase != TouchPhase.Ended )
 			{
-				Debug.LogError( "found touch with phase: " + _touchCache[i].phase );
+				Debug.LogWarning( "found touch Unity forgot to end with phase: " + _touchCache[i].phase );
 				_touchCache[i].phase = TouchPhase.Ended;
+				_liveTouches.Add( _touchCache[i] );
 			}
 		}
 	}
@@ -87,12 +89,23 @@ public class GestureKit : MonoBehaviour
 		// get all touches and examine them. only do our touch processing if we have some touches
 		if( Input.touchCount > 0 )
 		{
+			_shouldCheckForLostTouches = true;
+			
 			var maxTouchIndexToExamine = Mathf.Min( Input.touches.Length, maxTouchesToProcess );
 			for( var i = 0; i < maxTouchIndexToExamine; i++ )
 			{
 				var touch = Input.touches[i];
 				if( touch.fingerId < maxTouchesToProcess )
 					_liveTouches.Add( _touchCache[touch.fingerId].populateWithTouch( touch ) );
+			}
+		}
+		else
+		{
+			// we guard this so that we only check once after all the touches are lifted
+			if( _shouldCheckForLostTouches )
+			{
+				addTouchesUnityForgotToEndToLiveTouchesList();
+				_shouldCheckForLostTouches = false;
 			}
 		}
 
@@ -104,10 +117,6 @@ public class GestureKit : MonoBehaviour
 				recognizer.recognizeTouches( _liveTouches );
 			
 			_liveTouches.Clear();
-		}
-		else
-		{
-			babysitLostTouches();
 		}
 	}
 	

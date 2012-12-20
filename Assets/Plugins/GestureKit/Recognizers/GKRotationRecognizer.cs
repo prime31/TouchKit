@@ -4,16 +4,36 @@ using System.Collections.Generic;
 
 
 
-public class GKPinchRecognizer : GKAbstractGestureRecognizer
+/// <summary>
+/// 
+/// </summary>
+public class GKRotationRecognizer : GKAbstractGestureRecognizer
 {
-	public float deltaScale = 0;
-	private float _intialDistance;
-	private float _previousDistance;
+	public float deltaRotation = 0;
+	public float minimumDeltaRotationToRecognize = 0;
+	
+	private float _previousRotation;
 	
 	
 	private float distanceBetweenTrackedTouches()
 	{
 		return Vector2.Distance( _trackingTouches[0].position, _trackingTouches[1].position );
+	}
+	
+	
+	private float angleBetweenTouches()
+	{
+		var fromLine = _trackingTouches[1].position - _trackingTouches[0].position;
+		var toLine = new Vector2( 1, 0 );
+ 
+		var angle = Vector2.Angle( fromLine, toLine );
+		var cross = Vector3.Cross( fromLine, toLine );
+ 
+		// did we wrap around?
+		if( cross.z > 0 )
+			angle = 360f - angle;
+ 
+		return angle;
 	}
 	
 	
@@ -37,10 +57,9 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 			
 			if( _trackingTouches.Count == 2 )
 			{
-				deltaScale = 0;
-				_intialDistance = distanceBetweenTrackedTouches();
-				_previousDistance = _intialDistance;
-				state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+				deltaRotation = 0;
+				_previousRotation = angleBetweenTouches();
+				state = GKGestureRecognizerState.Began;
 			}
 		}
 	}
@@ -48,11 +67,11 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 	
 	public override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing || state == GKGestureRecognizerState.Began )
 		{
-			var currentDistance = distanceBetweenTrackedTouches();
-			deltaScale = ( currentDistance - _previousDistance ) / _intialDistance;
-			_previousDistance = currentDistance;
+			var currentRotation = angleBetweenTouches();
+			deltaRotation = Mathf.DeltaAngle( currentRotation, _previousRotation );
+			_previousRotation = currentRotation;
 			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
@@ -71,7 +90,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 		if( _trackingTouches.Count == 1 )
 		{
 			state = GKGestureRecognizerState.Possible;
-			deltaScale = 1;
+			deltaRotation = 0;
 		}
 		else
 		{
@@ -82,7 +101,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 	
 	public override string ToString()
 	{
-		return string.Format( "[{0}] state: {1}, deltaScale: {2}", this.GetType(), state, deltaScale );
+		return string.Format( "[{0}] state: {1}, location: {2}, rotation: {3}", this.GetType(), state, touchLocation(), deltaRotation );
 	}
 
 }

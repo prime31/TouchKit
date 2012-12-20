@@ -14,14 +14,14 @@ GestureKit comes with a few built in recognizers to get you started and to serve
 * **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement
 * **Pan Recognizer**: detects a pan gesture (finger down and moving around the screen)
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
-* **Pinch Recognizer**: detects pinches and reports back a scale
-
+* **Pinch Recognizer**: detects pinches and reports back the delta scale
+* **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
 
 
 How Do I Use GestureKit?
 -----
 
-If you are just using the built in recognizers, check out the demo scene which shows how to use them. If you want to make your own (and feel free to send pull requests if you make any generic recognizers!) all you have to do is subclass AbstractGestureRecognizer and implement the three methods: touchesBegan, touchesMoved and touchesEnded. Recognizers can be discrete (they only complete once like a tap or long touch) or continous (they can fire continuously like a pan). Recognizers use the **state** veriable to determine if they are still active, completed or failed. If you set the state to **Recognized**, the completion event is fired automatically for you and the recognizer is reset in preparation for the next set of touches.
+If you are just using the built in recognizers, check out the demo scene which shows how to use them. If you want to make your own (and feel free to send pull requests if you make any generic recognizers!) all you have to do is subclass **GKAbstractGestureRecognizer** and implement the three methods: touchesBegan, touchesMoved and touchesEnded. Recognizers can be discrete (they only complete once like a tap or long touch) or continous (they can fire continuously like a pan). Recognizers use the **state** veriable to determine if they are still active, completed or failed. If you set the state to **Recognized**, the completion event is fired automatically for you and the recognizer is reset in preparation for the next set of touches.
 
 Starting with **touchesBegan**, if you find a touch that look interesting you can add it to the **_trackingTouches** List and set the **state** to **Began**. By adding the touch to the **_trackingTouches** List you are telling GestureKit that you want to receive all future touch events that happen with that touch. As the touch moves, **touchesMoved** will be called where you can look at the touches and decide if the gesture is still possible. If it isn't, set the state to **Failed** and GestureKit will reset the recognizer for you.
 

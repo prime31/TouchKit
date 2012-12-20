@@ -4,6 +4,9 @@ using System.Collections;
 
 public class DemoOne : MonoBehaviour
 {
+	public Transform cube;
+
+	
 	void OnGUI()
 	{
 		GUI.matrix = Matrix4x4.Scale( new Vector3( 1.5f, 1.5f, 1.5f ) );
@@ -37,8 +40,14 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add Pan Recognizer" ) )
 		{
 			var recognizer = new GKPanRecognizer();
+			
+			// when using in conjunction with a pinch or rotation recognizer setting the min touches to 2 smoothes movement greatly
+			if( Application.platform == RuntimePlatform.IPhonePlayer )
+				recognizer.minimumNumberOfTouches = 2;
+			
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
+				Camera.mainCamera.transform.position -= new Vector3( recognizer.deltaTranslation.x, recognizer.deltaTranslation.y ) / 100;
 				Debug.Log( "pan recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
@@ -62,7 +71,20 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new GKPinchRecognizer();
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
+				cube.transform.localScale += Vector3.one * recognizer.deltaScale;
 				Debug.Log( "pinch recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
+		if( GUILayout.Button( "Add Rotation Recognizer" ) )
+		{
+			var recognizer = new GKRotationRecognizer();
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				cube.Rotate( Vector3.back, recognizer.deltaRotation );
+				Debug.Log( "rotation recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
