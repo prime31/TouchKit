@@ -14,6 +14,7 @@ GestureKit comes with a few built in recognizers to get you started and to serve
 * **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement
 * **Pan Recognizer**: detects a pan gesture (finger down and moving around the screen)
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
+* **Pinch Recognizer**: detects pinches and reports back a scale
 
 
 
