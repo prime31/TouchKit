@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class GKTapRecognizer : AbstractGestureRecognizer
+public class GKTapRecognizer : GKAbstractGestureRecognizer
 {
 	public int numberOfTapsRequired = 1;
 	// taps that last longer than this duration will be ignored
@@ -16,9 +16,9 @@ public class GKTapRecognizer : AbstractGestureRecognizer
 	{
 		if( touches[0].tapCount >= numberOfTapsRequired )
 		{
-			if( state == GestureRecognizerState.Possible )
+			if( state == GKGestureRecognizerState.Possible )
 			{
-				state = GestureRecognizerState.Began;
+				state = GKGestureRecognizerState.Began;
 				_trackingTouches.Add( touches[0] );
 				_touchBeganTime = Time.time;
 			}
@@ -28,21 +28,21 @@ public class GKTapRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Began )
+		if( state == GKGestureRecognizerState.Began )
 		{
 			// did we move?
 			if( touches[0].deltaPosition.sqrMagnitude > 5 )
-				state = GestureRecognizerState.Failed;
+				state = GKGestureRecognizerState.Failed;
 		}
 	}
 	
 	
 	public override void touchesEnded( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Began && ( Time.time <= _touchBeganTime + maxDurationForTapConsideration ) )
-			state = GestureRecognizerState.Recognized;
+		if( state == GKGestureRecognizerState.Began && ( Time.time <= _touchBeganTime + maxDurationForTapConsideration ) )
+			state = GKGestureRecognizerState.Recognized;
 		else
-			state = GestureRecognizerState.Failed;
+			state = GKGestureRecognizerState.Failed;
 	}
 	
 }

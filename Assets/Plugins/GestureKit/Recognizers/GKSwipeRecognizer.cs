@@ -16,7 +16,7 @@ public enum GKSwipeDirection
 }
 
 
-public class GKSwipeRecognizer : AbstractGestureRecognizer
+public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 {
 	public int numberOfTouchesRequired = 1;
 	public float timeToSwipe = 0.5f;	
@@ -38,7 +38,7 @@ public class GKSwipeRecognizer : AbstractGestureRecognizer
 		// if we have a time stipulation and we exceeded it stop listening for swipes
 		if( timeToSwipe > 0.0f && ( Time.time - _startTime ) > timeToSwipe )
 		{
-			state = GestureRecognizerState.Failed;
+			state = GKGestureRecognizerState.Failed;
 			return false;
 		}
 		
@@ -146,25 +146,25 @@ public class GKSwipeRecognizer : AbstractGestureRecognizer
 
 	public override void touchesBegan( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Possible )
+		if( state == GKGestureRecognizerState.Possible )
 		{
 			_swipeDetectionState = swipesToDetect;
 			_startPoint = touches[0].position;
 			_startTime = Time.time;
 			_trackingTouches.Add( touches[0] );
 			
-			state = GestureRecognizerState.Began;
+			state = GKGestureRecognizerState.Began;
 		}
 	}
 	
 	
 	public override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Began )
+		if( state == GKGestureRecognizerState.Began )
 		{
 			if( checkForSwipeCompletion( touches[0] ) )
 			{
-				state = GestureRecognizerState.Recognized;
+				state = GKGestureRecognizerState.Recognized;
 			}
 		}
 	}
@@ -172,7 +172,7 @@ public class GKSwipeRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesEnded( List<GKTouch> touches )
 	{
-		state = GestureRecognizerState.Failed;
+		state = GKGestureRecognizerState.Failed;
 	}
 	
 	

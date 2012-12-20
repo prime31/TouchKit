@@ -57,6 +57,17 @@ public class DemoOne : MonoBehaviour
 		}
 		
 		
+		if( GUILayout.Button( "Add Pinch Recognizer" ) )
+		{
+			var recognizer = new GKPinchRecognizer();
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				Debug.Log( "pinch recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
 		if( GUILayout.Button( "Remove All Recognizers" ) )
 		{
 			GestureKit.removeAllGestureRecognizers();

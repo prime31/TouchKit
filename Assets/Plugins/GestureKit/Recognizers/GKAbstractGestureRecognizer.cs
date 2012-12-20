@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 
-public enum GestureRecognizerState
+public enum GKGestureRecognizerState
 {
 	Possible, // we havent started yet and we are still listening
 	Began, // we have started and latched at least one finger
@@ -15,9 +15,9 @@ public enum GestureRecognizerState
 }
 
 
-public abstract class AbstractGestureRecognizer
+public abstract class GKAbstractGestureRecognizer
 {
-	public event Action<AbstractGestureRecognizer> gestureRecognizedEvent;
+	public event Action<GKAbstractGestureRecognizer> gestureRecognizedEvent;
 	
 	public bool enabled = true;
 	/// <summary>
@@ -29,21 +29,21 @@ public abstract class AbstractGestureRecognizer
 		get { return _trackingTouches.Count; }
 	}
 	
-	private GestureRecognizerState _state = GestureRecognizerState.Possible;
-	public GestureRecognizerState state
+	private GKGestureRecognizerState _state = GKGestureRecognizerState.Possible;
+	public GKGestureRecognizerState state
 	{
 		get { return _state; }
 		set
 		{
 			_state = value;
 			
-			if( _state == GestureRecognizerState.Recognized || _state == GestureRecognizerState.RecognizedAndStillRecognizing )
+			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
 			{
 				if( gestureRecognizedEvent != null )
 					gestureRecognizedEvent( this );
 			}
 			
-			if( _state == GestureRecognizerState.Recognized || _state == GestureRecognizerState.Failed )
+			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.Failed )
 				reset();
 		}
 	}
@@ -99,7 +99,7 @@ public abstract class AbstractGestureRecognizer
 	{
 		get
 		{
-			return ( enabled && state != GestureRecognizerState.Failed && state != GestureRecognizerState.Recognized );
+			return ( enabled && state != GKGestureRecognizerState.Failed && state != GKGestureRecognizerState.Recognized );
 		}
 	}
 	
@@ -144,7 +144,7 @@ public abstract class AbstractGestureRecognizer
 	
 	public void reset()
 	{
-		_state = GestureRecognizerState.Possible;
+		_state = GKGestureRecognizerState.Possible;
 		_trackingTouches.Clear();
 	}
 	

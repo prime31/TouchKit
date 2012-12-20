@@ -4,24 +4,17 @@ using System.Collections.Generic;
 
 
 
-public class GKPanRecognizer : AbstractGestureRecognizer
+public class GKPanRecognizer : GKAbstractGestureRecognizer
 {
 	public Vector2 startPosition;
 	
 	
 	public override void touchesBegan( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Possible )
+		if( state == GKGestureRecognizerState.Possible )
 		{
-			state = GestureRecognizerState.Began;
-			
-			// latch the touches
-			for( int i = 0; i < touches.Count; i++ )
-			{
-				if( !isTrackingTouch( touches[i] ) )
-					_trackingTouches.Add( touches[i] );
-			}
-			
+			state = GKGestureRecognizerState.Began;
+			_trackingTouches.Add( touches[0] );			
 			startPosition = touchLocation();
 		}
 	}
@@ -29,14 +22,14 @@ public class GKPanRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Began || state == GestureRecognizerState.RecognizedAndStillRecognizing )
-			state = GestureRecognizerState.RecognizedAndStillRecognizing;
+		if( state == GKGestureRecognizerState.Began || state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
 	}
 	
 	
 	public override void touchesEnded( List<GKTouch> touches )
 	{
-		state = GestureRecognizerState.Failed;
+		state = GKGestureRecognizerState.Failed;
 	}
 	
 	

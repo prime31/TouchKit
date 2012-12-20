@@ -5,7 +5,7 @@ using System.Timers;
 
 
 
-public class GKLongPressRecognizer : AbstractGestureRecognizer
+public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 {
 	public float minimumPressDuration = 0.5f;
 	public float allowableMovement = 10f;
@@ -25,8 +25,8 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 		// if our time elapsed it means we were not cancelled
 		if( Time.time >= endTime )
 		{
-			if( state == GestureRecognizerState.Began )
-				state = GestureRecognizerState.Recognized;
+			if( state == GKGestureRecognizerState.Began )
+				state = GKGestureRecognizerState.Recognized;
 		}
 		
 		_waiting = false;
@@ -35,26 +35,26 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesBegan( List<GKTouch> touches )
 	{
-		if( !_waiting && state == GestureRecognizerState.Possible )
+		if( !_waiting && state == GKGestureRecognizerState.Possible )
 		{
 			_beginLocation = touches[0].position;
 			_waiting = true;
 			GestureKit.instance.StartCoroutine( beginGesture() );
 			_trackingTouches.Add( touches[0] );
-			state = GestureRecognizerState.Began;
+			state = GKGestureRecognizerState.Began;
 		}
 	}
 	
 	
 	public override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GestureRecognizerState.Began )
+		if( state == GKGestureRecognizerState.Began )
 		{
 			// did we move too far?
 			var moveDistance = Vector2.Distance( touches[0].position, _beginLocation );
 			if( moveDistance > allowableMovement )
 			{
-				state = GestureRecognizerState.Failed;
+				state = GKGestureRecognizerState.Failed;
 				_waiting = false;
 			}
 		}
@@ -63,7 +63,7 @@ public class GKLongPressRecognizer : AbstractGestureRecognizer
 	
 	public override void touchesEnded( List<GKTouch> touches )
 	{
-		state = GestureRecognizerState.Failed;	
+		state = GKGestureRecognizerState.Failed;	
 		_waiting = false;
 	}
 

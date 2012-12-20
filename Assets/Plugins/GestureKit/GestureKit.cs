@@ -7,7 +7,7 @@ public class GestureKit : MonoBehaviour
 {
 	public static int maxTouchesToProcess = 2;
 	
-	private List<AbstractGestureRecognizer> _gestureRecognizers = new List<AbstractGestureRecognizer>();
+	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
 	private GKTouch[] _touchCache;
 	private List<GKTouch> _liveTouches = new List<GKTouch>();
 	
@@ -35,6 +35,24 @@ public class GestureKit : MonoBehaviour
 		}
 	}
 	
+	
+	/// <summary>
+	/// Unity often misses the Ended phase of touches so this method will look out for that
+	/// </summary>
+	private void babysitLostTouches()
+	{
+		for( int i = 0; i < _touchCache.Length; i++ )
+		{
+			if( _touchCache[i].phase != TouchPhase.Ended )
+			{
+				Debug.LogError( "found touch with phase: " + _touchCache[i].phase );
+				_touchCache[i].phase = TouchPhase.Ended;
+			}
+		}
+	}
+	
+	
+	#region MonoBehaviour
 	
 	private void OnApplicationQuit()
 	{
@@ -87,18 +105,24 @@ public class GestureKit : MonoBehaviour
 			
 			_liveTouches.Clear();
 		}
+		else
+		{
+			babysitLostTouches();
+		}
 	}
-
+	
+	#endregion
+	
 		
 	#region Public API
 	
-	public static void addGestureRecognizer( AbstractGestureRecognizer recognizer )
+	public static void addGestureRecognizer( GKAbstractGestureRecognizer recognizer )
 	{
 		instance._gestureRecognizers.Add( recognizer );
 	}
 	
 	
-	public static void removeGestureRecognizer( AbstractGestureRecognizer recognizer )
+	public static void removeGestureRecognizer( GKAbstractGestureRecognizer recognizer )
 	{
 		if( !_instance._gestureRecognizers.Contains( recognizer ) )
 		{

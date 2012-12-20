@@ -10,7 +10,7 @@ public class GKTouch
 	public Vector2 deltaPosition;
 	public float deltaTime;
 	public int tapCount;
-	public TouchPhase phase;
+	public TouchPhase phase = TouchPhase.Ended;
 	
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 	// used to track mouse movement and fake touches
