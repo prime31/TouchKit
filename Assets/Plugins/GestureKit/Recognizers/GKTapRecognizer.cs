@@ -1,10 +1,13 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 
 public class GKTapRecognizer : GKAbstractGestureRecognizer
 {
+	public event Action<GKTapRecognizer> gestureRecognizedEvent;
+	
 	public int numberOfTapsRequired = 1;
 	// taps that last longer than this duration will be ignored
 	public float maxDurationForTapConsideration = 0.5f;
@@ -12,7 +15,14 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	private float _touchBeganTime;
 	
 	
-	public override void touchesBegan( List<GKTouch> touches )
+	internal override void fireRecognizedEvent()
+	{
+		if( gestureRecognizedEvent != null )
+			gestureRecognizedEvent( this );
+	}
+	
+	
+	internal override void touchesBegan( List<GKTouch> touches )
 	{
 		if( touches[0].tapCount >= numberOfTapsRequired )
 		{
@@ -26,7 +36,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Began )
 		{
@@ -37,7 +47,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Began && ( Time.time <= _touchBeganTime + maxDurationForTapConsideration ) )
 			state = GKGestureRecognizerState.Recognized;

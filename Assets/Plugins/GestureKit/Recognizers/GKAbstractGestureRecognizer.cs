@@ -17,8 +17,6 @@ public enum GKGestureRecognizerState
 
 public abstract class GKAbstractGestureRecognizer
 {
-	public event Action<GKAbstractGestureRecognizer> gestureRecognizedEvent;
-	
 	public bool enabled = true;
 	/// <summary>
 	/// frame that the touch must be within to be recognized. null means full screen. note that Unity's origin is the bottom left
@@ -38,10 +36,7 @@ public abstract class GKAbstractGestureRecognizer
 			_state = value;
 			
 			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
-			{
-				if( gestureRecognizedEvent != null )
-					gestureRecognizedEvent( this );
-			}
+				fireRecognizedEvent();
 			
 			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.Failed )
 				reset();
@@ -106,7 +101,7 @@ public abstract class GKAbstractGestureRecognizer
 	
 	#region Public API
 	
-	public void recognizeTouches( List<GKTouch> touches )
+	internal void recognizeTouches( List<GKTouch> touches )
 	{
 		if( !shouldAttemptToRecognize )
 			return;
@@ -142,7 +137,7 @@ public abstract class GKAbstractGestureRecognizer
 	}
 	
 	
-	public void reset()
+	internal void reset()
 	{
 		_state = GKGestureRecognizerState.Possible;
 		_trackingTouches.Clear();
@@ -172,16 +167,19 @@ public abstract class GKAbstractGestureRecognizer
 	}
 	
 	
-	public virtual void touchesBegan( List<GKTouch> touches )
+	internal virtual void touchesBegan( List<GKTouch> touches )
 	{}
 	
 	
-	public virtual void touchesMoved( List<GKTouch> touches )
+	internal virtual void touchesMoved( List<GKTouch> touches )
 	{}
 	
 	
-	public virtual void touchesEnded( List<GKTouch> touches )
+	internal virtual void touchesEnded( List<GKTouch> touches )
 	{}
+	
+	
+	internal abstract void fireRecognizedEvent();
 	
 	
 	public override string ToString()

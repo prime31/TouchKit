@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 
 public class GKPanRecognizer : GKAbstractGestureRecognizer
 {
+	public event Action<GKPanRecognizer> gestureRecognizedEvent;
+	
 	public Vector2 deltaTranslation;
 	public int minimumNumberOfTouches = 1;
 	public int maximumNumberOfTouches = 2;
@@ -13,7 +16,14 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	private Vector2 _previousLocation;
 	
 	
-	public override void touchesBegan( List<GKTouch> touches )
+	internal override void fireRecognizedEvent()
+	{
+		if( gestureRecognizedEvent != null )
+			gestureRecognizedEvent( this );
+	}
+	
+	
+	internal override void touchesBegan( List<GKTouch> touches )
 	{
 		for( int i = 0; i < touches.Count; i++ )
 		{
@@ -35,7 +45,7 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Began || state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
@@ -47,7 +57,7 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<GKTouch> touches )
 	{
 		// remove any completed touches
 		for( int i = 0; i < touches.Count; i++ )

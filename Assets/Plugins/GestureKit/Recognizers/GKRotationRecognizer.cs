@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,6 +10,8 @@ using System.Collections.Generic;
 /// </summary>
 public class GKRotationRecognizer : GKAbstractGestureRecognizer
 {
+	public event Action<GKRotationRecognizer> gestureRecognizedEvent;
+	
 	public float deltaRotation = 0;
 	public float minimumDeltaRotationToRecognize = 0;
 	
@@ -37,7 +40,14 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesBegan( List<GKTouch> touches )
+	internal override void fireRecognizedEvent()
+	{
+		if( gestureRecognizedEvent != null )
+			gestureRecognizedEvent( this );
+	}
+	
+	
+	internal override void touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -65,7 +75,7 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing || state == GKGestureRecognizerState.Began )
 		{
@@ -77,7 +87,7 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<GKTouch> touches )
 	{
 		// remove any completed touches
 		for( int i = 0; i < touches.Count; i++ )

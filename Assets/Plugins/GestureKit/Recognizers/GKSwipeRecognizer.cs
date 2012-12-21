@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,6 +19,8 @@ public enum GKSwipeDirection
 
 public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 {
+	public event Action<GKSwipeRecognizer> gestureRecognizedEvent;
+	
 	public int numberOfTouchesRequired = 1;
 	public float timeToSwipe = 0.5f;	
 	public float allowedVariance = 35.0f;
@@ -143,8 +146,15 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
+	internal override void fireRecognizedEvent()
+	{
+		if( gestureRecognizedEvent != null )
+			gestureRecognizedEvent( this );
+	}
+	
+	
 
-	public override void touchesBegan( List<GKTouch> touches )
+	internal override void touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -158,7 +168,7 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Began )
 		{
@@ -170,7 +180,7 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<GKTouch> touches )
 	{
 		state = GKGestureRecognizerState.Failed;
 	}

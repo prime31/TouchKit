@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
@@ -7,6 +8,8 @@ using System.Timers;
 
 public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 {
+	public event Action<GKLongPressRecognizer> gestureRecognizedEvent;
+	
 	public float minimumPressDuration = 0.5f;
 	public float allowableMovement = 10f;
 	
@@ -33,7 +36,14 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesBegan( List<GKTouch> touches )
+	internal override void fireRecognizedEvent()
+	{
+		if( gestureRecognizedEvent != null )
+			gestureRecognizedEvent( this );
+	}
+	
+	
+	internal override void touchesBegan( List<GKTouch> touches )
 	{
 		if( !_waiting && state == GKGestureRecognizerState.Possible )
 		{
@@ -46,7 +56,7 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Began )
 		{
@@ -61,7 +71,7 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	public override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<GKTouch> touches )
 	{
 		state = GKGestureRecognizerState.Failed;	
 		_waiting = false;
