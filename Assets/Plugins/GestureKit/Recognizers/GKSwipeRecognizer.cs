@@ -21,7 +21,6 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 {
 	public event Action<GKSwipeRecognizer> gestureRecognizedEvent;
 	
-	public int numberOfTouchesRequired = 1;
 	public float timeToSwipe = 0.5f;	
 	public float allowedVariance = 35.0f;
 	public float minimumDistance = 40.0f;

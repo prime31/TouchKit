@@ -11,22 +11,17 @@ using System.Collections.Generic;
 public class GKRotationRecognizer : GKAbstractGestureRecognizer
 {
 	public event Action<GKRotationRecognizer> gestureRecognizedEvent;
+	public event Action<GKRotationRecognizer> gestureCompleteEvent;
 	
 	public float deltaRotation = 0;
 	public float minimumDeltaRotationToRecognize = 0;
 	
-	private float _previousRotation;
+	protected float _previousRotation;
 	
 	
-	private float distanceBetweenTrackedTouches()
+	protected float angleBetweenPoints( Vector2 position1, Vector2 position2 )
 	{
-		return Vector2.Distance( _trackingTouches[0].position, _trackingTouches[1].position );
-	}
-	
-	
-	private float angleBetweenTouches()
-	{
-		var fromLine = _trackingTouches[1].position - _trackingTouches[0].position;
+		var fromLine = position2 - position1;
 		var toLine = new Vector2( 1, 0 );
  
 		var angle = Vector2.Angle( fromLine, toLine );
@@ -63,12 +58,12 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 					if( _trackingTouches.Count == 2 )
 						break;
 				}
-			}
+			} // end for
 			
 			if( _trackingTouches.Count == 2 )
 			{
 				deltaRotation = 0;
-				_previousRotation = angleBetweenTouches();
+				_previousRotation = angleBetweenPoints( _trackingTouches[0].position, _trackingTouches[1].position );
 				state = GKGestureRecognizerState.Began;
 			}
 		}
@@ -79,7 +74,7 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	{
 		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing || state == GKGestureRecognizerState.Began )
 		{
-			var currentRotation = angleBetweenTouches();
+			var currentRotation = angleBetweenPoints( _trackingTouches[0].position, _trackingTouches[1].position );
 			deltaRotation = Mathf.DeltaAngle( currentRotation, _previousRotation );
 			_previousRotation = currentRotation;
 			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
@@ -94,6 +89,13 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 		{
 			if( touches[i].phase == TouchPhase.Ended )
 				_trackingTouches.Remove( touches[i] );
+		}
+		
+		// if we had previously been recognizing fire our complete event
+		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		{
+			if( gestureCompleteEvent != null )
+				gestureCompleteEvent( this );
 		}
 		
 		// if we still have a touch left continue to wait for another. no touches means its time to reset

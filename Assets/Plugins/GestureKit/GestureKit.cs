@@ -12,6 +12,10 @@ public class GestureKit : MonoBehaviour
 	private List<GKTouch> _liveTouches = new List<GKTouch>();
 	private bool _shouldCheckForLostTouches = false; // used to ensure we dont check for lost touches too often
 	
+#if UNITY_EDITOR
+	private bool _isUnityRemoteActive = false; // hack to detect the Unity remote. Once you touch the screen once mouse input will be ignored
+#endif
+	
 	
 	private static GestureKit _instance = null;
 	public static GestureKit instance
@@ -78,12 +82,29 @@ public class GestureKit : MonoBehaviour
 	
 	private void Update()
 	{
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+		// the next 10 or so lines is disgustingly, appallingly, horrendously horrible but it helps when testing
+#if UNITY_EDITOR
+		// check to see if the Unity Remote is active
+		if( !_isUnityRemoteActive && Input.touchCount > 0 )
+		{
+			Debug.LogWarning( "disabling mouse input because we detected a Unity Remote connected" );
+			_isUnityRemoteActive = true;
+		}
 		
-		// we only need to process if we have some interesting input this frame
-		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
-			_liveTouches.Add( _touchCache[0].populateFromMouse() );
-
+		if( !_isUnityRemoteActive )
+		{
+#endif
+		
+	#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+			
+			// we only need to process if we have some interesting input this frame
+			if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
+				_liveTouches.Add( _touchCache[0].populateFromMouse() );
+	
+	#endif
+		
+#if UNITY_EDITOR
+		}
 #endif
 		
 		// get all touches and examine them. only do our touch processing if we have some touches
@@ -109,7 +130,6 @@ public class GestureKit : MonoBehaviour
 			}
 		}
 
-		
 		// pass on the touches to all the recognizers
 		if( _liveTouches.Count > 0 )
 		{

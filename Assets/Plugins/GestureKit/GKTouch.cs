@@ -80,5 +80,11 @@ public class GKTouch
 		return this;
 	}
 #endif
+	
+	
+	public override string ToString()
+	{
+		return string.Format( "[GKTouch] fingerId: {0}, phase: {1}, position: {2}", fingerId, phase, position );
+	}
 
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public class GKPinchRecognizer : GKAbstractGestureRecognizer
 {
 	public event Action<GKPinchRecognizer> gestureRecognizedEvent;
+	public event Action<GKPinchRecognizer> gestureCompleteEvent;
 	
 	public float deltaScale = 0;
 	private float _intialDistance;
@@ -43,7 +44,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 					if( _trackingTouches.Count == 2 )
 						break;
 				}
-			}
+			} // end for
 			
 			if( _trackingTouches.Count == 2 )
 			{
@@ -75,6 +76,13 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 		{
 			if( touches[i].phase == TouchPhase.Ended )
 				_trackingTouches.Remove( touches[i] );
+		}
+		
+		// if we had previously been recognizing fire our complete event
+		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		{
+			if( gestureCompleteEvent != null )
+				gestureCompleteEvent( this );
 		}
 		
 		// if we still have a touch left continue to wait for another. no touches means its time to reset

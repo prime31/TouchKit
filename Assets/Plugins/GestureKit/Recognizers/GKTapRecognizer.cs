@@ -9,6 +9,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	public event Action<GKTapRecognizer> gestureRecognizedEvent;
 	
 	public int numberOfTapsRequired = 1;
+	public int numberOfTouchesRequired = 1;
 	// taps that last longer than this duration will be ignored
 	public float maxDurationForTapConsideration = 0.5f;
 	
@@ -24,11 +25,22 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	
 	internal override void touchesBegan( List<GKTouch> touches )
 	{
-		if( touches[0].tapCount >= numberOfTapsRequired )
+		if( state == GKGestureRecognizerState.Possible )
 		{
-			if( state == GKGestureRecognizerState.Possible )
+			for( int i = 0; i < touches.Count; i++ )
 			{
-				_trackingTouches.Add( touches[0] );
+				// only add touches in the Began phase
+				if( touches[i].phase == TouchPhase.Began )
+				{
+					_trackingTouches.Add( touches[i] );
+
+					if( _trackingTouches.Count == numberOfTouchesRequired )
+						break;
+				}
+			} // end for
+			
+			if( _trackingTouches.Count == numberOfTouchesRequired )
+			{
 				_touchBeganTime = Time.time;
 				state = GKGestureRecognizerState.Began;
 			}
@@ -41,8 +53,14 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 		if( state == GKGestureRecognizerState.Began )
 		{
 			// did we move?
-			if( touches[0].deltaPosition.sqrMagnitude > 5 )
-				state = GKGestureRecognizerState.Failed;
+			for( var i = 0; i < touches.Count; i++ )
+			{
+				if( touches[i].deltaPosition.sqrMagnitude > 5 )
+				{
+					state = GKGestureRecognizerState.Failed;
+					break;
+				}
+			}
 		}
 	}
 	

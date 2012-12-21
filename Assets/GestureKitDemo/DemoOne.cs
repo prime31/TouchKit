@@ -17,7 +17,14 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
 		{
 			var recognizer = new GKTapRecognizer();
-			recognizer.boundaryFrame = new Rect( 0, 0, 300, 300 );
+			
+			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
+			recognizer.boundaryFrame = new Rect( 0, 0, 600, 600 );
+			
+			// we can also set the number of touches required for the gesture
+			if( Application.platform == RuntimePlatform.IPhonePlayer )
+				recognizer.numberOfTouchesRequired = 2;
+			
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				Debug.Log( "tap recognizer fired: " + r );
@@ -49,6 +56,12 @@ public class DemoOne : MonoBehaviour
 			{
 				Camera.mainCamera.transform.position -= new Vector3( recognizer.deltaTranslation.x, recognizer.deltaTranslation.y ) / 100;
 				Debug.Log( "pan recognizer fired: " + r );
+			};
+			
+			// continuous gestures have a complete event so that we know when they are done recognizing
+			recognizer.gestureCompleteEvent += r =>
+			{
+				Debug.Log( "pan gesture complete" );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
@@ -85,6 +98,19 @@ public class DemoOne : MonoBehaviour
 			{
 				cube.Rotate( Vector3.back, recognizer.deltaRotation );
 				Debug.Log( "rotation recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
+		if( GUILayout.Button( "Add One Finger Rotation Recognizer" ) )
+		{
+			var recognizer = new GKOneFingerRotationRecognizer();
+			recognizer.targetPosition = Camera.mainCamera.WorldToScreenPoint( cube.position );
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				cube.Rotate( Vector3.back, recognizer.deltaRotation );
+				Debug.Log( "one finger rotation recognizer fired: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
