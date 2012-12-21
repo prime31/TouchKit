@@ -16,6 +16,7 @@ GestureKit comes with a few built in recognizers to get you started and to serve
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
 * **Pinch Recognizer**: detects pinches and reports back the delta scale
 * **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
+* **One Finger Rotation Recognizer**: pass it a target object's center position and it will report back the delta rotation of a single finger
 
 
 How Do I Use GestureKit?
