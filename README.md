@@ -10,9 +10,9 @@ Included Gesture Recognizers
 ---
 
 GestureKit comes with a few built in recognizers to get you started and to serve as an example for how to make your own. Included are the following:
-* **Tap Recognizer**: detects taps
+* **Tap Recognizer**: detects one or more taps from one or more fingers
 * **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement
-* **Pan Recognizer**: detects a pan gesture (finger down and moving around the screen)
+* **Pan Recognizer**: detects a pan gesture (one or more fingers down and moving around the screen)
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
 * **Pinch Recognizer**: detects pinches and reports back the delta scale
 * **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
