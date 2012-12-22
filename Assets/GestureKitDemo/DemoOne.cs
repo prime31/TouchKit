@@ -43,6 +43,21 @@ public class DemoOne : MonoBehaviour
 			GestureKit.addGestureRecognizer( recognizer );
 		}
 		
+		
+		if( GUILayout.Button( "Add Press Recognizer" ) )
+		{
+			var recognizer = new GKPressRecognizer( 0.3f, 10f );
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				Debug.Log( "press recognizer fired: " + r );
+			};
+			recognizer.gestureCompleteEvent += r =>
+			{
+				Debug.Log( "press recognizer completed: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
 
 		if( GUILayout.Button( "Add Pan Recognizer" ) )
 		{

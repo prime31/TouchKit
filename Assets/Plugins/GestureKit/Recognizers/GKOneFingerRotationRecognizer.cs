@@ -5,12 +5,17 @@ using System.Collections.Generic;
 
 
 
-
+/// <summary>
+/// detects a rotation around an object with a single finger. The target objects position must be provided in screen coordinates.
+/// </summary>
 public class GKOneFingerRotationRecognizer : GKRotationRecognizer
 {
 	public new event Action<GKOneFingerRotationRecognizer> gestureRecognizedEvent;
 	public new event Action<GKOneFingerRotationRecognizer> gestureCompleteEvent;
 	
+	/// <summary>
+	/// this should be the center point in screen coordinates of the object that is being rotated
+	/// </summary>
 	public Vector2 targetPosition;
 	
 	

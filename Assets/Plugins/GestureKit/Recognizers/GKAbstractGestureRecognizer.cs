@@ -47,6 +47,7 @@ public abstract class GKAbstractGestureRecognizer
 	/// stores all the touches we are currently tracking
 	/// </summary>
 	protected List<GKTouch> _trackingTouches = new List<GKTouch>();
+
 	
 	
 	/// <summary>

@@ -2,10 +2,12 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Timers;
 
 
 
+/// <summary>
+/// detects a long press. The gesture is considered recognized when a touch has been down for minimumPressDuration and if it has moved less than allowableMovement
+/// </summary>
 public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 {
 	public event Action<GKLongPressRecognizer> gestureRecognizedEvent;
@@ -15,6 +17,17 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	
 	private Vector2 _beginLocation;
 	private bool _waiting;
+	
+	
+	
+	public GKLongPressRecognizer(){}
+	
+	
+	public GKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
+	{
+		this.minimumPressDuration = minimumPressDuration;
+		this.allowableMovement = allowableMovement;
+	}
 	
 	
 	private IEnumerator beginGesture()
