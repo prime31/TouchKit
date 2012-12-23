@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class GestureKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
-	public bool isRetina { get; private set; }
+	public bool isRetina { get; private set; } // are we running on a retina device?
 	public static bool autoUpdateRectsForRetina = true; // automatically doubles rect width/height
 	public static int maxTouchesToProcess = 2;
 	
