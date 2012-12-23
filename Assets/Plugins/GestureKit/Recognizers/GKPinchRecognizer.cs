@@ -28,7 +28,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -54,6 +54,8 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 				state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
 			}
 		}
+		
+		return false;
 	}
 	
 	

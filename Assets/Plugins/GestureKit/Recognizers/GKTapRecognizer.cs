@@ -23,7 +23,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -43,8 +43,12 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 			{
 				_touchBeganTime = Time.time;
 				state = GKGestureRecognizerState.Began;
+				
+				return true;
 			}
 		}
+		
+		return false;
 	}
 	
 	

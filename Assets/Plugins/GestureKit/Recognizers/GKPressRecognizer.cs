@@ -64,7 +64,7 @@ public class GKPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( !_waiting && state == GKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
 		{
@@ -83,6 +83,8 @@ public class GKPressRecognizer : GKAbstractGestureRecognizer
 				state = GKGestureRecognizerState.Began;
 			}
 		}
+		
+		return false;
 	}
 	
 	

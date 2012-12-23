@@ -56,7 +56,7 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( !_waiting && state == GKGestureRecognizerState.Possible )
 		{
@@ -66,6 +66,8 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 			_trackingTouches.Add( touches[0] );
 			state = GKGestureRecognizerState.Began;
 		}
+		
+		return false;
 	}
 	
 	

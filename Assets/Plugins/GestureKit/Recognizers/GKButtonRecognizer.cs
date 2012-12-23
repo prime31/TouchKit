@@ -87,7 +87,7 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	internal override void fireRecognizedEvent() {}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		// grab the first touch that begins on us
 		if( state == GKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
@@ -95,7 +95,11 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 			_trackingTouches.Add( touches[0] );
 			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
 			onSelected();
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	

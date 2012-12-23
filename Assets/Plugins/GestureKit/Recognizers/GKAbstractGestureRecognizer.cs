@@ -15,17 +15,20 @@ public enum GKGestureRecognizerState
 }
 
 
-public abstract class GKAbstractGestureRecognizer
+public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestureRecognizer>
 {
 	public bool enabled = true;
+	
 	/// <summary>
 	/// frame that the touch must be within to be recognized. null means full screen. note that Unity's origin is the bottom left
 	/// </summary>
 	public Rect? boundaryFrame = null;
-	public int numberOfTouches
-	{
-		get { return _trackingTouches.Count; }
-	}
+	
+	/// <summary>
+	/// zIndex of touch input. 0 by default. if a zIndex of greater than 0 uses a touch in touchesBegan it will not be passed to any other recognizers.
+	/// useful if you have some full screen recognizers and you want to overlay a button/control
+	/// </summary>
+	public uint zIndex = 0;
 	
 	private GKGestureRecognizerState _state = GKGestureRecognizerState.Possible;
 	public GKGestureRecognizerState state
@@ -131,7 +134,15 @@ public abstract class GKAbstractGestureRecognizer
 					// only send touches began once and ensure that the touch is in the boundaryFrame if applicable
 					if( !_sentTouchesBegan && ( !boundaryFrame.HasValue || boundaryFrame.Value.Contains( touch.position ) ) )
 					{
-						touchesBegan( touches );
+						// if touchesBegan returns true and we have a zIndex greater than 0 we remove the touches with a phase of Began
+						if( touchesBegan( touches ) && zIndex > 0 )
+						{
+							for( var j = touches.Count - 1; j >= 0; j-- )
+							{
+								if( touches[j].phase == TouchPhase.Began )
+									touches.RemoveAt( j );
+							}
+						}
 						_sentTouchesBegan = true;
 					}
 					break;
@@ -192,8 +203,13 @@ public abstract class GKAbstractGestureRecognizer
 	}
 	
 	
-	internal virtual void touchesBegan( List<GKTouch> touches )
-	{}
+	/// <summary>
+	/// return true if a touch was used, false if none were. this is used by any recognizers that should swallow touches if on a higher than 0 zIndex
+	/// </summary>
+	internal virtual bool touchesBegan( List<GKTouch> touches )
+	{
+		return false;
+	}
 	
 	
 	internal virtual void touchesMoved( List<GKTouch> touches )
@@ -206,12 +222,23 @@ public abstract class GKAbstractGestureRecognizer
 	
 	internal abstract void fireRecognizedEvent();
 	
+	#endregion
+	
+	
+	#region IComparable and ToString implementation
+	
+	public int CompareTo( GKAbstractGestureRecognizer other )
+	{
+		return zIndex.CompareTo( other.zIndex );
+	}
+	
+	
+	
 	
 	public override string ToString()
 	{
-		return string.Format( "[{0}] state: {1}, location: {2}", this.GetType(), state, touchLocation() );
+		return string.Format( "[{0}] state: {1}, location: {2}, zIndex: {3}", this.GetType(), state, touchLocation(), zIndex );
 	}
 	
 	#endregion
-	
 }

@@ -24,7 +24,7 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -46,6 +46,8 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 				state = GKGestureRecognizerState.Began;
 			}
 		}
+		
+		return false;
 	}
 	
 	

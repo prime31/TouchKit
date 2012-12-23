@@ -26,7 +26,7 @@ public class GKOneFingerRotationRecognizer : GKRotationRecognizer
 	}
 	
 	
-	internal override void touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<GKTouch> touches )
 	{
 		if( state == GKGestureRecognizerState.Possible )
 		{
@@ -36,6 +36,8 @@ public class GKOneFingerRotationRecognizer : GKRotationRecognizer
 			_previousRotation = angleBetweenPoints( targetPosition, _trackingTouches[0].position );
 			state = GKGestureRecognizerState.Began;
 		}
+		
+		return false;
 	}
 	
 	
