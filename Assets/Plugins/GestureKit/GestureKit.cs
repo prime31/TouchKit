@@ -7,6 +7,7 @@ public class GestureKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
 	public bool isRetina { get; private set; }
+	public static bool autoUpdateRectsForRetina = true; // automatically doubles rect width/height
 	public static int maxTouchesToProcess = 2;
 	
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
@@ -174,7 +175,7 @@ public class GestureKit : MonoBehaviour
 	}
 	
 	
-	private void debugDrawRect( Rect rect, Color color )
+	private void debugDrawRect( GKRect rect, Color color )
 	{
 		var bl = new Vector3( rect.xMin, rect.yMin, 0 );
 		var br = new Vector3( rect.xMax, rect.yMin, 0 );

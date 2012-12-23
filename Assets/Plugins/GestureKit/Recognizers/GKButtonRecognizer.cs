@@ -16,8 +16,8 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	public event Action<GKButtonRecognizer> onDeselectedEvent;
 	public event Action<GKButtonRecognizer> onTouchUpInsideEvent;
 	
-	private Rect _defaultFrame;
-	private Rect _highlightedFrame;
+	private GKRect _defaultFrame;
+	private GKRect _highlightedFrame;
 	
 	
 	/* State Definitions
@@ -26,18 +26,18 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	 * Recognized: 
 	 */
 	
-	#region constructors
+	#region Constructors
 	
 	/// <summary>
 	/// the contstructors ensure we have a frame to work with for button recognizers
 	/// </summary>
-	public GKButtonRecognizer( Rect defaultFrame ) : this( defaultFrame, new RectOffset() )
+	public GKButtonRecognizer( GKRect defaultFrame ) : this( defaultFrame, 30 )
 	{}
 	
-	public GKButtonRecognizer( Rect defaultFrame, RectOffset highlightedFrameOffsets )
+	public GKButtonRecognizer( GKRect defaultFrame, float highlightedExpansion )
 	{
 		_defaultFrame = defaultFrame;
-		_highlightedFrame = highlightedFrameOffsets.Add( defaultFrame );
+		_highlightedFrame = defaultFrame.copyWithExpansion( highlightedExpansion );
 		boundaryFrame = _defaultFrame;
 	}
 	
@@ -106,7 +106,7 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	internal override void touchesMoved( List<GKTouch> touches )
 	{
 		// check to see if the touch is still in our frame
-		var isTouchInFrame = boundaryFrame.Value.Contains( touches[0].position );
+		var isTouchInFrame = boundaryFrame.Value.contains( touches[0].position );
 		
 		// if we are in the Began phase than we should switch to RecognizedAndStillRecognizing (highlighted) if the touch is in our frame
 		if( state == GKGestureRecognizerState.Began && isTouchInFrame )

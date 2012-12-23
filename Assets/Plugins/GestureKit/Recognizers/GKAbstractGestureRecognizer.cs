@@ -22,7 +22,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// <summary>
 	/// frame that the touch must be within to be recognized. null means full screen. note that Unity's origin is the bottom left
 	/// </summary>
-	public Rect? boundaryFrame = null;
+	public GKRect? boundaryFrame = null;
 	
 	/// <summary>
 	/// zIndex of touch input. 0 by default. if a zIndex of greater than 0 uses a touch in touchesBegan it will not be passed to any other recognizers.
@@ -124,7 +124,8 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 		// reset our state to avoid sending any phase more than once
 		_sentTouchesBegan = _sentTouchesMoved = _sentTouchesEnded = false;
 		
-		for( var i = 0; i < touches.Count; i++ )
+		// we loop backwards because the Began phase could end up removing a touch
+		for( var i = touches.Count - 1; i >= 0; i-- )
 		{
 			var touch = touches[i];
 			switch( touch.phase )
@@ -132,7 +133,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 				case TouchPhase.Began:
 				{
 					// only send touches began once and ensure that the touch is in the boundaryFrame if applicable
-					if( !_sentTouchesBegan && ( !boundaryFrame.HasValue || boundaryFrame.Value.Contains( touch.position ) ) )
+					if( !_sentTouchesBegan && ( !boundaryFrame.HasValue || boundaryFrame.Value.contains( touch.position ) ) )
 					{
 						// if touchesBegan returns true and we have a zIndex greater than 0 we remove the touches with a phase of Began
 						if( touchesBegan( touches ) && zIndex > 0 )

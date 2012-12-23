@@ -26,7 +26,7 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new GKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new Rect( 250, 250, 600, 600 );
+			recognizer.boundaryFrame = new GKRect( 250, 250, 600, 600 );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -127,7 +127,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new GKButtonRecognizer( new Rect( 700, 400, 278, 90 ), new RectOffset( 20, 20, 20, 20 ) );
+			var recognizer = new GKButtonRecognizer( new GKRect( 700, 400, 278, 90 ), 20 );
 			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
