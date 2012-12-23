@@ -118,7 +118,7 @@ public class GKPressRecognizer : GKAbstractGestureRecognizer
 				gestureCompleteEvent( this );
 		}
 		
-		state = GKGestureRecognizerState.Failed;	
+		state = GKGestureRecognizerState.Failed;
 		_waiting = false;
 	}
 

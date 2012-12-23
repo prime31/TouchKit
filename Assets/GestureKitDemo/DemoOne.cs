@@ -5,7 +5,13 @@ using System.Collections;
 public class DemoOne : MonoBehaviour
 {
 	public Transform cube;
-
+	
+	
+	void Start()
+	{
+		var i = GestureKit.instance;
+	}
+	
 	
 	void OnGUI()
 	{
@@ -113,6 +119,25 @@ public class DemoOne : MonoBehaviour
 			{
 				cube.Rotate( Vector3.back, recognizer.deltaRotation );
 				Debug.Log( "rotation recognizer fired: " + r );
+			};
+			GestureKit.addGestureRecognizer( recognizer );
+		}
+		
+		
+		if( GUILayout.Button( "Add Button Recognizer" ) )
+		{
+			var recognizer = new GKButtonRecognizer( new Rect( 200, 200, 300, 300 ), new RectOffset( 20, 20, 20, 20 ) );
+			recognizer.onSelectedEvent += ( r ) =>
+			{
+				Debug.Log( "button recognizer selected: " + r );
+			};
+			recognizer.onDeselectedEvent += ( r ) =>
+			{
+				Debug.Log( "button recognizer deselected: " + r );
+			};
+			recognizer.onTouchUpInsideEvent += ( r ) =>
+			{
+				Debug.Log( "button recognizer touch up inside: " + r );
 			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
