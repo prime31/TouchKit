@@ -138,11 +138,20 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 						// if touchesBegan returns true and we have a zIndex greater than 0 we remove the touches with a phase of Began
 						if( touchesBegan( touches ) && zIndex > 0 )
 						{
+							// if we remove more than one touch we have to be careful with our loop and make sure to decrement i appropriately
+							var removedTouches = 0;
 							for( var j = touches.Count - 1; j >= 0; j-- )
 							{
 								if( touches[j].phase == TouchPhase.Began )
+								{
 									touches.RemoveAt( j );
+									removedTouches++;
+								}
 							}
+						
+							// if we removed more than 1 touch decrement i for each additional touch removed
+							if( removedTouches > 0 )
+								i -= ( removedTouches - 1 );
 						}
 						_sentTouchesBegan = true;
 					}
