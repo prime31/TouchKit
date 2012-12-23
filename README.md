@@ -35,6 +35,12 @@ Using the Tap recognizer as an example, the flow would be like the following:
 
 
 
+UI Touch Handling Replacement
+----
+
+GestureKit can be used for any and all touch input in your game. The **GKButtonRecognizer** class has been designed to work with any sprite solution for button touch handling. This lets you keep your input totally separate from your rendering.
+
+
 License
 ----
 For any developers just wanting to use GestureKit in their games go right ahead.  You can use GoKit in any and all games either modified or unmodified.  In order to keep the spirit of this open source project it is expressly forbid to sell or commercially distribute GestureKit outside of your games. You can freely use it in as many games as you would like but you cannot commercially distribute the source code either directly or compiled into a library outside of your game.

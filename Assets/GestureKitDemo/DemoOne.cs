@@ -128,6 +128,7 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
 			var recognizer = new GKButtonRecognizer( new Rect( 700, 400, 278, 90 ), new RectOffset( 20, 20, 20, 20 ) );
+			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
 				Debug.Log( "button recognizer selected: " + r );
