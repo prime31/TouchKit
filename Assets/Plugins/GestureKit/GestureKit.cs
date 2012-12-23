@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class GestureKit : MonoBehaviour
 {
-	public bool debugDrawBoundaryFrames = true;
+	public bool debugDrawBoundaryFrames = false;
 	public static int maxTouchesToProcess = 2;
 	
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();

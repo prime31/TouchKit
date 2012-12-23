@@ -9,7 +9,8 @@ public class DemoOne : MonoBehaviour
 	
 	void Start()
 	{
-		var i = GestureKit.instance;
+		// turn on debug drawing while in the editor
+		GestureKit.instance.debugDrawBoundaryFrames = true;
 	}
 	
 	
@@ -17,7 +18,7 @@ public class DemoOne : MonoBehaviour
 	{
 		GUI.matrix = Matrix4x4.Scale( new Vector3( 1.5f, 1.5f, 1.5f ) );
 		GUI.skin.button.padding = new RectOffset( 0, 0, 10, 10 );
-		GUI.skin.button.fixedWidth = 200;
+		GUI.skin.button.fixedWidth = 250;
 		
 		
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
@@ -25,7 +26,7 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new GKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new Rect( 0, 0, 600, 600 );
+			recognizer.boundaryFrame = new Rect( 250, 250, 600, 600 );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -126,7 +127,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new GKButtonRecognizer( new Rect( 200, 200, 300, 300 ), new RectOffset( 20, 20, 20, 20 ) );
+			var recognizer = new GKButtonRecognizer( new Rect( 700, 400, 278, 90 ), new RectOffset( 20, 20, 20, 20 ) );
 			recognizer.onSelectedEvent += ( r ) =>
 			{
 				Debug.Log( "button recognizer selected: " + r );
