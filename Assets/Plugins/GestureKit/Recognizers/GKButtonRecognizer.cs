@@ -7,11 +7,6 @@ using System.Collections.Generic;
 
 public class GKButtonRecognizer : GKAbstractGestureRecognizer
 {
-	private enum GKButtonState
-	{
-		Highlighted
-	}
-	
 	public event Action<GKButtonRecognizer> onSelectedEvent;
 	public event Action<GKButtonRecognizer> onDeselectedEvent;
 	public event Action<GKButtonRecognizer> onTouchUpInsideEvent;
@@ -31,7 +26,7 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	/// <summary>
 	/// the contstructors ensure we have a frame to work with for button recognizers
 	/// </summary>
-	public GKButtonRecognizer( GKRect defaultFrame ) : this( defaultFrame, 30 )
+	public GKButtonRecognizer( GKRect defaultFrame ) : this( defaultFrame, 40 )
 	{}
 	
 	
