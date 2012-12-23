@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class GestureKit : MonoBehaviour
 {
+	public bool debugDrawBoundaryFrames = true;
 	public static int maxTouchesToProcess = 2;
 	
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
@@ -139,6 +140,55 @@ public class GestureKit : MonoBehaviour
 			_liveTouches.Clear();
 		}
 	}
+	
+	
+#if UNITY_EDITOR
+	
+	// this is for debugging only while in the editor
+	private void OnDrawGizmos()
+	{
+		if( !debugDrawBoundaryFrames )
+			return;
+
+		var colors = new Color[] { Color.red, Color.cyan, Color.red, Color.magenta, Color.yellow };
+		int i = 0;
+		
+		foreach( var r in _gestureRecognizers )
+		{
+			if( r.boundaryFrame.HasValue )
+			{
+				debugDrawRect( r.boundaryFrame.Value, colors[i] );
+				if( ++i >= colors.Length )
+					i = 0;
+			}
+		}
+	}
+	
+	
+	private void debugDrawRect( Rect rect, Color color )
+	{
+		var bl = new Vector3( rect.xMin, rect.yMin, 0 );
+		var br = new Vector3( rect.xMax, rect.yMin, 0 );
+		var tl = new Vector3( rect.xMin, rect.yMax, 0 );
+		var tr = new Vector3( rect.xMax, rect.yMax, 0 );
+		
+		bl = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( bl ) );
+		br = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( br ) );
+		tl = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( tl ) );
+		tr = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( tr ) );
+		
+		// draw four sides
+		Debug.DrawLine( bl, br, color );
+		Debug.DrawLine( br, tr, color );
+		Debug.DrawLine( tr, tl, color );
+		Debug.DrawLine( tl, bl, color );
+		
+		// make an "x" at the midpoint
+		Debug.DrawLine( tl, br, color );
+		Debug.DrawLine( bl, tr, color );
+	}
+	
+#endif
 	
 	#endregion
 	
