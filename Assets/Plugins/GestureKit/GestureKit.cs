@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class GestureKit : MonoBehaviour
+public partial class GestureKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
 	public bool isRetina { get; private set; } // are we running on a retina device?
@@ -27,10 +27,6 @@ public class GestureKit : MonoBehaviour
 	private GKTouch[] _touchCache;
 	private List<GKTouch> _liveTouches = new List<GKTouch>();
 	private bool _shouldCheckForLostTouches = false; // used to ensure we dont check for lost touches too often
-	
-#if UNITY_EDITOR
-	private bool _isUnityRemoteActive = false; // hack to detect the Unity remote. Once you touch the screen once mouse input will be ignored
-#endif
 	
 	
 	private static GestureKit _instance = null;
@@ -84,11 +80,6 @@ public class GestureKit : MonoBehaviour
 	
 	private void Awake()
 	{
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-		// we only need one touch on mouse driven platforms
-		maxTouchesToProcess = 1;
-#endif
-		
 #if UNITY_IPHONE
 		// check to see if we are on a retina device
 		if( iPhone.generation == iPhoneGeneration.iPad3Gen || iPhone.generation == iPhoneGeneration.iPadUnknown || iPhone.generation == iPhoneGeneration.iPhone4
@@ -106,16 +97,10 @@ public class GestureKit : MonoBehaviour
 	
 	private void Update()
 	{
-		// the next 10 or so lines is disgustingly, appallingly, horrendously horrible but it helps when testing
+		// the next couple sections are disgustingly, appallingly, horrendously horrible but it helps when testing in the editor
 #if UNITY_EDITOR
 		// check to see if the Unity Remote is active
-		if( !_isUnityRemoteActive && Input.touchCount > 0 )
-		{
-			Debug.LogWarning( "disabling mouse input because we detected a Unity Remote connected" );
-			_isUnityRemoteActive = true;
-		}
-		
-		if( !_isUnityRemoteActive )
+		if( shouldProcessMouseInput() )
 		{
 #endif
 		
@@ -163,56 +148,7 @@ public class GestureKit : MonoBehaviour
 			_liveTouches.Clear();
 		}
 	}
-	
-	
-#if UNITY_EDITOR
-	
-	// this is for debugging only while in the editor
-	private void OnDrawGizmos()
-	{
-		if( !debugDrawBoundaryFrames )
-			return;
 
-		var colors = new Color[] { Color.red, Color.cyan, Color.red, Color.magenta, Color.yellow };
-		int i = 0;
-		
-		foreach( var r in _gestureRecognizers )
-		{
-			if( r.boundaryFrame.HasValue )
-			{
-				debugDrawRect( r.boundaryFrame.Value, colors[i] );
-				if( ++i >= colors.Length )
-					i = 0;
-			}
-		}
-	}
-	
-	
-	private void debugDrawRect( GKRect rect, Color color )
-	{
-		var bl = new Vector3( rect.xMin, rect.yMin, 0 );
-		var br = new Vector3( rect.xMax, rect.yMin, 0 );
-		var tl = new Vector3( rect.xMin, rect.yMax, 0 );
-		var tr = new Vector3( rect.xMax, rect.yMax, 0 );
-		
-		bl = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( bl ) );
-		br = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( br ) );
-		tl = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( tl ) );
-		tr = Camera.main.ScreenToWorldPoint( Camera.main.transform.InverseTransformPoint( tr ) );
-		
-		// draw four sides
-		Debug.DrawLine( bl, br, color );
-		Debug.DrawLine( br, tr, color );
-		Debug.DrawLine( tr, tl, color );
-		Debug.DrawLine( tl, bl, color );
-		
-		// make an "x" at the midpoint
-		Debug.DrawLine( tl, br, color );
-		Debug.DrawLine( bl, tr, color );
-	}
-	
-#endif
-	
 	#endregion
 	
 		

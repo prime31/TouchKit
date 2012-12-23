@@ -40,12 +40,16 @@ public class GKTouch
 	
 	
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-	public GKTouch populateFromMouse()
+	
+	/// <summary>
+	/// seperating this out into a seperate method allows us to pass in a real mousePosition or a simulated mouse position when populating teh touch
+	/// </summary>
+	public GKTouch populateFromMouseAtPosition( Vector3 mousePosition )
 	{
 		// do we have some input to work with?
 		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 		{
-			var currentMousePosition = new Vector2( Input.mousePosition.x, Input.mousePosition.y );
+			var currentMousePosition = new Vector2( mousePosition.x, mousePosition.y );
 			
 			// if we have a lastMousePosition use it to get a delta
 			if( _lastMousePosition.HasValue )
@@ -71,13 +75,19 @@ public class GKTouch
 			else if( Input.GetMouseButton( 0 ) )
 			{
 				phase = TouchPhase.Moved;
-				_lastMousePosition = Input.mousePosition;
+				_lastMousePosition = mousePosition;
 			}
 			
 			position = currentMousePosition;
 		}
 		
 		return this;
+	}
+	
+	
+	public GKTouch populateFromMouse()
+	{
+		return populateFromMouseAtPosition( Input.mousePosition );
 	}
 #endif
 	
