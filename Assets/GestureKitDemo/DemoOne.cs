@@ -5,6 +5,7 @@ using System.Collections;
 public class DemoOne : MonoBehaviour
 {
 	public Transform cube;
+	private Vector2 _scrollPosition; // for the scroll view
 	
 	
 	void Start()
@@ -16,17 +17,20 @@ public class DemoOne : MonoBehaviour
 	
 	void OnGUI()
 	{
-		GUI.matrix = Matrix4x4.Scale( new Vector3( 1.5f, 1.5f, 1.5f ) );
-		GUI.skin.button.padding = new RectOffset( 0, 0, 10, 10 );
+		//GUI.matrix = Matrix4x4.Scale( new Vector3( 1.5f, 1.5f, 1.5f ) );
+		GUI.skin.button.padding = new RectOffset( 10, 10, 20, 20 );
 		GUI.skin.button.fixedWidth = 250;
 		
+		
+		GUILayout.BeginArea( new Rect( Screen.width - GUI.skin.button.fixedWidth - 20, 0, GUI.skin.button.fixedWidth + 20, Screen.height ) );
+			_scrollPosition = GUILayout.BeginScrollView( _scrollPosition, GUILayout.Width( GUI.skin.button.fixedWidth + 20 ), GUILayout.Height( Screen.height ) );
 		
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
 		{
 			var recognizer = new GKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new GKRect( 250, 250, 600, 600 );
+			recognizer.boundaryFrame = new GKRect( 50, 50, 400, 400 );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -127,7 +131,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new GKButtonRecognizer( new GKRect( 700, 400, 278, 90 ), 20 );
+			var recognizer = new GKButtonRecognizer( new GKRect( 300, 30, 278, 90 ), 20 );
 			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
@@ -162,6 +166,9 @@ public class DemoOne : MonoBehaviour
 		{
 			GestureKit.removeAllGestureRecognizers();
 		}
+		
 
+			GUILayout.EndScrollView();
+		GUILayout.EndArea();
 	}
 }

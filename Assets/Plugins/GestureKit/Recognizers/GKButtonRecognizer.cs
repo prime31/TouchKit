@@ -34,10 +34,15 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	public GKButtonRecognizer( GKRect defaultFrame ) : this( defaultFrame, 30 )
 	{}
 	
-	public GKButtonRecognizer( GKRect defaultFrame, float highlightedExpansion )
+	
+	public GKButtonRecognizer( GKRect defaultFrame, float highlightedExpansion ) : this( defaultFrame, defaultFrame.copyWithExpansion( highlightedExpansion ) )
+	{}
+	
+	
+	public GKButtonRecognizer( GKRect defaultFrame, GKRect highlightedFrame )
 	{
 		_defaultFrame = defaultFrame;
-		_highlightedFrame = defaultFrame.copyWithExpansion( highlightedExpansion );
+		_highlightedFrame = highlightedFrame;
 		boundaryFrame = _defaultFrame;
 	}
 	

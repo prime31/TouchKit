@@ -4,7 +4,7 @@ using System.Collections;
 
 
 /// <summary>
-/// replacement for the Unity Rect class that is GestureKit and resolution aware. Creating one while on a retina device will automatically double all values
+/// replacement for the Unity Rect class that is GestureKit and resolution-aware. Creating one while on a retina device will automatically double all values
 /// if GestureKit.autoUpdateRectsForRetina is true and GestureKit.isRetina is true.
 /// </summary>
 public struct GKRect
@@ -15,17 +15,19 @@ public struct GKRect
 	public float height;
 	
 	public float xMin { get { return x; } }
-	public float xMax { get { return x + height; } }
+	public float xMax { get { return x + width; } }
 	public float yMin { get { return y; } }
 	public float yMax { get { return y + height; } }
 	
 	
 	public GKRect( float x, float y, float width, float height )
 	{
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		var multiplier = ( GestureKit.autoUpdateRectsForRetina && GestureKit.instance.isRetina ) ? 2 : 1;
+		
+		this.x = x * multiplier;
+		this.y = y * multiplier;
+		this.width = width * multiplier;
+		this.height = height * multiplier;
 	}
 	
 	
