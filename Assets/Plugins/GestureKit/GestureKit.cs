@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class GestureKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
+	public bool isRetina { get; private set; }
 	public static int maxTouchesToProcess = 2;
 	
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
@@ -72,6 +73,14 @@ public class GestureKit : MonoBehaviour
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 		// we only need one touch on mouse driven platforms
 		maxTouchesToProcess = 1;
+#endif
+		
+#if UNITY_IPHONE
+		// check to see if we are on a retina device
+		if( iPhone.generation == iPhoneGeneration.iPad3Gen || iPhone.generation == iPhoneGeneration.iPadUnknown || iPhone.generation == iPhoneGeneration.iPhone4
+			|| iPhone.generation == iPhoneGeneration.iPhone4S || iPhone.generation == iPhoneGeneration.iPhone5 || iPhone.generation == iPhoneGeneration.iPodTouch4Gen
+			|| iPhone.generation == iPhoneGeneration.iPodTouch5Gen || iPhone.generation == iPhoneGeneration.iPodTouchUnknown )
+			isRetina = true;
 #endif
 		
 		// prep our GKTouch cache so we avoid excessive allocations
@@ -197,7 +206,14 @@ public class GestureKit : MonoBehaviour
 	
 	public static void addGestureRecognizer( GKAbstractGestureRecognizer recognizer )
 	{
+		// add, then sort and reverse so the higher zIndex items will be on top
 		instance._gestureRecognizers.Add( recognizer );
+		
+		if( recognizer.zIndex > 0 )
+		{
+			_instance._gestureRecognizers.Sort();
+			_instance._gestureRecognizers.Reverse();
+		}
 	}
 	
 	
