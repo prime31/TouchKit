@@ -19,7 +19,10 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	protected float _previousRotation;
 	
 	
-	protected float angleBetweenPoints( Vector2 position1, Vector2 position2 )
+	/// <summary>
+	/// this is public due to its usefulness elsewhere. it should probably move to a helper class.
+	/// </summary>
+	public static float angleBetweenPoints( Vector2 position1, Vector2 position2 )
 	{
 		var fromLine = position2 - position1;
 		var toLine = new Vector2( 1, 0 );
