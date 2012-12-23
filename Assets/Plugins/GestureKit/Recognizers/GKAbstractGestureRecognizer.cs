@@ -47,8 +47,18 @@ public abstract class GKAbstractGestureRecognizer
 	/// stores all the touches we are currently tracking
 	/// </summary>
 	protected List<GKTouch> _trackingTouches = new List<GKTouch>();
-
 	
+	/// <summary>
+	/// The subset of touches being tracked that is applicable to the current recognizer. This is kept around to avoid allocations at runtime.
+	/// </summary>
+	private List<GKTouch> _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer = new List<GKTouch>();
+	
+	/// <summary>
+	/// stores whether we sent any of the phases to the recognizer. This is to avoid sending a phase twice in one frame.
+	/// </summary>
+	private bool _sentTouchesBegan;
+	private bool _sentTouchesMoved;
+	private bool _sentTouchesEnded;
 	
 	/// <summary>
 	/// checks to see if the touch is currently being tracked by the recognizer
@@ -75,19 +85,20 @@ public abstract class GKAbstractGestureRecognizer
 	
 	
 	/// <summary>
-	/// returns only the touches currently being tracked by the recognizer
+	/// populates the _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer with only the touches currently being tracked by the recognizer.
+	/// returns true if there are any touches being tracked
 	/// </summary>
-	private List<GKTouch> subsetOfTouchesBeingTracked( List<GKTouch> touches )
+	private bool populateSubsetOfTouchesBeingTracked( List<GKTouch> touches )
 	{
-		List<GKTouch> trackedTouches = new List<GKTouch>();
+		_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Clear();
 		
 		for( int i = 0; i < touches.Count; i++ )
 		{
 			if( isTrackingTouch( touches[i] ) )
-				trackedTouches.Add( touches[i] );
+				_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Add( touches[i] );
 		}
 		
-		return trackedTouches;
+		return _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Count > 0;
 	}
 	
 	
@@ -107,30 +118,43 @@ public abstract class GKAbstractGestureRecognizer
 		if( !shouldAttemptToRecognize )
 			return;
 		
+		// reset our state to avoid sending any phase more than once
+		_sentTouchesBegan = _sentTouchesMoved = _sentTouchesEnded = false;
+		
 		for( var i = 0; i < touches.Count; i++ )
 		{
 			var touch = touches[i];
 			switch( touch.phase )
 			{
 				case TouchPhase.Began:
-					if( !boundaryFrame.HasValue || ( boundaryFrame.HasValue && boundaryFrame.Value.Contains( touch.position ) ) )
+				{
+					// only send touches began once and ensure that the touch is in the boundaryFrame if applicable
+					if( !_sentTouchesBegan && ( !boundaryFrame.HasValue || boundaryFrame.Value.Contains( touch.position ) ) )
+					{
 						touchesBegan( touches );
+						_sentTouchesBegan = true;
+					}
 					break;
+				}
 				case TouchPhase.Moved:
 				{
 					// limit touches sent to those that are being tracked
-					var subsetOfTouches = subsetOfTouchesBeingTracked( touches );
-					if( subsetOfTouches.Count > 0 )
-						touchesMoved( subsetOfTouches );
+					if( !_sentTouchesMoved && populateSubsetOfTouchesBeingTracked( touches ) )
+					{
+						touchesMoved( _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer );
+						_sentTouchesMoved = true;
+					}
 					break;
 				}
 				case TouchPhase.Ended:
 				case TouchPhase.Canceled:
 				{
 					// limit touches sent to those that are being tracked
-					var subsetOfTouches = subsetOfTouchesBeingTracked( touches );
-					if( subsetOfTouches.Count > 0 )
-						touchesEnded( subsetOfTouches );
+					if( !_sentTouchesEnded && populateSubsetOfTouchesBeingTracked( touches ) )
+					{
+						touchesEnded( _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer );
+						_sentTouchesEnded = true;
+					}
 					break;
 				}
 			}
