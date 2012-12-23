@@ -10,6 +10,19 @@ public class GestureKit : MonoBehaviour
 	public static bool autoUpdateRectsForRetina = true; // automatically doubles rect width/height
 	public static int maxTouchesToProcess = 2;
 	
+	/// <summary>
+	/// helper that will return 1 for non-retina and 2 for retina devices. useful for setting/modifying anything in screen coordinates.
+	/// </summary>
+	public int retinaMultiplier
+	{
+		get
+		{
+			if( isRetina && autoUpdateRectsForRetina )
+				return 2;
+			return 1;
+		}
+	}
+	
 	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
 	private GKTouch[] _touchCache;
 	private List<GKTouch> _liveTouches = new List<GKTouch>();

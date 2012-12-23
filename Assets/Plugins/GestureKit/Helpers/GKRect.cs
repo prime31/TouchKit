@@ -22,7 +22,7 @@ public struct GKRect
 	
 	public GKRect( float x, float y, float width, float height )
 	{
-		var multiplier = ( GestureKit.autoUpdateRectsForRetina && GestureKit.instance.isRetina ) ? 2 : 1;
+		var multiplier = GestureKit.instance.retinaMultiplier;
 		
 		this.x = x * multiplier;
 		this.y = y * multiplier;
@@ -33,12 +33,15 @@ public struct GKRect
 	
 	public GKRect copyWithExpansion( float allSidesExpansion )
 	{
+		allSidesExpansion *= GestureKit.instance.retinaMultiplier;
 		return copyWithExpansion( allSidesExpansion, allSidesExpansion );
 	}
 	
 	
 	public GKRect copyWithExpansion( float xExpansion, float yExpansion )
 	{
+		xExpansion *= GestureKit.instance.retinaMultiplier;
+		yExpansion *= GestureKit.instance.retinaMultiplier;
 		return new GKRect( x - xExpansion, y - yExpansion, width + ( xExpansion + yExpansion ), height + ( xExpansion + yExpansion ) );
 	}
 	
