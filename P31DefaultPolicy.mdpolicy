@@ -6,6 +6,8 @@
     <RemoveTrailingWhitespace>True</RemoveTrailingWhitespace>
   </TextStylePolicy>
   <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp">
+    <IndentSwitchBody>True</IndentSwitchBody>
+	<IndentCaseBody>True</IndentCaseBody>
     <AnonymousMethodBraceStyle>NextLine</AnonymousMethodBraceStyle>
     <PropertyBraceStyle>NextLine</PropertyBraceStyle>
     <PropertyGetBraceStyle>NextLine</PropertyGetBraceStyle>
