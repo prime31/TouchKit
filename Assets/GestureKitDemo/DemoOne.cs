@@ -51,6 +51,10 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "long press recognizer fired: " + r );
 			};
+			recognizer.gestureCompleteEvent += ( r ) =>
+			{
+				Debug.Log( "long press recognizer finished: " + r );
+			};
 			GestureKit.addGestureRecognizer( recognizer );
 		}
 		

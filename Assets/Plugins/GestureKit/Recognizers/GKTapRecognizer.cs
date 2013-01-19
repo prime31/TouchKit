@@ -12,6 +12,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 	public int numberOfTouchesRequired = 1;
 	// taps that last longer than this duration will be ignored
 	public float maxDurationForTapConsideration = 0.5f;
+	public float maxDeltaMovementForTapConsideration = 5f;
 	
 	private float _touchBeganTime;
 	
@@ -59,7 +60,7 @@ public class GKTapRecognizer : GKAbstractGestureRecognizer
 			// did we move?
 			for( var i = 0; i < touches.Count; i++ )
 			{
-				if( touches[i].deltaPosition.sqrMagnitude > 5 )
+				if( touches[i].deltaPosition.sqrMagnitude > maxDeltaMovementForTapConsideration )
 				{
 					state = GKGestureRecognizerState.Failed;
 					break;

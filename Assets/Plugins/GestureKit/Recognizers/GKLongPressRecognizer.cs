@@ -11,6 +11,7 @@ using System.Collections.Generic;
 public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 {
 	public event Action<GKLongPressRecognizer> gestureRecognizedEvent;
+	public event Action<GKLongPressRecognizer> gestureCompleteEvent; // fired when after a successful long press the finger is lifted
 	
 	public float minimumPressDuration = 0.5f;
 	public float allowableMovement = 10f;
@@ -42,7 +43,7 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 		if( Time.time >= endTime )
 		{
 			if( state == GKGestureRecognizerState.Began )
-				state = GKGestureRecognizerState.Recognized;
+				state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 		
 		_waiting = false;
@@ -73,12 +74,16 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<GKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Began )
+		if( state == GKGestureRecognizerState.Began || state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			// did we move too far?
 			var moveDistance = Vector2.Distance( touches[0].position, _beginLocation );
 			if( moveDistance > allowableMovement )
 			{
+				// fire the complete event if we had previously recognized a long press
+				if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
+					gestureCompleteEvent( this );
+						
 				state = GKGestureRecognizerState.Failed;
 				_waiting = false;
 			}
@@ -88,6 +93,10 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	
 	internal override void touchesEnded( List<GKTouch> touches )
 	{
+		// fire the complete event if we had previously recognized a long press
+		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
+			gestureCompleteEvent( this );
+		
 		state = GKGestureRecognizerState.Failed;	
 		_waiting = false;
 	}
