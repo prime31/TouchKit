@@ -8,18 +8,18 @@ using System.IO;
 
 
 
-public class GestureKitMenuItem : Editor
+public class TouchKitMenuItem : Editor
 {
 	const string
-		kSourcePath = "Assets/Plugins/GestureKit/",
-		kBuildTarget = "Assets/Plugins/GestureKit/GestureKit.dll";
+		kSourcePath = "Assets/Plugins/TouchKit/",
+		kBuildTargetFilename = "TouchKit.dll";
 	
 	
-	[MenuItem( "TouchKit/Create DLL..." )]
+	[MenuItem( "TouchKit/Create TouchKit.dll..." )]
 	static void createDLL()
 	{
 		var compileParams = new CompilerParameters();
-		compileParams.OutputAssembly = kBuildTarget;
+		compileParams.OutputAssembly = Path.Combine( System.Environment.GetFolderPath( System.Environment.SpecialFolder.Desktop ), kBuildTargetFilename );
 		compileParams.CompilerOptions = "/optimize";
 		compileParams.ReferencedAssemblies.Add( Path.Combine( EditorApplication.applicationContentsPath, "Frameworks/Managed/UnityEngine.dll" ) );
 		
@@ -31,12 +31,12 @@ public class GestureKitMenuItem : Editor
     	if( compilerResults.Errors.Count > 0 )
     	{
     		foreach( var error in compilerResults.Errors )
-    		{
     			Debug.LogError( error.ToString() );
-    		}
 		}
-		
-    	AssetDatabase.Refresh();
+		else
+		{
+			EditorUtility.DisplayDialog( "TouchKit", "TouchKit.dll should now be on your desktop. If you would like the in-editor support (multi-touch simulator and debug drawing of touch frames) copy the TouchKitEditorSupport.cs file into your project along with the TouchKit.dll", "OK" );
+		}
 	}
 	
 	
@@ -46,7 +46,7 @@ public class GestureKitMenuItem : Editor
 
 		foreach( var file in Directory.GetFiles( path, "*.cs" ) )
 		{
-			if( !file.Contains( "GestureKitEditorSupport" ) )
+			if( !file.Contains( "TouchKitEditorSupport" ) )
 				source.Add( File.ReadAllText( file ) );
 		}
 		
