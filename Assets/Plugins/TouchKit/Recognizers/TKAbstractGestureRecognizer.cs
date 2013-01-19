@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 
-public enum GKGestureRecognizerState
+public enum TKGestureRecognizerState
 {
 	Possible, // we havent started yet and we are still listening
 	Began, // we have started and latched at least one finger
@@ -15,14 +15,14 @@ public enum GKGestureRecognizerState
 }
 
 
-public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestureRecognizer>
+public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestureRecognizer>
 {
 	public bool enabled = true;
 	
 	/// <summary>
 	/// frame that the touch must be within to be recognized. null means full screen. note that Unity's origin is the bottom left
 	/// </summary>
-	public GKRect? boundaryFrame = null;
+	public TKRect? boundaryFrame = null;
 	
 	/// <summary>
 	/// zIndex of touch input. 0 by default. if a zIndex of greater than 0 uses a touch in touchesBegan it will not be passed to any other recognizers.
@@ -30,18 +30,18 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// </summary>
 	public uint zIndex = 0;
 	
-	private GKGestureRecognizerState _state = GKGestureRecognizerState.Possible;
-	public GKGestureRecognizerState state
+	private TKGestureRecognizerState _state = TKGestureRecognizerState.Possible;
+	public TKGestureRecognizerState state
 	{
 		get { return _state; }
 		set
 		{
 			_state = value;
 			
-			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 				fireRecognizedEvent();
 			
-			if( _state == GKGestureRecognizerState.Recognized || _state == GKGestureRecognizerState.Failed )
+			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.Failed )
 				reset();
 		}
 	}
@@ -49,12 +49,12 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// <summary>
 	/// stores all the touches we are currently tracking
 	/// </summary>
-	protected List<GKTouch> _trackingTouches = new List<GKTouch>();
+	protected List<TKTouch> _trackingTouches = new List<TKTouch>();
 	
 	/// <summary>
 	/// The subset of touches being tracked that is applicable to the current recognizer. This is kept around to avoid allocations at runtime.
 	/// </summary>
-	private List<GKTouch> _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer = new List<GKTouch>();
+	private List<TKTouch> _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer = new List<TKTouch>();
 	
 	/// <summary>
 	/// stores whether we sent any of the phases to the recognizer. This is to avoid sending a phase twice in one frame.
@@ -66,7 +66,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// <summary>
 	/// checks to see if the touch is currently being tracked by the recognizer
 	/// </summary>
-	protected bool isTrackingTouch( GKTouch t )
+	protected bool isTrackingTouch( TKTouch t )
 	{
 		return _trackingTouches.Contains( t );
 	}
@@ -75,7 +75,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// <summary>
 	/// checks to see if any of the touches are currently being tracked by the recognizer
 	/// </summary>
-	protected bool isTrackingAnyTouch( List<GKTouch> touches )
+	protected bool isTrackingAnyTouch( List<TKTouch> touches )
 	{
 		for( int i = 0; i < touches.Count; i++ )
 		{
@@ -91,7 +91,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// populates the _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer with only the touches currently being tracked by the recognizer.
 	/// returns true if there are any touches being tracked
 	/// </summary>
-	private bool populateSubsetOfTouchesBeingTracked( List<GKTouch> touches )
+	private bool populateSubsetOfTouchesBeingTracked( List<TKTouch> touches )
 	{
 		_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Clear();
 		
@@ -109,14 +109,14 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	{
 		get
 		{
-			return ( enabled && state != GKGestureRecognizerState.Failed && state != GKGestureRecognizerState.Recognized );
+			return ( enabled && state != TKGestureRecognizerState.Failed && state != TKGestureRecognizerState.Recognized );
 		}
 	}
 	
 	
 	#region Public API
 	
-	internal void recognizeTouches( List<GKTouch> touches )
+	internal void recognizeTouches( List<TKTouch> touches )
 	{
 		if( !shouldAttemptToRecognize )
 			return;
@@ -185,7 +185,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	
 	internal void reset()
 	{
-		_state = GKGestureRecognizerState.Possible;
+		_state = TKGestureRecognizerState.Possible;
 		_trackingTouches.Clear();
 	}
 	
@@ -216,17 +216,17 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	/// <summary>
 	/// return true if a touch was used, false if none were. this is used by any recognizers that should swallow touches if on a higher than 0 zIndex
 	/// </summary>
-	internal virtual bool touchesBegan( List<GKTouch> touches )
+	internal virtual bool touchesBegan( List<TKTouch> touches )
 	{
 		return false;
 	}
 	
 	
-	internal virtual void touchesMoved( List<GKTouch> touches )
+	internal virtual void touchesMoved( List<TKTouch> touches )
 	{}
 	
 	
-	internal virtual void touchesEnded( List<GKTouch> touches )
+	internal virtual void touchesEnded( List<TKTouch> touches )
 	{}
 	
 	
@@ -237,7 +237,7 @@ public abstract class GKAbstractGestureRecognizer : IComparable<GKAbstractGestur
 	
 	#region IComparable and ToString implementation
 	
-	public int CompareTo( GKAbstractGestureRecognizer other )
+	public int CompareTo( TKAbstractGestureRecognizer other )
 	{
 		return zIndex.CompareTo( other.zIndex );
 	}

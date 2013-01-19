@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 [System.Flags]
-public enum GKSwipeDirection
+public enum TKSwipeDirection
 {
     Left 		= ( 1 << 0 ),
     Right 		= ( 1 << 1 ),
@@ -17,30 +17,52 @@ public enum GKSwipeDirection
 }
 
 
-public class GKSwipeRecognizer : GKAbstractGestureRecognizer
+public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKSwipeRecognizer> gestureRecognizedEvent;
+	public event Action<TKSwipeRecognizer> gestureRecognizedEvent;
 	
 	public float timeToSwipe = 0.5f;	
-	public float allowedVariance = 35.0f;
-	public float minimumDistance = 40.0f;
-	public GKSwipeDirection swipesToDetect = GKSwipeDirection.All;
 	public float swipeVelocity { get; private set; }
-	public GKSwipeDirection completedSwipeDirection { get; private set; }
+	public TKSwipeDirection completedSwipeDirection { get; private set; }
+	
+	private float _allowedVariance = 35.0f;
+	private float _minimumDistance = 40.0f;
+	private TKSwipeDirection _swipesToDetect = TKSwipeDirection.All;
 	
 	// swipe state info
 	private Vector2 _startPoint;
 	private float _startTime;
-	private GKSwipeDirection _swipeDetectionState; // the current swipes that are still possibly valid
+	private TKSwipeDirection _swipeDetectionState; // the current swipes that are still possibly valid
 	
+	
+	
+	
+	public TKSwipeRecognizer() : this( 40f, 35f )
+	{}
+	
+	
+	public TKSwipeRecognizer( TKSwipeDirection swipesToDetect ) : this( swipesToDetect, 40f, 35f )
+	{}
+	
+	
+	public TKSwipeRecognizer( float minimumDistance, float allowedVariance ) : this( TKSwipeDirection.All, minimumDistance, allowedVariance )
+	{}
+	
+	
+	public TKSwipeRecognizer( TKSwipeDirection swipesToDetect, float minimumDistance, float allowedVariance )
+	{
+		_swipesToDetect = swipesToDetect;
+		_minimumDistance = minimumDistance * TouchKit.instance.retinaMultiplier;
+		_allowedVariance = allowedVariance * TouchKit.instance.retinaMultiplier;
+	}
 
 	
-	private bool checkForSwipeCompletion( GKTouch touch )
+	private bool checkForSwipeCompletion( TKTouch touch )
 	{
 		// if we have a time stipulation and we exceeded it stop listening for swipes
 		if( timeToSwipe > 0.0f && ( Time.time - _startTime ) > timeToSwipe )
 		{
-			state = GKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.Failed;
 			return false;
 		}
 		
@@ -53,14 +75,14 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 #endif
 			// check the delta move positions.  We can rule out at least 2 directions
 			if( touch.deltaPosition.x > 0.0f )
-				_swipeDetectionState &= ~GKSwipeDirection.Left;
+				_swipeDetectionState &= ~TKSwipeDirection.Left;
 			if( touch.deltaPosition.x < 0.0f )
-				_swipeDetectionState &= ~GKSwipeDirection.Right;
+				_swipeDetectionState &= ~TKSwipeDirection.Right;
 			
 			if( touch.deltaPosition.y < 0.0f )
-				_swipeDetectionState &= ~GKSwipeDirection.Up;			
+				_swipeDetectionState &= ~TKSwipeDirection.Up;			
 			if( touch.deltaPosition.y > 0.0f )
-				_swipeDetectionState &= ~GKSwipeDirection.Down;
+				_swipeDetectionState &= ~TKSwipeDirection.Down;
 
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 		}
@@ -74,70 +96,70 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 		
 		// only check for swipes in directions that havent been ruled out yet
 		// left check
-		if( ( _swipeDetectionState & GKSwipeDirection.Left ) != 0 )
+		if( ( _swipeDetectionState & TKSwipeDirection.Left ) != 0 )
 		{
-			if( xDeltaAbs > minimumDistance )
+			if( xDeltaAbs > _minimumDistance )
 			{
-				if( yDeltaAbs < allowedVariance )
+				if( yDeltaAbs < _allowedVariance )
 				{
-					completedSwipeDirection = GKSwipeDirection.Left;
+					completedSwipeDirection = TKSwipeDirection.Left;
 					swipeVelocity = xDeltaAbs / ( Time.time - _startTime );
 					return true;
 				}
 				
 				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~GKSwipeDirection.Left;
+				_swipeDetectionState &= ~TKSwipeDirection.Left;
 			}
 		}
 
 		// right check
-		if( ( _swipeDetectionState & GKSwipeDirection.Right ) != 0 )
+		if( ( _swipeDetectionState & TKSwipeDirection.Right ) != 0 )
 		{
-			if( xDeltaAbs > minimumDistance )
+			if( xDeltaAbs > _minimumDistance )
 			{
-				if( yDeltaAbs < allowedVariance )
+				if( yDeltaAbs < _allowedVariance )
 				{
-					completedSwipeDirection = GKSwipeDirection.Right;
+					completedSwipeDirection = TKSwipeDirection.Right;
 					swipeVelocity = xDeltaAbs / ( Time.time - _startTime );
 					return true;
 				}
 				
 				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~GKSwipeDirection.Right;
+				_swipeDetectionState &= ~TKSwipeDirection.Right;
 			}
 		}
 		
 		// up check
-		if( ( _swipeDetectionState & GKSwipeDirection.Up ) != 0 )
+		if( ( _swipeDetectionState & TKSwipeDirection.Up ) != 0 )
 		{
-			if( yDeltaAbs > minimumDistance )
+			if( yDeltaAbs > _minimumDistance )
 			{
-				if( xDeltaAbs < allowedVariance )
+				if( xDeltaAbs < _allowedVariance )
 				{
-					completedSwipeDirection = GKSwipeDirection.Up;
+					completedSwipeDirection = TKSwipeDirection.Up;
 					swipeVelocity = yDeltaAbs / ( Time.time - _startTime );
 					return true;
 				}
 				
 				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~GKSwipeDirection.Up;
+				_swipeDetectionState &= ~TKSwipeDirection.Up;
 			}
 		}
 		
 		// cown check
-		if( ( _swipeDetectionState & GKSwipeDirection.Down ) != 0 )
+		if( ( _swipeDetectionState & TKSwipeDirection.Down ) != 0 )
 		{
-			if( yDeltaAbs > minimumDistance )
+			if( yDeltaAbs > _minimumDistance )
 			{
-				if( xDeltaAbs < allowedVariance )
+				if( xDeltaAbs < _allowedVariance )
 				{
-					completedSwipeDirection = GKSwipeDirection.Down;
+					completedSwipeDirection = TKSwipeDirection.Down;
 					swipeVelocity = yDeltaAbs / ( Time.time - _startTime );
 					return true;
 				}
 				
 				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~GKSwipeDirection.Down;
+				_swipeDetectionState &= ~TKSwipeDirection.Down;
 			}
 		}
 		
@@ -153,37 +175,37 @@ public class GKSwipeRecognizer : GKAbstractGestureRecognizer
 	
 	
 
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Possible )
+		if( state == TKGestureRecognizerState.Possible )
 		{
-			_swipeDetectionState = swipesToDetect;
+			_swipeDetectionState = _swipesToDetect;
 			_startPoint = touches[0].position;
 			_startTime = Time.time;
 			_trackingTouches.Add( touches[0] );
 			
-			state = GKGestureRecognizerState.Began;
+			state = TKGestureRecognizerState.Began;
 		}
 		
 		return false;
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Began )
+		if( state == TKGestureRecognizerState.Began )
 		{
 			if( checkForSwipeCompletion( touches[0] ) )
 			{
-				state = GKGestureRecognizerState.Recognized;
+				state = TKGestureRecognizerState.Recognized;
 			}
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
-		state = GKGestureRecognizerState.Failed;
+		state = TKGestureRecognizerState.Failed;
 	}
 	
 	

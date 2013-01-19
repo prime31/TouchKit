@@ -7,7 +7,7 @@ using System.Collections;
 /// replacement for the Unity Rect class that is GestureKit and resolution-aware. Creating one while on a retina device will automatically double all values
 /// if GestureKit.autoUpdateRectsForRetina is true and GestureKit.isRetina is true.
 /// </summary>
-public struct GKRect
+public struct TKRect
 {
 	public float x;
 	public float y;
@@ -20,9 +20,9 @@ public struct GKRect
 	public float yMax { get { return y + height; } }
 	
 	
-	public GKRect( float x, float y, float width, float height )
+	public TKRect( float x, float y, float width, float height )
 	{
-		var multiplier = GestureKit.instance.retinaMultiplier;
+		var multiplier = TouchKit.instance.retinaMultiplier;
 		
 		this.x = x * multiplier;
 		this.y = y * multiplier;
@@ -31,18 +31,18 @@ public struct GKRect
 	}
 	
 	
-	public GKRect copyWithExpansion( float allSidesExpansion )
+	public TKRect copyWithExpansion( float allSidesExpansion )
 	{
-		allSidesExpansion *= GestureKit.instance.retinaMultiplier;
+		allSidesExpansion *= TouchKit.instance.retinaMultiplier;
 		return copyWithExpansion( allSidesExpansion, allSidesExpansion );
 	}
 	
 	
-	public GKRect copyWithExpansion( float xExpansion, float yExpansion )
+	public TKRect copyWithExpansion( float xExpansion, float yExpansion )
 	{
-		xExpansion *= GestureKit.instance.retinaMultiplier;
-		yExpansion *= GestureKit.instance.retinaMultiplier;
-		return new GKRect( x - xExpansion, y - yExpansion, width + ( xExpansion + yExpansion ), height + ( xExpansion + yExpansion ) );
+		xExpansion *= TouchKit.instance.retinaMultiplier;
+		yExpansion *= TouchKit.instance.retinaMultiplier;
+		return new TKRect( x - xExpansion, y - yExpansion, width + ( xExpansion + yExpansion ), height + ( xExpansion + yExpansion ) );
 	}
 	
 	
@@ -56,7 +56,7 @@ public struct GKRect
 	
 	public override string ToString()
 	{
-		return string.Format( "GKRect: x: {0}, xMax: {1}, y: {2}, yMax: {3}, width: {4}, height: {5}", x, xMax, y, yMax, width, height );
+		return string.Format( "TKRect: x: {0}, xMax: {1}, y: {2}, yMax: {3}, width: {4}, height: {5}", x, xMax, y, yMax, width, height );
 	}
 	
 }

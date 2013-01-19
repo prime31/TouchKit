@@ -7,7 +7,7 @@ using System.Collections;
 /// <summary>
 /// this only exists in the editor to assist with testing and simulating touches and keeping the main class clean
 /// </summary>
-public partial class GestureKit
+public partial class TouchKit
 {
 	private bool _isUnityRemoteActive = false; // hack to detect the Unity remote. Once you touch the screen once mouse input will be ignored
 	private Vector3 _simulatedMultitouchStartPosition;
@@ -47,7 +47,7 @@ public partial class GestureKit
 			{
 				// a mouse down now results in two touches being created. first we setup the position of the touches based on the original point when alt was pressed
 				var radius = Vector3.Distance( Input.mousePosition, _simulatedMultitouchStartPosition );
-				var angle = GKRotationRecognizer.angleBetweenPoints( _simulatedMultitouchStartPosition, Input.mousePosition );
+				var angle = TKRotationRecognizer.angleBetweenPoints( _simulatedMultitouchStartPosition, Input.mousePosition );
 				angle = Mathf.Deg2Rad * angle;
 				
 				var opposite = Mathf.Sin( angle ) * radius;
@@ -104,7 +104,7 @@ public partial class GestureKit
 	}
 	
 	
-	private void debugDrawRect( GKRect rect, Color color )
+	private void debugDrawRect( TKRect rect, Color color )
 	{
 		var bl = new Vector3( rect.xMin, rect.yMin, 0 );
 		var br = new Vector3( rect.xMax, rect.yMin, 0 );

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 
 
-public class GKPanRecognizer : GKAbstractGestureRecognizer
+public class TKPanRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKPanRecognizer> gestureRecognizedEvent;
-	public event Action<GKPanRecognizer> gestureCompleteEvent;
+	public event Action<TKPanRecognizer> gestureRecognizedEvent;
+	public event Action<TKPanRecognizer> gestureCompleteEvent;
 	
 	public Vector2 deltaTranslation;
 	public int minimumNumberOfTouches = 1;
@@ -24,9 +24,9 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Possible )
+		if( state == TKGestureRecognizerState.Possible )
 		{
 			for( int i = 0; i < touches.Count; i++ )
 			{
@@ -43,7 +43,7 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 			if( _trackingTouches.Count >= minimumNumberOfTouches )
 			{
 				_previousLocation = touchLocation();
-				state = GKGestureRecognizerState.Began;
+				state = TKGestureRecognizerState.Began;
 			}
 		}
 		
@@ -51,19 +51,19 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing || state == GKGestureRecognizerState.Began )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
 		{
 			var currentLocation = touchLocation();
 			deltaTranslation = currentLocation - _previousLocation;
 			_previousLocation = currentLocation;
-			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// remove any completed touches
 		for( int i = 0; i < touches.Count; i++ )
@@ -73,7 +73,7 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 		}
 		
 		// if we had previously been recognizing fire our complete event
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			if( gestureCompleteEvent != null )
 				gestureCompleteEvent( this );
@@ -82,11 +82,11 @@ public class GKPanRecognizer : GKAbstractGestureRecognizer
 		// if we still have a touch left continue. no touches means its time to reset
 		if( _trackingTouches.Count == 1 )
 		{
-			state = GKGestureRecognizerState.Began;
+			state = TKGestureRecognizerState.Began;
 		}
 		else
 		{
-			state = GKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.Failed;
 		}
 	}
 	

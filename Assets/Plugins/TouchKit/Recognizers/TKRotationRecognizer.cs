@@ -8,10 +8,10 @@ using System.Collections.Generic;
 /// <summary>
 /// 
 /// </summary>
-public class GKRotationRecognizer : GKAbstractGestureRecognizer
+public class TKRotationRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKRotationRecognizer> gestureRecognizedEvent;
-	public event Action<GKRotationRecognizer> gestureCompleteEvent;
+	public event Action<TKRotationRecognizer> gestureRecognizedEvent;
+	public event Action<TKRotationRecognizer> gestureCompleteEvent;
 	
 	public float deltaRotation = 0;
 	public float minimumDeltaRotationToRecognize = 0;
@@ -45,9 +45,9 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Possible )
+		if( state == TKGestureRecognizerState.Possible )
 		{
 			// we need to have two touches to work with so we dont set state to Begin until then
 			// latch the touches
@@ -67,7 +67,7 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 			{
 				deltaRotation = 0;
 				_previousRotation = angleBetweenPoints( _trackingTouches[0].position, _trackingTouches[1].position );
-				state = GKGestureRecognizerState.Began;
+				state = TKGestureRecognizerState.Began;
 			}
 		}
 		
@@ -75,19 +75,19 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing || state == GKGestureRecognizerState.Began )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
 		{
 			var currentRotation = angleBetweenPoints( _trackingTouches[0].position, _trackingTouches[1].position );
 			deltaRotation = Mathf.DeltaAngle( currentRotation, _previousRotation );
 			_previousRotation = currentRotation;
-			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// remove any completed touches
 		for( int i = 0; i < touches.Count; i++ )
@@ -97,7 +97,7 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 		}
 		
 		// if we had previously been recognizing fire our complete event
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			if( gestureCompleteEvent != null )
 				gestureCompleteEvent( this );
@@ -106,12 +106,12 @@ public class GKRotationRecognizer : GKAbstractGestureRecognizer
 		// if we still have a touch left continue to wait for another. no touches means its time to reset
 		if( _trackingTouches.Count == 1 )
 		{
-			state = GKGestureRecognizerState.Possible;
+			state = TKGestureRecognizerState.Possible;
 			deltaRotation = 0;
 		}
 		else
 		{
-			state = GKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.Failed;
 		}
 	}
 	

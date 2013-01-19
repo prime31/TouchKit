@@ -11,8 +11,7 @@ Included Gesture Recognizers
 
 TouchKit comes with a few built in recognizers to get you started and to serve as an example for how to make your own. Included are the following:
 * **Tap Recognizer**: detects one or more taps from one or more fingers
-* **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement. Fires when the duration passes.
-* **Press Recognizer**: detects a press with optional minimum duration and fires an event when it starts and ends
+* **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement. Fires when the duration passes and when the gesture is complete.
 * **Button Recognizer**: generic button recognizer designed to work with any 2D sprite system at all
 * **Pan Recognizer**: detects a pan gesture (one or more fingers down and moving around the screen)
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
@@ -24,7 +23,7 @@ TouchKit comes with a few built in recognizers to get you started and to serve a
 How Do I Use TouchKit?
 -----
 
-If you are just using the built in recognizers, check out the demo scene which shows how to use them. You will want to use Unity's script execution order (Edit -> Project Settings -> Script Execution Order) to ensure that TouchKit executes before your other scripts. This is just to ensure you have your input when the Update method on your listening objects runs. If you want to make your own (and feel free to send pull requests if you make any generic recognizers!) all you have to do is subclass **GKAbstractGestureRecognizer** and implement the three methods: touchesBegan, touchesMoved and touchesEnded. Recognizers can be discrete (they only complete once like a tap or long touch) or continous (they can fire continuously like a pan). Recognizers use the **state** veriable to determine if they are still active, completed or failed. If you set the state to **Recognized**, the completion event is fired automatically for you and the recognizer is reset in preparation for the next set of touches.
+If you are just using the built in recognizers, check out the demo scene which shows how to use them. You will want to use Unity's script execution order (Edit -> Project Settings -> Script Execution Order) to ensure that TouchKit executes before your other scripts. This is just to ensure you have your input when the Update method on your listening objects runs. If you want to make your own (and feel free to send pull requests if you make any generic recognizers!) all you have to do is subclass **TKAbstractGestureRecognizer** and implement the three methods: touchesBegan, touchesMoved and touchesEnded. Recognizers can be discrete (they only complete once like a tap or long touch) or continous (they can fire continuously like a pan). Recognizers use the **state** veriable to determine if they are still active, completed or failed. If you set the state to **Recognized**, the completion event is fired automatically for you and the recognizer is reset in preparation for the next set of touches.
 
 Starting with **touchesBegan**, if you find a touch that look interesting you can add it to the **_trackingTouches** List and set the **state** to **Began**. By adding the touch to the **_trackingTouches** List you are telling TouchKit that you want to receive all future touch events that happen with that touch. As the touch moves, **touchesMoved** will be called where you can look at the touches and decide if the gesture is still possible. If it isn't, set the state to **Failed** and TouchKit will reset the recognizer for you.
 
@@ -38,7 +37,7 @@ Using the Tap recognizer as an example, the flow would be like the following:
 UI Touch Handling Replacement
 ----
 
-TouchKit can be used for any and all touch input in your game. The **GKButtonRecognizer** class has been designed to work with any sprite solution for button touch handling. This lets you keep your input totally separate from your rendering. It implements the same setup that iOS does: a highlighted button expands its hit rect for better useability.
+TouchKit can be used for any and all touch input in your game. The **TKButtonRecognizer** class has been designed to work with any sprite solution for button touch handling. This lets you keep your input totally separate from your rendering. It implements the same setup that iOS does: a highlighted button expands its hit rect for better useability.
 
 
 License

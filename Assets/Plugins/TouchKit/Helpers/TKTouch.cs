@@ -3,7 +3,7 @@ using System.Collections;
 
 
 
-public class GKTouch
+public class TKTouch
 {
 	public readonly int fingerId;
 	public Vector2 position;
@@ -20,14 +20,14 @@ public class GKTouch
 #endif
 	
 	
-	public GKTouch( int fingerId )
+	public TKTouch( int fingerId )
 	{
-		// lock this GKTouch to the fingerId
+		// lock this TKTouch to the fingerId
 		this.fingerId = fingerId;
 	}
 	
 
-	public GKTouch populateWithTouch( Touch touch )
+	public TKTouch populateWithTouch( Touch touch )
 	{
 		position = touch.position;
 		deltaPosition = touch.deltaPosition;
@@ -44,7 +44,7 @@ public class GKTouch
 	/// <summary>
 	/// seperating this out into a seperate method allows us to pass in a real mousePosition or a simulated mouse position when populating teh touch
 	/// </summary>
-	public GKTouch populateFromMouseAtPosition( Vector3 mousePosition )
+	public TKTouch populateFromMouseAtPosition( Vector3 mousePosition )
 	{
 		// do we have some input to work with?
 		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
@@ -85,7 +85,7 @@ public class GKTouch
 	}
 	
 	
-	public GKTouch populateFromMouse()
+	public TKTouch populateFromMouse()
 	{
 		return populateFromMouseAtPosition( Input.mousePosition );
 	}
@@ -94,7 +94,7 @@ public class GKTouch
 	
 	public override string ToString()
 	{
-		return string.Format( "[GKTouch] fingerId: {0}, phase: {1}, position: {2}", fingerId, phase, position );
+		return string.Format( "[TKTouch] fingerId: {0}, phase: {1}, position: {2}", fingerId, phase, position );
 	}
 
 }

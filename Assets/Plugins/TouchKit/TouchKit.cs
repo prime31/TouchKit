@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public partial class GestureKit : MonoBehaviour
+public partial class TouchKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
 	public bool isRetina { get; private set; } // are we running on a retina device?
@@ -13,37 +13,37 @@ public partial class GestureKit : MonoBehaviour
 	/// <summary>
 	/// helper that will return 1 for non-retina and 2 for retina devices. useful for setting/modifying anything in screen coordinates.
 	/// </summary>
-	public int retinaMultiplier
+	public float retinaMultiplier
 	{
 		get
 		{
 			if( isRetina && autoUpdateRectsForRetina )
-				return 2;
-			return 1;
+				return 2f;
+			return 1f;
 		}
 	}
 	
-	private List<GKAbstractGestureRecognizer> _gestureRecognizers = new List<GKAbstractGestureRecognizer>();
-	private GKTouch[] _touchCache;
-	private List<GKTouch> _liveTouches = new List<GKTouch>();
+	private List<TKAbstractGestureRecognizer> _gestureRecognizers = new List<TKAbstractGestureRecognizer>();
+	private TKTouch[] _touchCache;
+	private List<TKTouch> _liveTouches = new List<TKTouch>();
 	private bool _shouldCheckForLostTouches = false; // used to ensure we dont check for lost touches too often
 	
 	
-	private static GestureKit _instance = null;
-	public static GestureKit instance
+	private static TouchKit _instance = null;
+	public static TouchKit instance
 	{
 		get
 		{
 			if( !_instance )
 			{
 				// check if there is a GO instance already available in the scene graph
-				_instance = FindObjectOfType( typeof( GestureKit ) ) as GestureKit;
+				_instance = FindObjectOfType( typeof( TouchKit ) ) as TouchKit;
 
 				// nope, create a new one
 				if( !_instance )
 				{
-					var obj = new GameObject( "GestureKit" );
-					_instance = obj.AddComponent<GestureKit>();
+					var obj = new GameObject( "TouchKit" );
+					_instance = obj.AddComponent<TouchKit>();
 					DontDestroyOnLoad( obj );
 				}
 			}
@@ -86,12 +86,17 @@ public partial class GestureKit : MonoBehaviour
 			|| iPhone.generation == iPhoneGeneration.iPhone4S || iPhone.generation == iPhoneGeneration.iPhone5 || iPhone.generation == iPhoneGeneration.iPodTouch4Gen
 			|| iPhone.generation == iPhoneGeneration.iPodTouch5Gen || iPhone.generation == iPhoneGeneration.iPodTouchUnknown )
 			isRetina = true;
+		
+#elif UNITY_ANDROID
+		
+		// TODO: add retina checker for android
+		
 #endif
 		
-		// prep our GKTouch cache so we avoid excessive allocations
-		_touchCache = new GKTouch[maxTouchesToProcess];
+		// prep our TKTouch cache so we avoid excessive allocations
+		_touchCache = new TKTouch[maxTouchesToProcess];
 		for( int i = 0; i < maxTouchesToProcess; i++ )
-			_touchCache[i] = new GKTouch( i );
+			_touchCache[i] = new TKTouch( i );
 	}
 	
 	
@@ -154,7 +159,7 @@ public partial class GestureKit : MonoBehaviour
 		
 	#region Public API
 	
-	public static void addGestureRecognizer( GKAbstractGestureRecognizer recognizer )
+	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
 		// add, then sort and reverse so the higher zIndex items will be on top
 		instance._gestureRecognizers.Add( recognizer );
@@ -167,7 +172,7 @@ public partial class GestureKit : MonoBehaviour
 	}
 	
 	
-	public static void removeGestureRecognizer( GKAbstractGestureRecognizer recognizer )
+	public static void removeGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
 		if( !_instance._gestureRecognizers.Contains( recognizer ) )
 		{

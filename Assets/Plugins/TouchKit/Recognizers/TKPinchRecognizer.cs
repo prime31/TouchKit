@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 
 
-public class GKPinchRecognizer : GKAbstractGestureRecognizer
+public class TKPinchRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKPinchRecognizer> gestureRecognizedEvent;
-	public event Action<GKPinchRecognizer> gestureCompleteEvent;
+	public event Action<TKPinchRecognizer> gestureRecognizedEvent;
+	public event Action<TKPinchRecognizer> gestureCompleteEvent;
 	
 	public float deltaScale = 0;
 	private float _intialDistance;
@@ -28,9 +28,9 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Possible )
+		if( state == TKGestureRecognizerState.Possible )
 		{
 			// we need to have two touches to work with so we dont set state to Begin until then
 			// latch the touches
@@ -51,7 +51,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 				deltaScale = 0;
 				_intialDistance = distanceBetweenTrackedTouches();
 				_previousDistance = _intialDistance;
-				state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 			}
 		}
 		
@@ -59,19 +59,19 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			var currentDistance = distanceBetweenTrackedTouches();
 			deltaScale = ( currentDistance - _previousDistance ) / _intialDistance;
 			_previousDistance = currentDistance;
-			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// remove any completed touches
 		for( int i = 0; i < touches.Count; i++ )
@@ -81,7 +81,7 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 		}
 		
 		// if we had previously been recognizing fire our complete event
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			if( gestureCompleteEvent != null )
 				gestureCompleteEvent( this );
@@ -90,12 +90,12 @@ public class GKPinchRecognizer : GKAbstractGestureRecognizer
 		// if we still have a touch left continue to wait for another. no touches means its time to reset
 		if( _trackingTouches.Count == 1 )
 		{
-			state = GKGestureRecognizerState.Possible;
+			state = TKGestureRecognizerState.Possible;
 			deltaScale = 1;
 		}
 		else
 		{
-			state = GKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.Failed;
 		}
 	}
 	

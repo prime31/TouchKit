@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 
 
-public class GKButtonRecognizer : GKAbstractGestureRecognizer
+public class TKButtonRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKButtonRecognizer> onSelectedEvent;
-	public event Action<GKButtonRecognizer> onDeselectedEvent;
-	public event Action<GKButtonRecognizer> onTouchUpInsideEvent;
+	public event Action<TKButtonRecognizer> onSelectedEvent;
+	public event Action<TKButtonRecognizer> onDeselectedEvent;
+	public event Action<TKButtonRecognizer> onTouchUpInsideEvent;
 	
-	private GKRect _defaultFrame;
-	private GKRect _highlightedFrame;
+	private TKRect _defaultFrame;
+	private TKRect _highlightedFrame;
 	
 	
 	/* State Definitions
@@ -26,15 +26,15 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	/// <summary>
 	/// the contstructors ensure we have a frame to work with for button recognizers
 	/// </summary>
-	public GKButtonRecognizer( GKRect defaultFrame ) : this( defaultFrame, 40 )
+	public TKButtonRecognizer( TKRect defaultFrame ) : this( defaultFrame, 40f )
 	{}
 	
 	
-	public GKButtonRecognizer( GKRect defaultFrame, float highlightedExpansion ) : this( defaultFrame, defaultFrame.copyWithExpansion( highlightedExpansion ) )
+	public TKButtonRecognizer( TKRect defaultFrame, float highlightedExpansion ) : this( defaultFrame, defaultFrame.copyWithExpansion( highlightedExpansion ) )
 	{}
 	
 	
-	public GKButtonRecognizer( GKRect defaultFrame, GKRect highlightedFrame )
+	public TKButtonRecognizer( TKRect defaultFrame, TKRect highlightedFrame )
 	{
 		_defaultFrame = defaultFrame;
 		_highlightedFrame = highlightedFrame;
@@ -81,19 +81,19 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	#endregion
 	
 	
-	#region GKAbstractGestureRecognizer
+	#region TKAbstractGestureRecognizer
 	
 	// we do nothing here. all event will be handled internally
 	internal override void fireRecognizedEvent() {}
 	
 	
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
 		// grab the first touch that begins on us
-		if( state == GKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
+		if( state == TKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
 		{
 			_trackingTouches.Add( touches[0] );
-			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 			onSelected();
 			
 			return true;
@@ -103,35 +103,35 @@ public class GKButtonRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
 		// check to see if the touch is still in our frame
 		var isTouchInFrame = boundaryFrame.Value.contains( touches[0].position );
 		
 		// if we are in the Began phase than we should switch to RecognizedAndStillRecognizing (highlighted) if the touch is in our frame
-		if( state == GKGestureRecognizerState.Began && isTouchInFrame )
+		if( state == TKGestureRecognizerState.Began && isTouchInFrame )
 		{
-			state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 			onSelected();
 		}
-		else if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing && !isTouchInFrame ) // if the touch exits the frame and we were highlighted deselect now
+		else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && !isTouchInFrame ) // if the touch exits the frame and we were highlighted deselect now
 		{
-			state = GKGestureRecognizerState.Began;
+			state = TKGestureRecognizerState.Began;
 			onDeselected();
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// if we were previously highlighted (RecognizedAndStillRecognizing) we have an official touch
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 			onTouchUpInside();
 		
 		// reset the boundary frame
 		boundaryFrame = _defaultFrame;
 		
-		state = GKGestureRecognizerState.Failed;
+		state = TKGestureRecognizerState.Failed;
 	}
 	
 	#endregion

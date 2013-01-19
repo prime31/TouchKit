@@ -8,10 +8,10 @@ using System.Collections.Generic;
 /// <summary>
 /// detects a long press. The gesture is considered recognized when a touch has been down for minimumPressDuration and if it has moved less than allowableMovement
 /// </summary>
-public class GKLongPressRecognizer : GKAbstractGestureRecognizer
+public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<GKLongPressRecognizer> gestureRecognizedEvent;
-	public event Action<GKLongPressRecognizer> gestureCompleteEvent; // fired when after a successful long press the finger is lifted
+	public event Action<TKLongPressRecognizer> gestureRecognizedEvent;
+	public event Action<TKLongPressRecognizer> gestureCompleteEvent; // fired when after a successful long press the finger is lifted
 	
 	public float minimumPressDuration = 0.5f;
 	public float allowableMovement = 10f;
@@ -21,13 +21,13 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	
 	
 	
-	public GKLongPressRecognizer(){}
+	public TKLongPressRecognizer(){}
 	
 	
-	public GKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
+	public TKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
 	{
 		this.minimumPressDuration = minimumPressDuration;
-		this.allowableMovement = allowableMovement;
+		this.allowableMovement = allowableMovement * TouchKit.instance.retinaMultiplier;
 	}
 	
 	
@@ -42,8 +42,8 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 		// if our time elapsed it means we were not cancelled
 		if( Time.time >= endTime )
 		{
-			if( state == GKGestureRecognizerState.Began )
-				state = GKGestureRecognizerState.RecognizedAndStillRecognizing;
+			if( state == TKGestureRecognizerState.Began )
+				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 		
 		_waiting = false;
@@ -57,47 +57,47 @@ public class GKLongPressRecognizer : GKAbstractGestureRecognizer
 	}
 	
 	
-	internal override bool touchesBegan( List<GKTouch> touches )
+	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( !_waiting && state == GKGestureRecognizerState.Possible )
+		if( !_waiting && state == TKGestureRecognizerState.Possible )
 		{
 			_beginLocation = touches[0].position;
 			_waiting = true;
-			GestureKit.instance.StartCoroutine( beginGesture() );
+			TouchKit.instance.StartCoroutine( beginGesture() );
 			_trackingTouches.Add( touches[0] );
-			state = GKGestureRecognizerState.Began;
+			state = TKGestureRecognizerState.Began;
 		}
 		
 		return false;
 	}
 	
 	
-	internal override void touchesMoved( List<GKTouch> touches )
+	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == GKGestureRecognizerState.Began || state == GKGestureRecognizerState.RecognizedAndStillRecognizing )
+		if( state == TKGestureRecognizerState.Began || state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			// did we move too far?
 			var moveDistance = Vector2.Distance( touches[0].position, _beginLocation );
 			if( moveDistance > allowableMovement )
 			{
 				// fire the complete event if we had previously recognized a long press
-				if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
+				if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
 					gestureCompleteEvent( this );
 						
-				state = GKGestureRecognizerState.Failed;
+				state = TKGestureRecognizerState.Failed;
 				_waiting = false;
 			}
 		}
 	}
 	
 	
-	internal override void touchesEnded( List<GKTouch> touches )
+	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// fire the complete event if we had previously recognized a long press
-		if( state == GKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
+		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
 			gestureCompleteEvent( this );
 		
-		state = GKGestureRecognizerState.Failed;	
+		state = TKGestureRecognizerState.Failed;	
 		_waiting = false;
 	}
 

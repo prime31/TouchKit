@@ -11,7 +11,7 @@ public class DemoOne : MonoBehaviour
 	void Start()
 	{
 		// turn on debug drawing while in the editor
-		GestureKit.instance.debugDrawBoundaryFrames = true;
+		TouchKit.instance.debugDrawBoundaryFrames = true;
 	}
 	
 	
@@ -27,10 +27,10 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
 		{
-			var recognizer = new GKTapRecognizer();
+			var recognizer = new TKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new GKRect( 50, 50, 400, 400 );
+			recognizer.boundaryFrame = new TKRect( 50, 50, 400, 400 );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -40,13 +40,13 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "tap recognizer fired: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Add Long Press Recognizer" ) )
 		{
-			var recognizer = new GKLongPressRecognizer();
+			var recognizer = new TKLongPressRecognizer();
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				Debug.Log( "long press recognizer fired: " + r );
@@ -55,28 +55,13 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "long press recognizer finished: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
-		
-		
-		if( GUILayout.Button( "Add Press Recognizer" ) )
-		{
-			var recognizer = new GKPressRecognizer( 0.3f, 10f );
-			recognizer.gestureRecognizedEvent += ( r ) =>
-			{
-				Debug.Log( "press recognizer fired: " + r );
-			};
-			recognizer.gestureCompleteEvent += r =>
-			{
-				Debug.Log( "press recognizer completed: " + r );
-			};
-			GestureKit.addGestureRecognizer( recognizer );
-		}
-		
+
 
 		if( GUILayout.Button( "Add Pan Recognizer" ) )
 		{
-			var recognizer = new GKPanRecognizer();
+			var recognizer = new TKPanRecognizer();
 			
 			// when using in conjunction with a pinch or rotation recognizer setting the min touches to 2 smoothes movement greatly
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -93,49 +78,48 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "pan gesture complete" );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 
 		
 		if( GUILayout.Button( "Add Horizontal Swipe Recognizer" ) )
 		{
-			var recognizer = new GKSwipeRecognizer();
-			recognizer.swipesToDetect = GKSwipeDirection.Horizontal;
+			var recognizer = new TKSwipeRecognizer( TKSwipeDirection.Horizontal );
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				Debug.Log( "swipe recognizer fired: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Add Pinch Recognizer" ) )
 		{
-			var recognizer = new GKPinchRecognizer();
+			var recognizer = new TKPinchRecognizer();
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				cube.transform.localScale += Vector3.one * recognizer.deltaScale;
 				Debug.Log( "pinch recognizer fired: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Add Rotation Recognizer" ) )
 		{
-			var recognizer = new GKRotationRecognizer();
+			var recognizer = new TKRotationRecognizer();
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				cube.Rotate( Vector3.back, recognizer.deltaRotation );
 				Debug.Log( "rotation recognizer fired: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new GKButtonRecognizer( new GKRect( 300, 30, 278, 90 ), 20 );
+			var recognizer = new TKButtonRecognizer( new TKRect( 300, 30, 278, 90 ), 20 );
 			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
@@ -149,26 +133,26 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "button recognizer touch up inside: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Add One Finger Rotation Recognizer" ) )
 		{
-			var recognizer = new GKOneFingerRotationRecognizer();
+			var recognizer = new TKOneFingerRotationRecognizer();
 			recognizer.targetPosition = Camera.mainCamera.WorldToScreenPoint( cube.position );
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				cube.Rotate( Vector3.back, recognizer.deltaRotation );
 				Debug.Log( "one finger rotation recognizer fired: " + r );
 			};
-			GestureKit.addGestureRecognizer( recognizer );
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 		
 		
 		if( GUILayout.Button( "Remove All Recognizers" ) )
 		{
-			GestureKit.removeAllGestureRecognizers();
+			TouchKit.removeAllGestureRecognizers();
 		}
 		
 
