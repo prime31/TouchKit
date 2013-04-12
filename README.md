@@ -18,6 +18,7 @@ TouchKit comes with a few built in recognizers to get you started and to serve a
 * **Pinch Recognizer**: detects pinches and reports back the delta scale
 * **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
 * **One Finger Rotation Recognizer**: pass it a target object's center position and it will report back the delta rotation of a single finger
+* **Any Touch Recognizer**: fires enter/exit events whenever a touch enters/exist the boundary. the difference here is that it will allow a touch to begin outside of it's frame and then move into its frame. handy for directional buttons.
 
 
 How Do I Use TouchKit?
