@@ -150,6 +150,22 @@ public class DemoOne : MonoBehaviour
 		}
 		
 		
+		if( GUILayout.Button( "Add Any Touch Recognizer" ) )
+		{
+			var recognizer = new TKAnyTouchRecognizer( new TKRect( 10, 10, 278, 90 ) );
+			recognizer.zIndex = 1;
+			recognizer.onEnteredEvent += ( r ) =>
+			{
+				Debug.Log( "any touch entered: " + r );
+			};
+			recognizer.onExitedEvent += ( r ) =>
+			{
+				Debug.Log( "any touch exited: " + r );
+			};
+			TouchKit.addGestureRecognizer( recognizer );
+		}
+		
+		
 		if( GUILayout.Button( "Remove All Recognizers" ) )
 		{
 			TouchKit.removeAllGestureRecognizers();

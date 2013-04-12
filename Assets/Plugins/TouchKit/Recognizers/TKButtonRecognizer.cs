@@ -83,7 +83,7 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 	
 	#region TKAbstractGestureRecognizer
 	
-	// we do nothing here. all event will be handled internally
+	// we do nothing here. all events will be handled internally
 	internal override void fireRecognizedEvent() {}
 	
 	

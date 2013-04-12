@@ -46,6 +46,13 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 		}
 	}
 	
+	
+	/// <summary>
+	/// when true, touchesMoved will be called for ALL touches. By default, only the touches
+	/// a recognizer is tracking (from touchesBegan) will be sent.
+	/// </summary>
+	protected bool alwaysSendTouchesMoved = false;
+	
 	/// <summary>
 	/// stores all the touches we are currently tracking
 	/// </summary>
@@ -97,7 +104,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 		
 		for( int i = 0; i < touches.Count; i++ )
 		{
-			if( isTrackingTouch( touches[i] ) )
+			if( alwaysSendTouchesMoved || isTrackingTouch( touches[i] ) )
 				_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Add( touches[i] );
 		}
 		
