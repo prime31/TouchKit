@@ -3,10 +3,14 @@
   <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp">
     <FileWidth>120</FileWidth>
     <TabsToSpaces>False</TabsToSpaces>
+	<TabWidth>4</TabWidth>
     <EolMarker>Unix</EolMarker>
   </TextStylePolicy>
   <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp">
     <IndentSwitchBody>True</IndentSwitchBody>
+	<ElseNewLinePlacement>NextLine</ElseNewLinePlacement>
+	<CatchNewLinePlacement>NewLine</CatchNewLinePlacement>
+	<FinallyNewLinePlacement>NewLine</FinallyNewLinePlacement>
     <AnonymousMethodBraceStyle>NextLine</AnonymousMethodBraceStyle>
     <PropertyBraceStyle>NextLine</PropertyBraceStyle>
     <PropertyGetBraceStyle>NextLine</PropertyGetBraceStyle>
@@ -49,6 +53,7 @@
     <SpacesBeforeBrackets>False</SpacesBeforeBrackets>
     <BlankLinesAfterUsings>2</BlankLinesAfterUsings>
     <BlankLinesBetweenTypes>2</BlankLinesBetweenTypes>
+	<BlankLinesBetweenMembers>2</BlankLinesBetweenMembers>
   </CSharpFormattingPolicy>
   <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain">
     <FileWidth>120</FileWidth>
