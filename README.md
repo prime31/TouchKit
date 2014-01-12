@@ -1,7 +1,7 @@
 TouchKit
 ====
 
-TouchKit aims to make touch handling in Unity more sane. Touches in TouchKit are actual objects as opposed to Structs like Unity uses by default. The advantage to this is that touch tracking becomes orders of magnitude more simple. You can retain a touch that began and since you are only holding on to a pointer (as opposed to a Struct) the properites of that touch will be updating as the touch changes. TouchKit is not all the useful for simple, single-tap processing. It's usefulness is in detecting and managing gestures (hence the name TouchKit).
+TouchKit aims to make touch handling in Unity more sane. Touches in TouchKit are actual objects as opposed to Structs like Unity uses by default. The advantage to this is that touch tracking becomes orders of magnitude more simple. You can retain a touch that began and since you are only holding on to a pointer (as opposed to a Struct) the properites of that touch will be updating as the touch changes. TouchKit is not all the useful for simple, single-tap processing. It's usefulness is in detecting and managing gestures (hence the original name before the lovely trademark owner complained: GestureKit).
 
 TouchKit also allows gesture recognizers to define a Rect in which to do detection. If a touch doesn't orginate in the Rect the touches won't be passed on to the recognizer.
 
