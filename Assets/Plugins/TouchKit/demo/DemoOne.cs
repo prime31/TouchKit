@@ -10,14 +10,13 @@ public class DemoOne : MonoBehaviour
 	
 	void Start()
 	{
-		// turn on debug drawing while in the editor
+		// turn on debug drawing while in the editor for assistance setting up your rects
 		TouchKit.instance.debugDrawBoundaryFrames = true;
 	}
 	
 	
 	void OnGUI()
 	{
-		//GUI.matrix = Matrix4x4.Scale( new Vector3( 1.5f, 1.5f, 1.5f ) );
 		GUI.skin.button.padding = new RectOffset( 10, 10, 20, 20 );
 		GUI.skin.button.fixedWidth = 250;
 		
@@ -30,7 +29,7 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new TKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new TKRect( 50, 50, 400, 400 );
+			recognizer.boundaryFrame = new TKRect( 0, 0, 50f, 50f, TKAnchor.BottomLeft );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -69,7 +68,7 @@ public class DemoOne : MonoBehaviour
 			
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
-				Camera.mainCamera.transform.position -= new Vector3( recognizer.deltaTranslation.x, recognizer.deltaTranslation.y ) / 100;
+				Camera.main.transform.position -= new Vector3( recognizer.deltaTranslation.x, recognizer.deltaTranslation.y ) / 100;
 				Debug.Log( "pan recognizer fired: " + r );
 			};
 			
@@ -119,7 +118,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new TKButtonRecognizer( new TKRect( 300, 30, 278, 90 ), 20 );
+			var recognizer = new TKButtonRecognizer( new TKRect( 5f, 145f, 80f, 30f, TKAnchor.TopLeft ), 10f );
 			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
@@ -140,7 +139,7 @@ public class DemoOne : MonoBehaviour
 		if( GUILayout.Button( "Add One Finger Rotation Recognizer" ) )
 		{
 			var recognizer = new TKOneFingerRotationRecognizer();
-			recognizer.targetPosition = Camera.mainCamera.WorldToScreenPoint( cube.position );
+			recognizer.targetPosition = Camera.main.WorldToScreenPoint( cube.position );
 			recognizer.gestureRecognizedEvent += ( r ) =>
 			{
 				cube.Rotate( Vector3.back, recognizer.deltaRotation );
@@ -152,7 +151,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Any Touch Recognizer" ) )
 		{
-			var recognizer = new TKAnyTouchRecognizer( new TKRect( 10, 10, 278, 90 ) );
+			var recognizer = new TKAnyTouchRecognizer( new TKRect( 10, 10, 80, 50, TKAnchor.BottomLeft ) );
 			recognizer.zIndex = 1;
 			recognizer.onEnteredEvent += ( r ) =>
 			{

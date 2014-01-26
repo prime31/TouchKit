@@ -26,7 +26,7 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 	public TKTapRecognizer( float maxDurationForTapConsideration, float maxDeltaMovementForTapConsideration )
 	{
 		_maxDurationForTapConsideration = maxDurationForTapConsideration;
-		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsideration * TouchKit.instance.retinaMultiplier;
+		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsideration * TouchKit.instance.runtimeDistanceModifier;
 	}
 	
 	

@@ -52,8 +52,8 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	public TKSwipeRecognizer( TKSwipeDirection swipesToDetect, float minimumDistance, float allowedVariance )
 	{
 		_swipesToDetect = swipesToDetect;
-		_minimumDistance = minimumDistance * TouchKit.instance.retinaMultiplier;
-		_allowedVariance = allowedVariance * TouchKit.instance.retinaMultiplier;
+		_minimumDistance = minimumDistance * TouchKit.instance.runtimeDistanceModifier;
+		_allowedVariance = allowedVariance * TouchKit.instance.runtimeDistanceModifier;
 	}
 
 	

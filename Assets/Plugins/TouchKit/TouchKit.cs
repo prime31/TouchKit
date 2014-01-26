@@ -6,27 +6,28 @@ using System.Collections.Generic;
 public partial class TouchKit : MonoBehaviour
 {
 	public bool debugDrawBoundaryFrames = false;
-	public bool isRetina { get; private set; } // are we running on a retina device?
-	public static bool autoUpdateRectsForRetina = true; // automatically doubles rect width/height
-	public static int maxTouchesToProcess = 2;
-	
+	public bool autoScaleRectsAndDistances = true;
+
 	/// <summary>
-	/// helper that will return 1 for non-retina and 2 for retina devices. useful for setting/modifying anything in screen coordinates.
+	/// all TKRect sizes should be based on this screen size. They will be adjusted at runtime if autoUpdateRects is true
 	/// </summary>
-	public float retinaMultiplier
-	{
-		get
-		{
-			if( isRetina && autoUpdateRectsForRetina )
-				return 2f;
-			return 1f;
-		}
-	}
+	public Vector2 designTimeResolution = new Vector2( 320, 180 ); // 16:9 is a decent starting point for aspect ratio
+	public int maxTouchesToProcess = 2;
+
+	/// <summary>
+	/// used at runtime to scale any TKRects as they are made for the current screen size
+	/// </summary>
+	public Vector2 runtimeScaleModifier { get; private set; }
+
+	/// <summary>
+	/// used at runtime to modify distances
+	/// </summary>
+	public float runtimeDistanceModifier { get; private set; }
 	
 	private List<TKAbstractGestureRecognizer> _gestureRecognizers = new List<TKAbstractGestureRecognizer>();
 	private TKTouch[] _touchCache;
 	private List<TKTouch> _liveTouches = new List<TKTouch>();
-	private bool _shouldCheckForLostTouches = false; // used to ensure we dont check for lost touches too often
+	private bool _shouldCheckForLostTouches = false; // used internally to ensure we dont check for lost touches too often
 	
 	
 	private static TouchKit _instance = null;
@@ -45,6 +46,16 @@ public partial class TouchKit : MonoBehaviour
 					var obj = new GameObject( "TouchKit" );
 					_instance = obj.AddComponent<TouchKit>();
 					DontDestroyOnLoad( obj );
+				}
+
+				// prep the scalers. for the distance scaler we just use an average of the width and height scales
+				_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
+				_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
+
+				if( !_instance.autoScaleRectsAndDistances )
+				{
+					_instance.runtimeScaleModifier = Vector2.one;
+					_instance.runtimeDistanceModifier = 1f;
 				}
 			}
 
@@ -75,24 +86,12 @@ public partial class TouchKit : MonoBehaviour
 	private void OnApplicationQuit()
 	{
 		_instance = null;
+		Destroy( gameObject );
 	}
 	
 	
 	private void Awake()
 	{
-#if UNITY_IPHONE
-		// check to see if we are on a retina device
-		if( iPhone.generation == iPhoneGeneration.iPad3Gen || iPhone.generation == iPhoneGeneration.iPadUnknown || iPhone.generation == iPhoneGeneration.iPhone4
-			|| iPhone.generation == iPhoneGeneration.iPhone4S || iPhone.generation == iPhoneGeneration.iPhone5 || iPhone.generation == iPhoneGeneration.iPodTouch4Gen
-			|| iPhone.generation == iPhoneGeneration.iPodTouch5Gen || iPhone.generation == iPhoneGeneration.iPodTouchUnknown )
-			isRetina = true;
-		
-#elif UNITY_ANDROID
-		
-		// TODO: add retina checker for android
-		
-#endif
-		
 		// prep our TKTouch cache so we avoid excessive allocations
 		_touchCache = new TKTouch[maxTouchesToProcess];
 		for( int i = 0; i < maxTouchesToProcess; i++ )
