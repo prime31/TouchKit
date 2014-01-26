@@ -9,8 +9,6 @@ using System.Collections;
 /// </summary>
 public struct TKRect
 {
-	public TKAnchor anchor;
-
 	public float x;
 	public float y;
 	public float width;
@@ -22,14 +20,9 @@ public struct TKRect
 	public float yMax { get { return y + height; } }
 	public Vector2 center { get { return new Vector2( x + ( width / 2f ), y + ( height / 2f ) ); } }
 	
-	
-	public TKRect( float x, float y, float width, float height ) : this( x, y, width, height, TKAnchor.Center )
-	{}
 
-
-	public TKRect( float x, float y, float width, float height, TKAnchor anchor )
+	public TKRect( float x, float y, float width, float height )
 	{
-		this.anchor = anchor;
 		this.x = x;
 		this.y = y;
 		this.width = width;

@@ -29,7 +29,7 @@ public class DemoOne : MonoBehaviour
 			var recognizer = new TKTapRecognizer();
 			
 			// we can limit recognition to a specific Rect, in this case the bottom-left corner of the screen
-			recognizer.boundaryFrame = new TKRect( 0, 0, 50f, 50f, TKAnchor.BottomLeft );
+			recognizer.boundaryFrame = new TKRect( 0, 0, 50f, 50f );
 			
 			// we can also set the number of touches required for the gesture
 			if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -118,7 +118,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Button Recognizer" ) )
 		{
-			var recognizer = new TKButtonRecognizer( new TKRect( 5f, 145f, 80f, 30f, TKAnchor.TopLeft ), 10f );
+			var recognizer = new TKButtonRecognizer( new TKRect( 5f, 145f, 80f, 30f ), 10f );
 			recognizer.zIndex = 1;
 			recognizer.onSelectedEvent += ( r ) =>
 			{
@@ -151,7 +151,7 @@ public class DemoOne : MonoBehaviour
 		
 		if( GUILayout.Button( "Add Any Touch Recognizer" ) )
 		{
-			var recognizer = new TKAnyTouchRecognizer( new TKRect( 10, 10, 80, 50, TKAnchor.BottomLeft ) );
+			var recognizer = new TKAnyTouchRecognizer( new TKRect( 10, 10, 80, 50 ) );
 			recognizer.zIndex = 1;
 			recognizer.onEnteredEvent += ( r ) =>
 			{
