@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 
 /// <summary>
-/// 
+///
 /// </summary>
 public class TKRotationRecognizer : TKAbstractGestureRecognizer
 {
@@ -26,14 +26,14 @@ public class TKRotationRecognizer : TKAbstractGestureRecognizer
 	{
 		var fromLine = position2 - position1;
 		var toLine = new Vector2( 1, 0 );
- 
+
 		var angle = Vector2.Angle( fromLine, toLine );
 		var cross = Vector3.Cross( fromLine, toLine );
- 
+
 		// did we wrap around?
 		if( cross.z > 0 )
 			angle = 360f - angle;
- 
+
 		return angle;
 	}
 	

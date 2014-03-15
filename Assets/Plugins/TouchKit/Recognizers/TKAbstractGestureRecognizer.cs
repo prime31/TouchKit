@@ -205,14 +205,14 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	    var x = 0f;
 	    var y = 0f;
 	    var k = 0f;
-	    
+	
 	    foreach( var touch in _trackingTouches )
 		{
 	        x += touch.position.x;
 	        y += touch.position.y;
 	        k++;
 	    }
-	    
+	
 	    if( k > 0 )
 	        return new Vector2( x / k, y / k );
 	    else

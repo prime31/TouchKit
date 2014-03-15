@@ -18,7 +18,7 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 	/* State Definitions
 	 * Began: a touch started out on the button but has moved off. We still track it in case it comes back on the button
 	 * RecognizedAndStillRecognizing: a touch is currently down on the button
-	 * Recognized: 
+	 * Recognized:
 	 */
 	
 	#region Constructors
