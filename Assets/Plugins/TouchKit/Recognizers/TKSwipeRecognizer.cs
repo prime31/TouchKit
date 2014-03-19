@@ -35,7 +35,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	private float _startTime;
 	private TKSwipeDirection _swipeDetectionState; // the current swipes that are still possibly valid
 	
-	public Vector2 StartPoint
+	public Vector2 startPoint
 	{
 		get
 		{
@@ -43,7 +43,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		}
 	}
 
-	public Vector2 EndPoint
+	public Vector2 endPoint
 	{
 		get
 		{
@@ -228,6 +228,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	
 	public override string ToString()
 	{
-		return string.Format( "{0}, swipe direction: {1}, swipe velocity: {2}, start point: {3}, end point: {4}", base.ToString(), completedSwipeDirection, swipeVelocity, StartPoint, EndPoint );
+		return string.Format( "{0}, swipe direction: {1}, swipe velocity: {2}, start point: {3}, end point: {4}",
+			base.ToString(), completedSwipeDirection, swipeVelocity, startPoint, endPoint );
 	}
 }
