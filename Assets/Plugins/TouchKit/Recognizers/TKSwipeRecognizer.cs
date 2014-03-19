@@ -31,10 +31,25 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	
 	// swipe state info
 	private Vector2 _startPoint;
+	private Vector2 _endPoint;
 	private float _startTime;
 	private TKSwipeDirection _swipeDetectionState; // the current swipes that are still possibly valid
 	
-	
+	public Vector2 StartPoint
+	{
+		get
+		{
+			return this._startPoint;
+		}
+	}
+
+	public Vector2 EndPoint
+	{
+		get
+		{
+			return this._endPoint;
+		}
+	}
 	
 	
 	public TKSwipeRecognizer() : this( 40f, 35f )
@@ -93,7 +108,9 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// Grab the total distance moved in both directions
 		var xDeltaAbs = Mathf.Abs( _startPoint.x - touch.position.x );
 		var yDeltaAbs = Mathf.Abs( _startPoint.y - touch.position.y );
-		
+
+		_endPoint = touch.position;
+
 		// only check for swipes in directions that havent been ruled out yet
 		// left check
 		if( ( _swipeDetectionState & TKSwipeDirection.Left ) != 0 )
@@ -211,6 +228,6 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	
 	public override string ToString()
 	{
-		return string.Format( "{0}, swipe direction: {1}, swipe velocity: {2}", base.ToString(), completedSwipeDirection, swipeVelocity );
+		return string.Format( "{0}, swipe direction: {1}, swipe velocity: {2}, start point: {3}, end point: {4}", base.ToString(), completedSwipeDirection, swipeVelocity, StartPoint, EndPoint );
 	}
 }
