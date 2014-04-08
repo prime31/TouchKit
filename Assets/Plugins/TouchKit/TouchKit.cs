@@ -2,6 +2,17 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// TK touch state.
+/// </summary>
+public enum TKTouchState
+{
+	TouchBegin,     //when user first time touch an object with collider2d
+	TouchMoveEnter, //when user move his/her finger int an object
+	TouchMoveLeave, //when user leave his/her finger from an object but still touching
+	TouchEnded,     //when user stop touching on an object
+	TouchCanceled   //when system canceled touching event
+}
 
 public partial class TouchKit : MonoBehaviour
 {
@@ -28,7 +39,10 @@ public partial class TouchKit : MonoBehaviour
 	private TKTouch[] _touchCache;
 	private List<TKTouch> _liveTouches = new List<TKTouch>();
 	private bool _shouldCheckForLostTouches = false; // used internally to ensure we dont check for lost touches too often
-	
+
+	//Touch event Detection
+	private Dictionary<int,Dictionary<GameObject, TKTouchState>>  coveredObjects;
+	public bool isTouchEventDetectionEnabled = true;
 	
 	private static TouchKit _instance = null;
 	public static TouchKit instance
@@ -93,6 +107,8 @@ public partial class TouchKit : MonoBehaviour
 	private void Awake()
 	{
 		// prep our TKTouch cache so we avoid excessive allocations
+		coveredObjects = new Dictionary<int, Dictionary<GameObject, TKTouchState>> ();
+
 		_touchCache = new TKTouch[maxTouchesToProcess];
 		for( int i = 0; i < maxTouchesToProcess; i++ )
 			_touchCache[i] = new TKTouch( i );
@@ -146,10 +162,112 @@ public partial class TouchKit : MonoBehaviour
 		// pass on the touches to all the recognizers
 		if( _liveTouches.Count > 0 )
 		{
+			if(isTouchEventDetectionEnabled)
+				DetectTouchEvent();
+
 			foreach( var recognizer in _gestureRecognizers )
 				recognizer.recognizeTouches( _liveTouches );
-			
+
 			_liveTouches.Clear();
+		}
+	}
+
+	void DetectTouchEvent()
+	{
+		if(_liveTouches == null)
+			return;
+
+		foreach(TKTouch touch in _liveTouches)
+		{
+			if(touch.phase == TouchPhase.Began)
+			{
+				if(!coveredObjects.ContainsKey(touch.fingerId))
+					coveredObjects.Add(touch.fingerId, new Dictionary<GameObject, TKTouchState>());
+
+				var ray = Camera.main.ScreenToWorldPoint(touch.position);
+				var hit = Physics2D.Raycast(ray, Vector2.zero);
+
+				if(hit.collider != null)
+				{
+					var obj = hit.collider.gameObject;
+					coveredObjects[touch.fingerId].Add(obj, TKTouchState.TouchBegin);
+					obj.SendMessage(TKTouchState.TouchBegin.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+				}
+			}
+			else if(touch.phase == TouchPhase.Moved)
+			{
+				var ray = Camera.main.ScreenToWorldPoint(touch.position);
+				var hit = Physics2D.Raycast(ray, Vector2.zero);
+
+				Dictionary<GameObject, bool> hittedObjects = new Dictionary<GameObject, bool>();
+
+				if(hit.collider != null)
+				{
+					hittedObjects.Add(hit.collider.gameObject, true);
+				}
+
+				var s = coveredObjects[touch.fingerId];
+				GameObject[] keys = new GameObject[s.Keys.Count];
+				s.Keys.CopyTo(keys, 0);
+				foreach(var key in keys)
+				{
+					if(hittedObjects.ContainsKey(key))
+					{
+						if(s[key] != TKTouchState.TouchMoveEnter)
+						{
+							s[key] = TKTouchState.TouchMoveEnter;
+							key.SendMessage(TKTouchState.TouchMoveEnter.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+						}
+					}
+					else
+					{
+						if(s[key] != TKTouchState.TouchMoveLeave)
+						{
+							s[key] = TKTouchState.TouchMoveLeave;
+							key.SendMessage(TKTouchState.TouchMoveLeave.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+						}
+					}
+
+				}
+
+				foreach(var key in hittedObjects.Keys)
+				{
+					if(!coveredObjects[touch.fingerId].ContainsKey(key))
+					{
+						coveredObjects[touch.fingerId].Add(key, TKTouchState.TouchMoveEnter);
+						key.SendMessage(TKTouchState.TouchMoveEnter.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+					}
+				}
+			}
+			else if(touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+			{
+				var ray = Camera.main.ScreenToWorldPoint(touch.position);
+				var hit = Physics2D.Raycast(ray, Vector2.zero);
+				
+				Dictionary<GameObject, bool> hittedObjects = new Dictionary<GameObject, bool>();
+
+				if(hit.collider != null)
+				{
+					hittedObjects.Add(hit.collider.gameObject, true);
+				}
+
+				foreach(var key in hittedObjects.Keys)
+				{
+					TKTouchState message = (touch.phase == TouchPhase.Ended) ? TKTouchState.TouchEnded : TKTouchState.TouchCanceled;
+					key.SendMessage(message.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+				}
+
+				var s = coveredObjects[touch.fingerId];
+				foreach(var key in s.Keys)
+				{
+					if(!hittedObjects.ContainsKey(key))
+					{
+						key.SendMessage(TKTouchState.TouchCanceled.ToString(), touch, SendMessageOptions.DontRequireReceiver);
+					}
+				}
+
+				coveredObjects[touch.fingerId].Clear();
+			}
 		}
 	}
 
