@@ -7,14 +7,6 @@ public class DemoOne : MonoBehaviour
 	public Transform cube;
 	private Vector2 _scrollPosition; // for the scroll view
 	
-	
-	void Start()
-	{
-		// turn on debug drawing while in the editor for assistance setting up your rects
-		TouchKit.instance.debugDrawBoundaryFrames = true;
-	}
-	
-	
 	void OnGUI()
 	{
 		GUI.skin.button.padding = new RectOffset( 10, 10, 20, 20 );
