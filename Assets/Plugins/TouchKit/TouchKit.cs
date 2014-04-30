@@ -4,8 +4,16 @@ using System.Collections.Generic;
 
 
 public partial class TouchKit : MonoBehaviour
-{
-	public bool debugDrawBoundaryFrames = false;
+{	
+	[HideInInspector]
+	public bool simulateTouches = true;
+	[HideInInspector]
+	public bool simulateMultitouch = true;
+	[HideInInspector]
+	public bool drawTouches = false;
+	[HideInInspector]
+	public bool drawDebugBoundaryFrames = false;
+	
 	public bool autoScaleRectsAndDistances = true;
 
 	/// <summary>
@@ -13,12 +21,12 @@ public partial class TouchKit : MonoBehaviour
 	/// </summary>
 	public Vector2 designTimeResolution = new Vector2( 320, 180 ); // 16:9 is a decent starting point for aspect ratio
 	public int maxTouchesToProcess = 2;
-
+	
 	/// <summary>
 	/// used at runtime to scale any TKRects as they are made for the current screen size
 	/// </summary>
 	public Vector2 runtimeScaleModifier { get; private set; }
-
+	
 	/// <summary>
 	/// used at runtime to modify distances
 	/// </summary>
@@ -39,7 +47,7 @@ public partial class TouchKit : MonoBehaviour
 			{
 				// check if there is a GO instance already available in the scene graph
 				_instance = FindObjectOfType( typeof( TouchKit ) ) as TouchKit;
-
+				
 				// nope, create a new one
 				if( !_instance )
 				{
@@ -47,7 +55,7 @@ public partial class TouchKit : MonoBehaviour
 					_instance = obj.AddComponent<TouchKit>();
 					DontDestroyOnLoad( obj );
 				}
-
+				
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
 				_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
 				_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
@@ -58,7 +66,7 @@ public partial class TouchKit : MonoBehaviour
 					_instance.runtimeDistanceModifier = 1f;
 				}
 			}
-
+			
 			return _instance;
 		}
 	}
@@ -102,23 +110,23 @@ public partial class TouchKit : MonoBehaviour
 	private void Update()
 	{
 		// the next couple sections are disgustingly, appallingly, horrendously horrible but it helps when testing in the editor
-#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		// check to see if the Unity Remote is active
 		if( shouldProcessMouseInput() )
 		{
-#endif
-		
-	#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+			#endif
+			
+			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 			
 			// we only need to process if we have some interesting input this frame
 			if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 				_liveTouches.Add( _touchCache[0].populateFromMouse() );
-	
-	#endif
-		
-#if UNITY_EDITOR
+			
+			#endif
+			
+			#if UNITY_EDITOR
 		}
-#endif
+		#endif
 		
 		// get all touches and examine them. only do our touch processing if we have some touches
 		if( Input.touchCount > 0 )
@@ -142,7 +150,7 @@ public partial class TouchKit : MonoBehaviour
 				_shouldCheckForLostTouches = false;
 			}
 		}
-
+		
 		// pass on the touches to all the recognizers
 		if( _liveTouches.Count > 0 )
 		{
@@ -152,10 +160,10 @@ public partial class TouchKit : MonoBehaviour
 			_liveTouches.Clear();
 		}
 	}
-
+	
 	#endregion
 	
-		
+	
 	#region Public API
 	
 	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
@@ -190,5 +198,5 @@ public partial class TouchKit : MonoBehaviour
 	}
 	
 	#endregion
-
+	
 }
