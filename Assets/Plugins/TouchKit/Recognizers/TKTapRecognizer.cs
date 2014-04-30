@@ -7,36 +7,36 @@ using System.Collections.Generic;
 public class TKTapRecognizer : TKAbstractGestureRecognizer
 {
 	public event Action<TKTapRecognizer> gestureRecognizedEvent;
-	
+
 	public int numberOfTapsRequired = 1;
 	public int numberOfTouchesRequired = 1;
-	
+
 	// taps that last longer than this duration will be ignored
 	private float _maxDurationForTapConsideration = 0.5f;
 	private float _maxDeltaMovementForTapConsideration = 5f;
-	
+
 	private float _touchBeganTime;
-	
-	
-	
+
+
+
 	public TKTapRecognizer() : this( 0.5f, 5f )
 	{}
-	
-	
+
+
 	public TKTapRecognizer( float maxDurationForTapConsideration, float maxDeltaMovementForTapConsideration )
 	{
 		_maxDurationForTapConsideration = maxDurationForTapConsideration;
 		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsideration * TouchKit.instance.runtimeDistanceModifier;
 	}
-	
-	
+
+
 	internal override void fireRecognizedEvent()
 	{
 		if( gestureRecognizedEvent != null )
 			gestureRecognizedEvent( this );
 	}
-	
-	
+
+
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
 		if( state == TKGestureRecognizerState.Possible )
@@ -52,20 +52,20 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 						break;
 				}
 			} // end for
-			
+
 			if( _trackingTouches.Count == numberOfTouchesRequired )
 			{
 				_touchBeganTime = Time.time;
 				state = TKGestureRecognizerState.Began;
-				
+
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
 		if( state == TKGestureRecognizerState.Began )
@@ -81,8 +81,8 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 			}
 		}
 	}
-	
-	
+
+
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		if( state == TKGestureRecognizerState.Began && ( Time.time <= _touchBeganTime + _maxDurationForTapConsideration ) )
@@ -90,5 +90,5 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 		else
 			state = TKGestureRecognizerState.Failed;
 	}
-	
+
 }

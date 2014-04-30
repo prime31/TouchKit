@@ -54,32 +54,32 @@ public class TKTouch
 		
 		switch (touchPhase)
 		{
-		case TouchPhase.Began:
-			phase = TouchPhase.Began;
-			_lastPosition = currentPosition2d;
-			
-			// check for multiple clicks
-			if (Time.time < _lastClickTime + _multipleClickInterval)
-				tapCount++;
-			else
-				tapCount = 1;
-			_lastClickTime = Time.time;
-			break;
-		case TouchPhase.Stationary:
-		case TouchPhase.Moved:
-			if (deltaPosition.magnitude == 0)
-			{
-				phase = TouchPhase.Stationary;   
-			} else
-			{
-				phase = TouchPhase.Moved;  
-			}
-			_lastPosition = position;
-			break;
-		case TouchPhase.Ended:
-			phase = TouchPhase.Ended;
-			_lastPosition = null;
-			break;
+			case TouchPhase.Began:
+				phase = TouchPhase.Began;
+				_lastPosition = currentPosition2d;
+				
+				// check for multiple clicks
+				if (Time.time < _lastClickTime + _multipleClickInterval)
+					tapCount++;
+				else
+					tapCount = 1;
+				_lastClickTime = Time.time;
+				break;
+			case TouchPhase.Stationary:
+			case TouchPhase.Moved:
+				if (deltaPosition.magnitude == 0)
+				{
+					phase = TouchPhase.Stationary;   
+				} else
+				{
+					phase = TouchPhase.Moved;  
+				}
+				_lastPosition = position;
+				break;
+			case TouchPhase.Ended:
+				phase = TouchPhase.Ended;
+				_lastPosition = null;
+				break;
 		}
 		
 		position = currentPosition2d;
