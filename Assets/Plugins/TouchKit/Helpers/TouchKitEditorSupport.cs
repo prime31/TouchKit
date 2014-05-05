@@ -102,17 +102,17 @@ public partial class TouchKit
 			{
 				if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
 				{
-					var touchPos = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(touch.position));
+                    var touchPos = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.nearClipPlane));
 					Gizmos.DrawIcon(touchPos, "greenPoint.png", false);
 				}
 			}
 			
 			if (_simulatedMultitouchStartPosition.HasValue && !_hasActiveSimulatedTouch)
 			{
-				var mousePos = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(Input.mousePosition));
+                var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
 				Gizmos.DrawIcon(mousePos, "redPoint.png", false);
 				
-				var simulatedPos = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(_simulatedMousePosition));
+                var simulatedPos = Camera.main.ScreenToWorldPoint(new Vector3(_simulatedMousePosition.x, _simulatedMousePosition.y, Camera.main.nearClipPlane));
 				Gizmos.DrawIcon(simulatedPos, "redPoint.png", false);
 			}
 		}
