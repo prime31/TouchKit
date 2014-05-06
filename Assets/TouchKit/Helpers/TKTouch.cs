@@ -10,6 +10,11 @@ public class TKTouch
 		public float deltaTime;
 		public int tapCount;
 		public TouchPhase phase = TouchPhase.Ended;
+
+		public Vector2 previousPosition
+		{
+			get { return position - deltaPosition; }
+		}
 	
 	#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 		// used to track mouse movement and fake touches
