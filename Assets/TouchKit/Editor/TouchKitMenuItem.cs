@@ -11,7 +11,7 @@ using System.IO;
 public class TouchKitMenuItem : Editor
 {
 	const string
-		kSourcePath = "Assets/Plugins/TouchKit/",
+		kSourcePath = "Assets/TouchKit/",
 		kBuildTargetFilename = "TouchKit.dll";
 	
 	
@@ -51,7 +51,10 @@ public class TouchKitMenuItem : Editor
 		}
 		
 		foreach( var dir in Directory.GetDirectories( path ) )
-			source.AddRange( getSourceForStandardDLL( dir ) );
+		{
+			if (!dir.Contains( "/Editor" ) )
+				source.AddRange( getSourceForStandardDLL( dir ) );
+		}
 		
 		return source.ToArray();
 	}
