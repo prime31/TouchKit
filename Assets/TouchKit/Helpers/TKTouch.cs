@@ -13,7 +13,7 @@ public class TKTouch
 
 		public Vector2 previousPosition
 		{
-			get { return position - deltaPosition; }
+				get { return position - deltaPosition; }
 		}
 	
 	#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
