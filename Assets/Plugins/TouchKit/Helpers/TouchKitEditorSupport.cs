@@ -149,10 +149,10 @@ public partial class TouchKit
 		var tl = new Vector3(rect.xMin, rect.yMax, 0);
 		var tr = new Vector3(rect.xMax, rect.yMax, 0);
 		
-		bl = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(bl));
-		br = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(br));
-		tl = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(tl));
-		tr = Camera.main.ScreenToWorldPoint(Camera.main.transform.InverseTransformPoint(tr));
+		bl = Camera.main.ScreenToWorldPoint(new Vector3(bl.x, bl.y, Camera.main.farClipPlane));
+		br = Camera.main.ScreenToWorldPoint(new Vector3(br.x, br.y, Camera.main.farClipPlane));
+		tl = Camera.main.ScreenToWorldPoint(new Vector3(tl.x, tl.y, Camera.main.farClipPlane));
+		tr = Camera.main.ScreenToWorldPoint(new Vector3(tr.x, tr.y, Camera.main.farClipPlane));
 		
 		// draw four sides
 		Debug.DrawLine(bl, br, color);
