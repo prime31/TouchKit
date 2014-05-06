@@ -56,13 +56,13 @@ public class TKTouch
 		{
 		case TouchPhase.Began:
 			phase = TouchPhase.Began;
-			_lastPosition = currentPosition2d;
 			
 			// check for multiple clicks
 			if (Time.time < _lastClickTime + _multipleClickInterval)
 				tapCount++;
 			else
 				tapCount = 1;
+			_lastPosition = currentPosition2d;
 			_lastClickTime = Time.time;
 			break;
 		case TouchPhase.Stationary:
@@ -74,7 +74,7 @@ public class TKTouch
 			{
 				phase = TouchPhase.Moved;  
 			}
-			_lastPosition = position;
+			_lastPosition = currentPosition2d;
 			break;
 		case TouchPhase.Ended:
 			phase = TouchPhase.Ended;
