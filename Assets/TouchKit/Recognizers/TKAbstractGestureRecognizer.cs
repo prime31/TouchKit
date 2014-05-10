@@ -18,18 +18,18 @@ public enum TKGestureRecognizerState
 public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestureRecognizer>
 {
 	public bool enabled = true;
-	
+
 	/// <summary>
 	/// frame that the touch must be within to be recognized. null means full screen. note that Unity's origin is the bottom left
 	/// </summary>
 	public TKRect? boundaryFrame = null;
-	
+
 	/// <summary>
 	/// zIndex of touch input. 0 by default. if a zIndex of greater than 0 uses a touch in touchesBegan it will not be passed to any other recognizers.
 	/// useful if you have some full screen recognizers and you want to overlay a button/control
 	/// </summary>
 	public uint zIndex = 0;
-	
+
 	private TKGestureRecognizerState _state = TKGestureRecognizerState.Possible;
 	public TKGestureRecognizerState state
 	{
@@ -37,39 +37,39 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 		set
 		{
 			_state = value;
-			
+
 			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 				fireRecognizedEvent();
-			
+
 			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.Failed )
 				reset();
 		}
 	}
-	
-	
+
+
 	/// <summary>
 	/// when true, touchesMoved will be called for ALL touches. By default, only the touches
 	/// a recognizer is tracking (from touchesBegan) will be sent.
 	/// </summary>
 	protected bool alwaysSendTouchesMoved = false;
-	
+
 	/// <summary>
 	/// stores all the touches we are currently tracking
 	/// </summary>
 	protected List<TKTouch> _trackingTouches = new List<TKTouch>();
-	
+
 	/// <summary>
 	/// The subset of touches being tracked that is applicable to the current recognizer. This is kept around to avoid allocations at runtime.
 	/// </summary>
 	private List<TKTouch> _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer = new List<TKTouch>();
-	
+
 	/// <summary>
 	/// stores whether we sent any of the phases to the recognizer. This is to avoid sending a phase twice in one frame.
 	/// </summary>
 	private bool _sentTouchesBegan;
 	private bool _sentTouchesMoved;
 	private bool _sentTouchesEnded;
-	
+
 	/// <summary>
 	/// checks to see if the touch is currently being tracked by the recognizer
 	/// </summary>
@@ -89,11 +89,11 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 			if( _trackingTouches.Contains( touches[i] ) )
 				return true;
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	/// <summary>
 	/// populates the _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer with only the touches currently being tracked by the recognizer.
 	/// returns true if there are any touches being tracked
@@ -101,17 +101,17 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	private bool populateSubsetOfTouchesBeingTracked( List<TKTouch> touches )
 	{
 		_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Clear();
-		
+
 		for( int i = 0; i < touches.Count; i++ )
 		{
 			if( alwaysSendTouchesMoved || isTrackingTouch( touches[i] ) )
 				_subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Add( touches[i] );
 		}
-		
+
 		return _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Count > 0;
 	}
-	
-	
+
+
 	private bool shouldAttemptToRecognize
 	{
 		get
@@ -119,18 +119,18 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 			return ( enabled && state != TKGestureRecognizerState.Failed && state != TKGestureRecognizerState.Recognized );
 		}
 	}
-	
-	
+
+
 	#region Public API
-	
+
 	internal void recognizeTouches( List<TKTouch> touches )
 	{
 		if( !shouldAttemptToRecognize )
 			return;
-		
+
 		// reset our state to avoid sending any phase more than once
 		_sentTouchesBegan = _sentTouchesMoved = _sentTouchesEnded = false;
-		
+
 		// we loop backwards because the Began phase could end up removing a touch
 		for( var i = touches.Count - 1; i >= 0; i-- )
 		{
@@ -155,7 +155,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 									removedTouches++;
 								}
 							}
-						
+
 							// if we removed more than 1 touch decrement i for each additional touch removed
 							if( removedTouches > 0 )
 								i -= ( removedTouches - 1 );
@@ -188,15 +188,15 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 			}
 		}
 	}
-	
-	
+
+
 	internal void reset()
 	{
 		_state = TKGestureRecognizerState.Possible;
 		_trackingTouches.Clear();
 	}
-	
-	
+
+
 	/// <summary>
 	/// returns the location of the touches. If there are multiple touches this will return the centroid of the location.
 	/// </summary>
@@ -205,21 +205,21 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	    var x = 0f;
 	    var y = 0f;
 	    var k = 0f;
-	
-	    foreach( var touch in _trackingTouches )
+
+		for( var i = 0; i < _trackingTouches.Count; i++ )
 		{
-	        x += touch.position.x;
-	        y += touch.position.y;
-	        k++;
-	    }
-	
+			x += _trackingTouches[i].position.x;
+			y += _trackingTouches[i].position.y;
+			k++;
+		}
+
 	    if( k > 0 )
 	        return new Vector2( x / k, y / k );
 	    else
 	        return Vector2.zero;
 	}
-	
-	
+
+
 	/// <summary>
 	/// return true if a touch was used, false if none were. this is used by any recognizers that should swallow touches if on a higher than 0 zIndex
 	/// </summary>
@@ -227,35 +227,35 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	{
 		return false;
 	}
-	
-	
+
+
 	internal virtual void touchesMoved( List<TKTouch> touches )
 	{}
-	
-	
+
+
 	internal virtual void touchesEnded( List<TKTouch> touches )
 	{}
-	
-	
+
+
 	internal abstract void fireRecognizedEvent();
-	
+
 	#endregion
-	
-	
+
+
 	#region IComparable and ToString implementation
-	
+
 	public int CompareTo( TKAbstractGestureRecognizer other )
 	{
 		return zIndex.CompareTo( other.zIndex );
 	}
-	
-	
-	
-	
+
+
+
+
 	public override string ToString()
 	{
 		return string.Format( "[{0}] state: {1}, location: {2}, zIndex: {3}", this.GetType(), state, touchLocation(), zIndex );
 	}
-	
+
 	#endregion
 }
