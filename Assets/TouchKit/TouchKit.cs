@@ -40,6 +40,12 @@ public partial class TouchKit : MonoBehaviour
 	/// </summary>
 	public float runtimeDistanceModifier { get; private set; }
 
+	/// <summary>
+	/// used at runtime to translate a pixel value into Unity units. Just multiply the pixel value by the runtimeAspectRatioModifier
+	/// </summary>
+	public Vector2 pixelsToUnityUnitsMultiplier { get; private set; }
+
+
 	private List<TKAbstractGestureRecognizer> _gestureRecognizers = new List<TKAbstractGestureRecognizer>();
 	private TKTouch[] _touchCache;
 	private List<TKTouch> _liveTouches = new List<TKTouch>();
@@ -65,6 +71,13 @@ public partial class TouchKit : MonoBehaviour
 				}
 
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
+				var screenSizeUnityUnits = new Vector2( Camera.main.aspect * Camera.main.orthographicSize * 2f, Camera.main.orthographicSize * 2f );
+				_instance.pixelsToUnityUnitsMultiplier = new Vector2
+				(
+					screenSizeUnityUnits.x / (float)Screen.width,
+					screenSizeUnityUnits.y / (float)Screen.height
+				);
+
 				_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
 				_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
 
@@ -156,13 +169,6 @@ public partial class TouchKit : MonoBehaviour
 
 	#region MonoBehaviour
 
-	private void OnApplicationQuit()
-	{
-		_instance = null;
-		Destroy( gameObject );
-	}
-
-
 	private void Awake()
 	{
 		// prep our TKTouch cache so we avoid excessive allocations
@@ -176,6 +182,13 @@ public partial class TouchKit : MonoBehaviour
 	{
 		if( shouldAutoUpdateTouches )
 			internalUpdateTouches();
+	}
+
+
+	private void OnApplicationQuit()
+	{
+		_instance = null;
+		Destroy( gameObject );
 	}
 
 	#endregion
