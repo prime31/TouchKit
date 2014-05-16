@@ -14,7 +14,15 @@ public partial class TouchKit : MonoBehaviour
 	[HideInInspector]
 	public bool drawDebugBoundaryFrames = false;
 
+	/// <summary>
+	/// lets TouchKit know if it should scale all rects and distances based on the designTimeResolution
+	/// </summary>
 	public bool autoScaleRectsAndDistances = true;
+
+	/// <summary>
+	/// if false, TouchKit will not do anything in Update. You will need to call updateTouches yourself.
+	/// </summary>
+	public bool shouldAutoUpdateTouches = true;
 
 	/// <summary>
 	/// all TKRect sizes should be based on this screen size. They will be adjusted at runtime if autoUpdateRects is true
@@ -89,45 +97,27 @@ public partial class TouchKit : MonoBehaviour
 	}
 
 
-	#region MonoBehaviour
-
-	private void OnApplicationQuit()
-	{
-		_instance = null;
-		Destroy( gameObject );
-	}
-
-
-	private void Awake()
-	{
-		// prep our TKTouch cache so we avoid excessive allocations
-		_touchCache = new TKTouch[maxTouchesToProcess];
-		for( int i = 0; i < maxTouchesToProcess; i++ )
-			_touchCache[i] = new TKTouch( i );
-	}
-
-
-	private void Update()
+	private void internalUpdateTouches()
 	{
 		// the next couple sections are disgustingly, appallingly, horrendously horrible due to all the #ifs but it
 		// helps when testing in the editor
-#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		// check to see if the Unity Remote is active
 		if( shouldProcessMouseInput() )
 		{
-#endif
+			#endif
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 
 			// we only need to process if we have some interesting input this frame
 			if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 				_liveTouches.Add( _touchCache[0].populateFromMouse() );
 
-#endif
+			#endif
 
-#if UNITY_EDITOR
+			#if UNITY_EDITOR
 		}
-#endif
+		#endif
 
 
 		// get all touches and examine them. only do our touch processing if we have some touches
@@ -163,10 +153,41 @@ public partial class TouchKit : MonoBehaviour
 		}
 	}
 
+
+	#region MonoBehaviour
+
+	private void OnApplicationQuit()
+	{
+		_instance = null;
+		Destroy( gameObject );
+	}
+
+
+	private void Awake()
+	{
+		// prep our TKTouch cache so we avoid excessive allocations
+		_touchCache = new TKTouch[maxTouchesToProcess];
+		for( int i = 0; i < maxTouchesToProcess; i++ )
+			_touchCache[i] = new TKTouch( i );
+	}
+
+
+	private void Update()
+	{
+		if( shouldAutoUpdateTouches )
+			internalUpdateTouches();
+	}
+
 	#endregion
 
 
 	#region Public API
+
+	public static void updateTouches()
+	{
+		_instance.internalUpdateTouches();
+	}
+
 
 	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
