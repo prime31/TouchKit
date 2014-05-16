@@ -75,7 +75,7 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 			{
 				if( touches[i].deltaPosition.sqrMagnitude > _maxDeltaMovementForTapConsideration )
 				{
-					state = TKGestureRecognizerState.Failed;
+					state = TKGestureRecognizerState.FailedOrEnded;
 					break;
 				}
 			}
@@ -88,7 +88,7 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 		if( state == TKGestureRecognizerState.Began && ( Time.time <= _touchBeganTime + _maxDurationForTapConsideration ) )
 			state = TKGestureRecognizerState.Recognized;
 		else
-			state = TKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.FailedOrEnded;
 	}
 
 }

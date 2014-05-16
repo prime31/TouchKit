@@ -46,7 +46,6 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 		{
 			_trackingTouches.Add( touches[0] );
 			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-
 			onTouchEntered();
 
 			return true;
@@ -72,12 +71,14 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 		if( !isTrackingTouch && isTouchInFrame )
 		{
 			_trackingTouches.Add( touches[0] );
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 			onTouchEntered();
 		}
 		// if we are tracking the touch and it exited the frame fire the onExitedEvent
 		else if( isTrackingTouch && !isTouchInFrame )
 		{
 			_trackingTouches.Remove( touches[0] );
+			state = TKGestureRecognizerState.FailedOrEnded;
 			onTouchExited();
 		}
 	}
@@ -88,8 +89,8 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 		if( _trackingTouches.Contains( touches[0] ) )
 		{
 			_trackingTouches.Remove( touches[0] );
+			state = TKGestureRecognizerState.FailedOrEnded;
 			onTouchExited();
-			state = TKGestureRecognizerState.Failed;
 		}
 	}
 
