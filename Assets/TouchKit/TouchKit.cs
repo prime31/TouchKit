@@ -109,24 +109,26 @@ public partial class TouchKit : MonoBehaviour
 
 	private void Update()
 	{
-		// the next couple sections are disgustingly, appallingly, horrendously horrible but it helps when testing in the editor
-		#if UNITY_EDITOR
+		// the next couple sections are disgustingly, appallingly, horrendously horrible due to all the #ifs but it
+		// helps when testing in the editor
+#if UNITY_EDITOR
 		// check to see if the Unity Remote is active
 		if( shouldProcessMouseInput() )
 		{
-			#endif
+#endif
 
-			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 
 			// we only need to process if we have some interesting input this frame
 			if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 				_liveTouches.Add( _touchCache[0].populateFromMouse() );
 
-			#endif
+#endif
 
-			#if UNITY_EDITOR
+#if UNITY_EDITOR
 		}
-		#endif
+#endif
+
 
 		// get all touches and examine them. only do our touch processing if we have some touches
 		if( Input.touchCount > 0 )
