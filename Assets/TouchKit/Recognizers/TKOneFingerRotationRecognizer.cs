@@ -62,7 +62,7 @@ public class TKOneFingerRotationRecognizer : TKRotationRecognizer
 				gestureCompleteEvent( this );
 		}
 		
-		state = TKGestureRecognizerState.Failed;
+		state = TKGestureRecognizerState.FailedOrEnded;
 	}
 
 }

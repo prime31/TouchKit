@@ -95,7 +95,7 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 		}
 		else
 		{
-			state = TKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.FailedOrEnded;
 		}
 	}
 	

@@ -111,7 +111,7 @@ public class TKRotationRecognizer : TKAbstractGestureRecognizer
 		}
 		else
 		{
-			state = TKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.FailedOrEnded;
 		}
 	}
 	

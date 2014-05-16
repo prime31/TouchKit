@@ -86,7 +86,7 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 		}
 		else
 		{
-			state = TKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.FailedOrEnded;
 		}
 	}
 	

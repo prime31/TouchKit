@@ -77,7 +77,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// if we have a time stipulation and we exceeded it stop listening for swipes
 		if( timeToSwipe > 0.0f && ( Time.time - _startTime ) > timeToSwipe )
 		{
-			state = TKGestureRecognizerState.Failed;
+			state = TKGestureRecognizerState.FailedOrEnded;
 			return false;
 		}
 		
@@ -222,7 +222,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
-		state = TKGestureRecognizerState.Failed;
+		state = TKGestureRecognizerState.FailedOrEnded;
 	}
 	
 	
