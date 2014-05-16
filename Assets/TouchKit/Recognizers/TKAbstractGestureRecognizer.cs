@@ -9,7 +9,7 @@ public enum TKGestureRecognizerState
 {
 	Possible, // we havent started yet and we are still listening
 	Began, // we have started and latched at least one finger
-	Failed, // no go. failed to recognize
+	FailedOrEnded, // no go. failed to recognize or we are done recognizing
 	RecognizedAndStillRecognizing, // this will fire the state changed event and allow a gesture to continue to recognize. useful for continuous gestures
 	Recognized // successfully recognized and we are not a continuous recognizer
 }
@@ -41,7 +41,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 				fireRecognizedEvent();
 
-			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.Failed )
+			if( _state == TKGestureRecognizerState.Recognized || _state == TKGestureRecognizerState.FailedOrEnded )
 				reset();
 		}
 	}
@@ -116,7 +116,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	{
 		get
 		{
-			return ( enabled && state != TKGestureRecognizerState.Failed && state != TKGestureRecognizerState.Recognized );
+			return ( enabled && state != TKGestureRecognizerState.FailedOrEnded && state != TKGestureRecognizerState.Recognized );
 		}
 	}
 
