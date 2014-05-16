@@ -20,6 +20,7 @@ public class DemoTwo : MonoBehaviour
 	void Start()
 	{
 		_controls = new VirtualControls();
+		_controls.createDebugQuads();
 	}
 
 
@@ -35,7 +36,7 @@ public class DemoTwo : MonoBehaviour
 		showLabelAndValue( "Right: ", _controls.rightDown.ToString() );
 		showLabelAndValue( "Up: ", _controls.upDown.ToString() );
 
-		GUILayout.Space( 10 );
+		GUILayout.Space( 4 );
 
 		showLabelAndValue( "Attack: ", _controls.attackDown.ToString() );
 		showLabelAndValue( "Jump: ", _controls.jumpDown.ToString() );

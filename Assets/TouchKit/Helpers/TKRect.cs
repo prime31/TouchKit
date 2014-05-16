@@ -87,7 +87,8 @@ public struct TKRect
 
 	public override string ToString()
 	{
-		return string.Format( "TKRect: x: {0}, xMax: {1}, y: {2}, yMax: {3}, width: {4}, height: {5}", x, xMax, y, yMax, width, height );
+		return string.Format( "TKRect: x: {0}, xMax: {1}, y: {2}, yMax: {3}, width: {4}, height: {5}, center: {6}",
+			x, xMax, y, yMax, width, height, center );
 	}
 
 }
