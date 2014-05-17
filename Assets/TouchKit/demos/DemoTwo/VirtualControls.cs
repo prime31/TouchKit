@@ -111,7 +111,6 @@ public class VirtualControls
 
 		// attack button. we use the onSelectedEvent here because we only want to know the exact frame it was pressed
 		_attackRecognizer = new TKButtonRecognizer( new TKRect( TouchKit.instance.designTimeResolution.x - buttonWidth * 2f, 0, buttonWidth, buttonHeight ), 0f );
-		_attackRecognizer.zIndex = 1;
 		_attackRecognizer.onSelectedEvent += ( r ) =>
 		{
 			attackDown = true;
@@ -121,7 +120,6 @@ public class VirtualControls
 
 		// jump button
 		_jumpRecognizer = new TKButtonRecognizer( new TKRect( TouchKit.instance.designTimeResolution.x - buttonWidth, 0, buttonWidth, buttonHeight ), 0f );
-		_jumpRecognizer.zIndex = 1;
 		TouchKit.addGestureRecognizer( _jumpRecognizer );
 	}
 

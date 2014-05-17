@@ -33,6 +33,7 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 			onExitedEvent( this );
 	}
 
+
 	#region TKAbstractGestureRecognizer
 
 	// we do nothing here. all events will be handled internally
@@ -42,13 +43,20 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
 		// grab the first touch that begins on us
-		if( state == TKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
+		if( state == TKGestureRecognizerState.Possible )
 		{
-			_trackingTouches.Add( touches[0] );
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-			onTouchEntered();
+			for( int i = 0; i < touches.Count; i++ )
+			{
+				// only add touches in the Began phase
+				if( touches[i].phase == TouchPhase.Began )
+				{
+					_trackingTouches.Add( touches[i] );
+					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+					onTouchEntered();
 
-			return true;
+					return true;
+				}
+			}
 		}
 
 		return false;
@@ -57,40 +65,46 @@ public class TKAnyTouchRecognizer : TKAbstractGestureRecognizer
 
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		// check to see if the touch is in our frame
-		var isTouchInFrame = boundaryFrame.Value.contains( touches[0].position );
-
-		// are we already tracking this touch?
-		var isTrackingTouch = _trackingTouches.Contains( touches[0] );
-
-		// if we are tracking the touch and it is in frame we do nothing more
-		if( isTrackingTouch && isTouchInFrame )
-			return;
-
-		// if we are not tracking the touch and it is in our frame start tracking it
-		if( !isTrackingTouch && isTouchInFrame )
+		for( int i = 0; i < touches.Count; i++ )
 		{
-			_trackingTouches.Add( touches[0] );
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-			onTouchEntered();
-		}
-		// if we are tracking the touch and it exited the frame fire the onExitedEvent
-		else if( isTrackingTouch && !isTouchInFrame )
-		{
-			_trackingTouches.Remove( touches[0] );
-			state = TKGestureRecognizerState.FailedOrEnded;
-			onTouchExited();
+			// check to see if the touch is in our frame
+			var isTouchInFrame = isTouchWithinBoundaryFrame( touches[i] );
+
+			// are we already tracking this touch?
+			var isTrackingTouch = _trackingTouches.Contains( touches[i] );
+
+			// if we are tracking the touch and it is in frame we do nothing more
+			if( isTrackingTouch && isTouchInFrame )
+				continue;
+
+			// if we are not tracking the touch and it is in our frame start tracking it
+			if( !isTrackingTouch && isTouchInFrame )
+			{
+				_trackingTouches.Add( touches[i] );
+				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+				onTouchEntered();
+			}
+			// if we are tracking the touch and it exited the frame fire the onExitedEvent
+			else if( isTrackingTouch && !isTouchInFrame )
+			{
+				_trackingTouches.Remove( touches[i] );
+				state = TKGestureRecognizerState.FailedOrEnded;
+				onTouchExited();
+			}
 		}
 	}
 
 
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
-		if( _trackingTouches.Contains( touches[0] ) )
+		for( int i = 0; i < touches.Count; i++ )
 		{
-			_trackingTouches.Remove( touches[0] );
-			state = TKGestureRecognizerState.FailedOrEnded;
-			onTouchExited();
+			if( touches[i].phase == TouchPhase.Ended && _trackingTouches.Contains( touches[i] ) )
+			{
+				_trackingTouches.Remove( touches[i] );
+				state = TKGestureRecognizerState.FailedOrEnded;
+				onTouchExited();
+			}
 		}
 	}
 

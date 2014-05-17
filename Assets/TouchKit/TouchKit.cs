@@ -128,7 +128,7 @@ public partial class TouchKit : MonoBehaviour
 		// check to see if the Unity Remote is active
 		if( shouldProcessMouseInput() )
 		{
-			#endif
+		#endif
 
 			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 
@@ -138,7 +138,7 @@ public partial class TouchKit : MonoBehaviour
 
 			#endif
 
-			#if UNITY_EDITOR
+		#if UNITY_EDITOR
 		}
 		#endif
 

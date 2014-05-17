@@ -140,7 +140,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 				case TouchPhase.Began:
 				{
 					// only send touches began once and ensure that the touch is in the boundaryFrame if applicable
-					if( !_sentTouchesBegan && ( !boundaryFrame.HasValue || boundaryFrame.Value.contains( touch.position ) ) )
+					if( !_sentTouchesBegan && isTouchWithinBoundaryFrame( touches[i] ) )
 					{
 						// if touchesBegan returns true and we have a zIndex greater than 0 we remove the touches with a phase of Began
 						if( touchesBegan( touches ) && zIndex > 0 )
@@ -194,6 +194,12 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	{
 		_state = TKGestureRecognizerState.Possible;
 		_trackingTouches.Clear();
+	}
+
+
+	internal bool isTouchWithinBoundaryFrame( TKTouch touch )
+	{
+		return !boundaryFrame.HasValue || boundaryFrame.Value.contains( touch.position );
 	}
 
 

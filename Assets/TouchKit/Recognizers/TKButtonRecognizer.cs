@@ -90,13 +90,20 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
 		// grab the first touch that begins on us
-		if( state == TKGestureRecognizerState.Possible && touches[0].phase == TouchPhase.Began )
+		if( state == TKGestureRecognizerState.Possible )
 		{
-			_trackingTouches.Add( touches[0] );
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-			onSelected();
+			for( int i = 0; i < touches.Count; i++ )
+			{
+				// only add touches in the Began phase
+				if( touches[i].phase == TouchPhase.Began )
+				{
+					_trackingTouches.Add( touches[i] );
+					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+					onSelected();
 
-			return true;
+					return true;
+				}
+			}
 		}
 
 		return false;
@@ -105,19 +112,25 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		// check to see if the touch is still in our frame
-		var isTouchInFrame = boundaryFrame.Value.contains( touches[0].position );
+		for( int i = 0; i < touches.Count; i++ )
+		{
+			if( touches[i].phase == TouchPhase.Stationary )
+			{
+				// check to see if the touch is still in our frame
+				var isTouchInFrame = isTouchWithinBoundaryFrame( touches[i] );
 
-		// if we are in the Began phase than we should switch to RecognizedAndStillRecognizing (highlighted) if the touch is in our frame
-		if( state == TKGestureRecognizerState.Began && isTouchInFrame )
-		{
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-			onSelected();
-		}
-		else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && !isTouchInFrame ) // if the touch exits the frame and we were highlighted deselect now
-		{
-			state = TKGestureRecognizerState.FailedOrEnded;
-			onDeselected();
+				// if we are in the Began phase than we should switch to RecognizedAndStillRecognizing (highlighted) if the touch is in our frame
+				if( state == TKGestureRecognizerState.Began && isTouchInFrame )
+				{
+					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+					onSelected();
+				}
+				else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && !isTouchInFrame ) // if the touch exits the frame and we were highlighted deselect now
+				{
+					state = TKGestureRecognizerState.FailedOrEnded;
+					onDeselected();
+				}
+			}
 		}
 	}
 

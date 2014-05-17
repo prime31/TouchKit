@@ -40,14 +40,14 @@ public partial class TouchKit
 			else if( Input.GetKey( KeyCode.LeftShift ) )
 			{
 				// calculate the last mouse position from the simulated position and shift the start position acordingly
-				Vector3 lastMousePosition = _simulatedMultitouchStartPosition.Value + ( _simulatedMultitouchStartPosition.Value - _simulatedMousePosition );
-				Vector3 diff =  Input.mousePosition - lastMousePosition;
+				var lastMousePosition = _simulatedMultitouchStartPosition.Value + ( _simulatedMultitouchStartPosition.Value - _simulatedMousePosition );
+				var diff =  Input.mousePosition - lastMousePosition;
 				_simulatedMultitouchStartPosition += diff;
 			}
 
 			if( Input.GetKey( KeyCode.LeftAlt ) || Input.GetKeyUp( KeyCode.LeftAlt ) )
 			{
-				Vector3 diff = new Vector3( Input.mousePosition.x - _simulatedMultitouchStartPosition.Value.x, Input.mousePosition.y - _simulatedMultitouchStartPosition.Value.y );
+				var diff = new Vector3( Input.mousePosition.x - _simulatedMultitouchStartPosition.Value.x, Input.mousePosition.y - _simulatedMultitouchStartPosition.Value.y );
 				_simulatedMousePosition = _simulatedMultitouchStartPosition.Value - diff;
 			}
 
