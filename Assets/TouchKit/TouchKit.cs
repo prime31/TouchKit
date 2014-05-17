@@ -41,7 +41,8 @@ public partial class TouchKit : MonoBehaviour
 	public float runtimeDistanceModifier { get; private set; }
 
 	/// <summary>
-	/// used at runtime to translate a pixel value into Unity units. Just multiply the pixel value by the runtimeAspectRatioModifier
+	/// used at runtime to translate a pixel value into Unity units. Just multiply the pixel value by the runtimeAspectRatioModifier.
+	/// Note that this will only work for orthographic cameras!
 	/// </summary>
 	public Vector2 pixelsToUnityUnitsMultiplier { get; private set; }
 
@@ -71,12 +72,21 @@ public partial class TouchKit : MonoBehaviour
 				}
 
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
-				var screenSizeUnityUnits = new Vector2( Camera.main.aspect * Camera.main.orthographicSize * 2f, Camera.main.orthographicSize * 2f );
-				_instance.pixelsToUnityUnitsMultiplier = new Vector2
-				(
-					screenSizeUnityUnits.x / (float)Screen.width,
-					screenSizeUnityUnits.y / (float)Screen.height
-				);
+				var aCamera = Camera.main ?? Camera.allCameras[0];
+
+				if( aCamera.isOrthoGraphic )
+				{
+					var screenSizeUnityUnits = new Vector2( aCamera.aspect * aCamera.orthographicSize * 2f, aCamera.orthographicSize * 2f );
+					_instance.pixelsToUnityUnitsMultiplier = new Vector2
+					(
+						screenSizeUnityUnits.x / (float)Screen.width,
+						screenSizeUnityUnits.y / (float)Screen.height
+					);
+				}
+				else
+				{
+					_instance.pixelsToUnityUnitsMultiplier = Vector2.one;
+				}
 
 				_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
 				_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
