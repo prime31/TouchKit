@@ -41,7 +41,7 @@ public partial class TouchKit : MonoBehaviour
 	public float runtimeDistanceModifier { get; private set; }
 
 	/// <summary>
-	/// used at runtime to translate a pixel value into Unity units. Just multiply the pixel value by the runtimeAspectRatioModifier.
+	/// used at runtime to translate a pixel value into Unity units. Just multiply the pixel value by the pixelsToUnityUnitsMultiplier.
 	/// Note that this will only work for orthographic cameras!
 	/// </summary>
 	public Vector2 pixelsToUnityUnitsMultiplier { get; private set; }
