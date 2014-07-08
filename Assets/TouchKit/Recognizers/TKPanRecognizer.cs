@@ -23,10 +23,11 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			gestureRecognizedEvent( this );
 	}
 	
-	
+
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( state == TKGestureRecognizerState.Possible )
+		// add new or additional touches to gesture (allows for two or more touches to be added or removed without ending the pan gesture)
+		if( state == TKGestureRecognizerState.Possible || ( ( state == TKGestureRecognizerState.Began || state == TKGestureRecognizerState.RecognizedAndStillRecognizing ) && _trackingTouches.Count < maximumNumberOfTouches ) )
 		{
 			for( int i = 0; i < touches.Count; i++ )
 			{
@@ -43,7 +44,10 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			if( _trackingTouches.Count >= minimumNumberOfTouches )
 			{
 				_previousLocation = touchLocation();
-				state = TKGestureRecognizerState.Began;
+				if( state != TKGestureRecognizerState.RecognizedAndStillRecognizing )
+				{
+					state = TKGestureRecognizerState.Began;
+				}
 			}
 		}
 		
@@ -71,21 +75,23 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			if( touches[i].phase == TouchPhase.Ended )
 				_trackingTouches.Remove( touches[i] );
 		}
-		
-		// if we had previously been recognizing fire our complete event
-		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
-		{
-			if( gestureCompleteEvent != null )
-				gestureCompleteEvent( this );
-		}
-		
+
 		// if we still have a touch left continue. no touches means its time to reset
-		if( _trackingTouches.Count == 1 )
+		if( _trackingTouches.Count >= minimumNumberOfTouches )
 		{
-			state = TKGestureRecognizerState.Began;
+			_previousLocation = touchLocation();
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 		else
 		{
+			// if we had previously been recognizing fire our complete event
+			if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
+			{
+				if( gestureCompleteEvent != null ) {
+					gestureCompleteEvent( this );
+				}
+			}
+
 			state = TKGestureRecognizerState.FailedOrEnded;
 		}
 	}
