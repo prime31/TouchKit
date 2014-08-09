@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 public class TKCurveRecognizer : TKAbstractGestureRecognizer {
 
-	public new event Action<TKCurveRecognizer> gestureRecognizedEvent;
-	public new event Action<TKCurveRecognizer> gestureCompleteEvent;
-	
+	public event Action<TKCurveRecognizer> gestureRecognizedEvent;
+	public event Action<TKCurveRecognizer> gestureCompleteEvent;
+
+	public float reportRotationStep = 20f; //how much rotation (degrees) is needed for the recognized event to fire
 	public float squareDistance = 10f; //squared distance of touhes being evaluated
-	public float maxSharpnes = 50f; //maximum angle (degrees) a touch trail is allowed to change direction
+	public float maxSharpnes = 50f; //maximum angle (degrees) a touch is allowed to change direction of movement
 
 	public int minimumNumberOfTouches = 1;
 	public int maximumNumberOfTouches = 2;
 
-	//should be read only values
-	public float deltaRotation;
-	public float totalRotation = 0f;
+	//should be read only
+	public float deltaRotation = 0f; //rotation since last reported
 
 	private Vector2 _previousLocation;
 	private Vector2 _deltaTranslation;//direction vector from previous to current location (current location being the last location far enough from the previous one)
@@ -49,9 +49,12 @@ public class TKCurveRecognizer : TKAbstractGestureRecognizer {
 			if( _trackingTouches.Count >= minimumNumberOfTouches )
 			{
 				_previousLocation = touchLocation();
-				if( state != TKGestureRecognizerState.RecognizedAndStillRecognizing )
-				{
-					state = TKGestureRecognizerState.Began;
+				if( state != TKGestureRecognizerState.RecognizedAndStillRecognizing ){
+					//initialize values, but stay in Possible state. use Began only when there's enough data
+					state = TKGestureRecognizerState.Possible;
+					deltaRotation = 0f;
+					_deltaTranslation = Vector2.zero;
+					_previousDeltaTranslation = Vector2.zero;
 				}
 			}
 		}
@@ -62,46 +65,52 @@ public class TKCurveRecognizer : TKAbstractGestureRecognizer {
 
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		//Debug.Log("touch moved");
-		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
-		{
+		if( state == TKGestureRecognizerState.Possible ){
+			//previous delta translation hasn't been set yet, need another itteration
+
+			Vector2 currentLocation = touchLocation();
+			Vector2 delta = currentLocation - _previousLocation;
+			_deltaTranslation = delta;
+			_previousLocation = currentLocation;
+			_previousDeltaTranslation = _deltaTranslation;
+
+			state = TKGestureRecognizerState.Began; //got enough data to begin recognizing in next move
+		}
+		else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began ){
 			
 			Vector2 currentLocation = touchLocation();
 			
 			Vector2 delta = currentLocation - _previousLocation;
 			if(delta.sqrMagnitude >= 10f){
+					
+				float a = Vector2.Angle(_previousDeltaTranslation, delta);
 				
-				if(_previousDeltaTranslation == Vector2.zero){ //previous delta translation hasn't been set yet, need another itteration
-					_deltaTranslation = delta;
-					_previousLocation = currentLocation;
-					_previousDeltaTranslation = _deltaTranslation;
+				if(a > maxSharpnes){
+					Debug.Log("Curve is to sharp: "+a+"  max sharpnes set to:" +maxSharpnes);
+					state = TKGestureRecognizerState.FailedOrEnded; //calls reset
 				}
 				else{
 					
-					float a = Vector2.Angle(_previousDeltaTranslation, delta);
+					_deltaTranslation = delta;
 					
-					if(a > maxSharpnes){
-						Debug.Log("Curve is to sharp: "+a+"  max sharpnes set to:" +maxSharpnes);
-						reset();
+					float crossZ = Vector3.Cross(_previousDeltaTranslation, delta).z;//  / (_previousDeltaTranslation.magnitude * delta.magnitude);
+					if(crossZ > 0f){
+						deltaRotation -= a;
 					}
 					else{
-						
-						_deltaTranslation = delta;
-						
-						float crossZ = Vector3.Cross(_previousDeltaTranslation, delta).z;//  / (_previousDeltaTranslation.magnitude * delta.magnitude);
-						if(crossZ > 0f){
-							deltaRotation = -a;
-						}
-						else{
-							deltaRotation = a;
-						}
-						totalRotation += deltaRotation;
-						state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-						
-						_previousLocation = currentLocation;
-						_previousDeltaTranslation = _deltaTranslation;
-						
+						deltaRotation += a;
 					}
+
+					if(Mathf.Abs(deltaRotation) >= reportRotationStep){
+						//if total rotation changed enough: recognize and reset total rotation
+
+						state = TKGestureRecognizerState.RecognizedAndStillRecognizing; // fires recognized event
+
+						deltaRotation = 0f;//reset total rotation
+					}
+					_previousLocation = currentLocation;
+					_previousDeltaTranslation = _deltaTranslation;
+					
 				}
 			}
 			
@@ -122,7 +131,7 @@ public class TKCurveRecognizer : TKAbstractGestureRecognizer {
 		if( _trackingTouches.Count >= minimumNumberOfTouches )
 		{
 			_previousLocation = touchLocation();
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+			state = TKGestureRecognizerState.RecognizedAndStillRecognizing; //fires recognized event
 		}
 		else
 		{
@@ -133,20 +142,12 @@ public class TKCurveRecognizer : TKAbstractGestureRecognizer {
 					gestureCompleteEvent( this );
 				}
 			}
-			reset();
+			state = TKGestureRecognizerState.FailedOrEnded; //calls reset
 		}
 	}
 	
-	private void reset(){
-		totalRotation = 0f;
-		_deltaTranslation = Vector2.zero;
-		_previousDeltaTranslation = Vector2.zero;
-		state = TKGestureRecognizerState.FailedOrEnded;
-	}
-	
-	
 	public override string ToString() {
-		return string.Format( "[{0}] state: {1}, trans: {2}, lastTrans: {3}, rot: {4}", this.GetType(), state, _deltaTranslation, _previousDeltaTranslation, deltaRotation );
+		return string.Format( "[{0}] state: {1}, trans: {2}, lastTrans: {3}, totalRot: {4}", this.GetType(), state, _deltaTranslation, _previousDeltaTranslation, deltaRotation );
 	}
 	
 }

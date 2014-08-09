@@ -26,7 +26,7 @@ public class DemoOne : MonoBehaviour
 			};
 
 			recognizer.gestureCompleteEvent += ( r ) => {
-				Debug.Log( "curve completed. total rotation: "+r.totalRotation );
+				Debug.Log( "curve completed.");
 			};
 
 			TouchKit.addGestureRecognizer( recognizer );
