@@ -208,13 +208,17 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void updateTouches()
 	{
-		_instance.internalUpdateTouches();
+        if (_instance == null) return;
+
+        _instance.internalUpdateTouches();
 	}
 
 
 	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
-		// add, then sort and reverse so the higher zIndex items will be on top
+        if (_instance == null) return;
+        
+        // add, then sort and reverse so the higher zIndex items will be on top
 		instance._gestureRecognizers.Add( recognizer );
 
 		if( recognizer.zIndex > 0 )
@@ -227,6 +231,8 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void removeGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
+        if (_instance == null) return;
+
 		if( !_instance._gestureRecognizers.Contains( recognizer ) )
 		{
 			Debug.LogError( "Trying to remove gesture recognizer that has not been added: " + recognizer );
@@ -240,6 +246,8 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void removeAllGestureRecognizers()
 	{
+        if (_instance == null) return;
+
 		instance._gestureRecognizers.Clear();
 	}
 
