@@ -17,20 +17,6 @@ public class DemoOne : MonoBehaviour
 		GUILayout.BeginArea( new Rect( Screen.width - GUI.skin.button.fixedWidth - 20, 0, GUI.skin.button.fixedWidth + 20, Screen.height ) );
 			_scrollPosition = GUILayout.BeginScrollView( _scrollPosition, GUILayout.Width( GUI.skin.button.fixedWidth + 20 ), GUILayout.Height( Screen.height ) );
 
-		if( GUILayout.Button( "Add Curve Recognizer" ) ){
-			var recognizer = new TKCurveRecognizer();
-
-			recognizer.gestureRecognizedEvent += ( r ) => {
-				cube.Rotate( Vector3.back, recognizer.deltaRotation );
-				Debug.Log( "curve recognizer fired: " + r );
-			};
-
-			recognizer.gestureCompleteEvent += ( r ) => {
-				Debug.Log( "curve completed.");
-			};
-
-			TouchKit.addGestureRecognizer( recognizer );
-		}
 
 		if( GUILayout.Button( "Add Tap Recognizer" ) )
 		{
@@ -169,6 +155,25 @@ public class DemoOne : MonoBehaviour
 			{
 				Debug.Log( "any touch exited: " + r );
 			};
+			TouchKit.addGestureRecognizer( recognizer );
+		}
+
+
+		if( GUILayout.Button( "Add Curve Recognizer" ) )
+		{
+			var recognizer = new TKCurveRecognizer();
+
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				cube.Rotate( Vector3.back, recognizer.deltaRotation );
+				Debug.Log( "curve recognizer fired: " + r );
+			};
+
+			recognizer.gestureCompleteEvent += ( r ) =>
+			{
+				Debug.Log( "curve completed.");
+			};
+
 			TouchKit.addGestureRecognizer( recognizer );
 		}
 

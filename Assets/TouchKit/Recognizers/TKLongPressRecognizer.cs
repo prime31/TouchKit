@@ -63,7 +63,8 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 		{
 			_beginLocation = touches[0].position;
 			_waiting = true;
-			//TouchKit.instance.StartCoroutine( beginGesture() );
+
+			TouchKit.instance.StartCoroutine( beginGesture() );
 			_trackingTouches.Add( touches[0] );
 			state = TKGestureRecognizerState.Began;
 		}

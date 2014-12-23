@@ -47,9 +47,9 @@ public partial class TouchKit : MonoBehaviour
 	public Vector2 pixelsToUnityUnitsMultiplier { get; private set; }
 
 
-	private List<TKAbstractGestureRecognizer> _gestureRecognizers = new List<TKAbstractGestureRecognizer>();
+	private List<TKAbstractGestureRecognizer> _gestureRecognizers = new List<TKAbstractGestureRecognizer>( 5 );
 	private TKTouch[] _touchCache;
-	private List<TKTouch> _liveTouches = new List<TKTouch>();
+	private List<TKTouch> _liveTouches = new List<TKTouch>( 2 );
 	private bool _shouldCheckForLostTouches = false; // used internally to ensure we dont check for lost touches too often
 
 
@@ -171,7 +171,6 @@ public partial class TouchKit : MonoBehaviour
 		{
 			for( var i = 0; i < _gestureRecognizers.Count; i++ )
 				_gestureRecognizers[i].recognizeTouches( _liveTouches );
-
 			_liveTouches.Clear();
 		}
 	}
@@ -208,14 +207,18 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void updateTouches()
 	{
-        if (_instance == null) return;
+        if( _instance == null )
+        	return;
 
         _instance.internalUpdateTouches();
 	}
 
 
 	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
-	{       
+	{
+		if( _instance == null )
+			return;
+
         // add, then sort and reverse so the higher zIndex items will be on top
 		instance._gestureRecognizers.Add( recognizer );
 
@@ -229,7 +232,8 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void removeGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
-        if (_instance == null) return;
+		if( _instance == null )
+			return;
 
 		if( !_instance._gestureRecognizers.Contains( recognizer ) )
 		{
@@ -244,7 +248,8 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void removeAllGestureRecognizers()
 	{
-        if (_instance == null) return;
+        if( _instance == null )
+        	return;
 
 		instance._gestureRecognizers.Clear();
 	}

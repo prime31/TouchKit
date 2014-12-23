@@ -24,7 +24,7 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 	#region Constructors
 
 	/// <summary>
-	/// the contstructors ensure we have a frame to work with for button recognizers
+	/// the constructors ensure we have a frame to work with for button recognizers
 	/// </summary>
 	public TKButtonRecognizer( TKRect defaultFrame ) : this( defaultFrame, 40f )
 	{}
