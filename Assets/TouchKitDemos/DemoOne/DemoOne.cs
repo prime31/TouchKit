@@ -6,6 +6,7 @@ public class DemoOne : MonoBehaviour
 {
 	public Transform cube;
 	private Vector2 _scrollPosition; // for the scroll view
+	public AnimationCurve touchPadInputCurve = AnimationCurve.Linear( 0.0f, 0.0f, 1.0f, 1.0f );
 
 
 	void OnGUI()
@@ -70,6 +71,26 @@ public class DemoOne : MonoBehaviour
 			recognizer.gestureCompleteEvent += r =>
 			{
 				Debug.Log( "pan gesture complete" );
+			};
+			TouchKit.addGestureRecognizer( recognizer );
+		}
+
+
+		if( GUILayout.Button( "Add TouchPad Recognizer" ) )
+		{
+			var recognizer = new TKTouchPadRecognizer( new TKRect( 0f, 50f, 80f, 50f ) );
+			recognizer.inputCurve = touchPadInputCurve;
+
+			recognizer.gestureRecognizedEvent += ( r ) =>
+			{
+				//Camera.main.transform.position -= new Vector3( recognizer.deltaTranslation.x, recognizer.deltaTranslation.y ) / 100;
+				Debug.Log( "touchpad recognizer fired: " + r );
+			};
+
+			// continuous gestures have a complete event so that we know when they are done recognizing
+			recognizer.gestureCompleteEvent += r =>
+			{
+				Debug.Log( "touchpad gesture complete" );
 			};
 			TouchKit.addGestureRecognizer( recognizer );
 		}

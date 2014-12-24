@@ -14,6 +14,7 @@ TouchKit comes with a few built in recognizers to get you started and to serve a
 * **Long Press Recognizer**: detects long-presses with configurable duration and allowed movement. Fires when the duration passes and when the gesture is complete.
 * **Button Recognizer**: generic button recognizer designed to work with any 2D sprite system at all
 * **Pan Recognizer**: detects a pan gesture (one or more fingers down and moving around the screen)
+* **TouchPad Recognizer**: detects and tracks a touch in an area and maps the location from -1 to 1 on the x and y axis based on the touches distance from the center of the area
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
 * **Pinch Recognizer**: detects pinches and reports back the delta scale
 * **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
@@ -49,7 +50,7 @@ License
 ----
 For any developers just wanting to use TouchKit in their games go right ahead.  You can use TouchKit in any and all games either modified or unmodified.  In order to keep the spirit of this open source project it is expressly forbid to sell or commercially distribute TouchKit outside of your games. You can freely use it in as many games as you would like but you cannot commercially distribute the source code either directly or compiled into a library outside of your game.
 
-Feel free to include a "prime31 inside" logo on your about page, web page, splash page or anywhere else your game might show up if you would like.  
-[small](http://prime31.com/assets/images/prime31InsideSmall.png) or 
+Feel free to include a "prime31 inside" logo on your about page, web page, splash page or anywhere else your game might show up if you would like.
+[small](http://prime31.com/assets/images/prime31InsideSmall.png) or
 [larger](http://prime31.com/assets/images/prime31Inside.png) or
 [huge](http://prime31.com/assets/images/prime31InsideHuge.png)

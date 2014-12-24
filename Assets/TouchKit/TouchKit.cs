@@ -73,15 +73,9 @@ public partial class TouchKit : MonoBehaviour
 
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
 				var aCamera = Camera.main ?? Camera.allCameras[0];
-
 				if( aCamera.isOrthoGraphic )
 				{
-					var screenSizeUnityUnits = new Vector2( aCamera.aspect * aCamera.orthographicSize * 2f, aCamera.orthographicSize * 2f );
-					_instance.pixelsToUnityUnitsMultiplier = new Vector2
-					(
-						screenSizeUnityUnits.x / (float)Screen.width,
-						screenSizeUnityUnits.y / (float)Screen.height
-					);
+					setupPixelsToUnityUnitsMultiplierWithCamera( aCamera );
 				}
 				else
 				{
@@ -204,6 +198,28 @@ public partial class TouchKit : MonoBehaviour
 
 
 	#region Public API
+
+	/// <summary>
+	/// TouchKit will attempt to use the first camera to set this up. If that is not the camera you would like used
+	/// just call this method with your HUD (or standard orthographic) camera.
+	/// </summary>
+	/// <param name="cam">Cam.</param>
+	public static void setupPixelsToUnityUnitsMultiplierWithCamera( Camera cam )
+	{
+		if( !cam.isOrthoGraphic )
+		{
+			Debug.LogError( "Attempting to setup unity pixel-to-units modifier with a non-orthographic camera" );
+			return;
+		}
+
+		var screenSizeUnityUnits = new Vector2( cam.aspect * cam.orthographicSize * 2f, cam.orthographicSize * 2f );
+		_instance.pixelsToUnityUnitsMultiplier = new Vector2
+		(
+			screenSizeUnityUnits.x / (float)Screen.width,
+			screenSizeUnityUnits.y / (float)Screen.height
+		);
+	}
+
 
 	public static void updateTouches()
 	{
