@@ -60,7 +60,7 @@ public class TKButtonRecognizer : TKAbstractGestureRecognizer
 
 
 	/// <summary>
-	/// called when a touch ends (if the button was already highlighted) or if a tracked touch exists the highlighted frame
+	/// called when a touch ends (if the button was already highlighted) or if a tracked touch exits the highlighted frame
 	/// </summary>
 	protected virtual void onDeselected()
 	{
