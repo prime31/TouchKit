@@ -232,10 +232,7 @@ public partial class TouchKit : MonoBehaviour
 
 	public static void addGestureRecognizer( TKAbstractGestureRecognizer recognizer )
 	{
-		if( _instance == null )
-			return;
-
-        // add, then sort and reverse so the higher zIndex items will be on top
+		// add, then sort and reverse so the higher zIndex items will be on top
 		instance._gestureRecognizers.Add( recognizer );
 
 		if( recognizer.zIndex > 0 )
