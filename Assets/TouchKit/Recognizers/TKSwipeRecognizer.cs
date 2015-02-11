@@ -80,12 +80,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 			state = TKGestureRecognizerState.FailedOrEnded;
 			return false;
 		}
-		
 
-		// when dealing with standalones (non touch-based devices) we need to be careful what we examaine
-		// we filter out all touches (mouse movements really) that didnt move
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-		if( touch.deltaPosition.x != 0.0f || touch.deltaPosition.y != 0.0f )
+
+        // when dealing with standalones (non touch-based devices) we need to be careful what we examaine
+        // we filter out all touches (mouse movements really) that didnt move
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+        if ( touch.deltaPosition.x != 0.0f || touch.deltaPosition.y != 0.0f )
 		{
 #endif
 			// check the delta move positions.  We can rule out at least 2 directions
@@ -99,14 +99,14 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 			if( touch.deltaPosition.y > 0.0f )
 				_swipeDetectionState &= ~TKSwipeDirection.Down;
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-		}
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+        }
 #endif
-		
-		//Debug.Log( string.Format( "swipeStatus: {0}", swipeDetectionState ) );
-		
-		// Grab the total distance moved in both directions
-		var xDeltaAbs = Mathf.Abs( _startPoint.x - touch.position.x );
+
+        //Debug.Log( string.Format( "swipeStatus: {0}", swipeDetectionState ) );
+
+        // Grab the total distance moved in both directions
+        var xDeltaAbs = Mathf.Abs( _startPoint.x - touch.position.x );
 		var yDeltaAbs = Mathf.Abs( _startPoint.y - touch.position.y );
 
 		_endPoint = touch.position;

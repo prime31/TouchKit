@@ -124,7 +124,7 @@ public partial class TouchKit : MonoBehaviour
 		{
 		#endif
 
-			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
 
 			// we only need to process if we have some interesting input this frame
 			if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )

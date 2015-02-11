@@ -80,8 +80,8 @@ public class VirtualControls
 		// create the quad button
 		var button = GameObject.CreatePrimitive( PrimitiveType.Quad );
 		button.transform.position = center;
-		button.renderer.material.shader = Shader.Find( "Sprites/Default" );
-		button.renderer.material.color = color;
+		button.GetComponent<Renderer>().material.shader = Shader.Find( "Sprites/Default" );
+		button.GetComponent<Renderer>().material.color = color;
 
 		// scale the quad button accordingly
 		button.transform.localScale = new Vector3
