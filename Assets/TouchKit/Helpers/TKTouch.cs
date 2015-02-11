@@ -16,9 +16,9 @@ public class TKTouch
 		get { return position - deltaPosition; }
 	}
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-	// used to track mouse movement and fake touches
-	private Vector2? _lastPosition;
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+    // used to track mouse movement and fake touches
+    private Vector2? _lastPosition;
 	private double _lastClickTime;
 	private double _multipleClickInterval = 0.2;
 #endif
@@ -46,8 +46,8 @@ public class TKTouch
 		return this;
 	}
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
-	public TKTouch populateWithPosition( Vector3 currentPosition, TouchPhase touchPhase )
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+    public TKTouch populateWithPosition( Vector3 currentPosition, TouchPhase touchPhase )
 	{
 		var currentPosition2d = new Vector2( currentPosition.x, currentPosition.y );
 
