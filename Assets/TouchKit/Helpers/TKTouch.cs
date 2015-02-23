@@ -6,6 +6,7 @@ public class TKTouch
 {
 	public readonly int fingerId;
 	public Vector2 position;
+	public Vector2 startPosition;
 	public Vector2 deltaPosition;
 	public float deltaTime;
 	public int tapCount;
@@ -36,6 +37,11 @@ public class TKTouch
 		deltaPosition = touch.deltaPosition;
 		deltaTime = touch.deltaTime;
 		tapCount = touch.tapCount;
+
+		if (touch.phase== TouchPhase.Began)
+		{
+			startPosition = position;
+		}
 
 		// canceled and ended are the same to us
 		if( touch.phase == TouchPhase.Canceled )
@@ -68,6 +74,7 @@ public class TKTouch
 				else
 					tapCount = 1;
 				_lastPosition = currentPosition2d;
+				startPosition = currentPosition2d;
 				_lastClickTime = Time.time;
 				break;
 			case TouchPhase.Stationary:

@@ -225,6 +225,27 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 	        return Vector2.zero;
 	}
 
+	/// <summary>
+	/// returns the start location of the touches. If there are multiple touches this will return the centroid of the location.
+	/// </summary>
+	public Vector2 startTouchLocation()
+	{
+		var x = 0f;
+		var y = 0f;
+		var k = 0f;
+		
+		for( var i = 0; i < _trackingTouches.Count; i++ )
+		{
+			x += _trackingTouches[i].startPosition.x;
+			y += _trackingTouches[i].startPosition.y;
+			k++;
+		}
+		
+		if( k > 0 )
+			return new Vector2( x / k, y / k );
+		else
+			return Vector2.zero;
+	}
 
 	/// <summary>
 	/// return true if a touch was used, false if none were. this is used by any recognizers that should swallow touches if on a higher than 0 zIndex
