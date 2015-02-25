@@ -11,12 +11,20 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	public event Action<TKPanRecognizer> gestureCompleteEvent;
 	
 	public Vector2 deltaTranslation;
+	public Vector2 totalDeltaTranslation = Vector2.zero;
 	public int minimumNumberOfTouches = 1;
 	public int maximumNumberOfTouches = 2;
 	
 	private Vector2 _previousLocation;
-	
-	
+	private float _minDistanceToPan;
+
+	public TKPanRecognizer( float minPanDistance = 0f)
+	{
+		_minDistanceToPan = minPanDistance;
+		_minDistanceToPan = _minDistanceToPan * TouchKit.instance.runtimeDistanceModifier;
+	}
+
+
 	internal override void fireRecognizedEvent()
 	{
 		if( gestureRecognizedEvent != null )
@@ -46,6 +54,7 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 				_previousLocation = touchLocation();
 				if( state != TKGestureRecognizerState.RecognizedAndStillRecognizing )
 				{
+					totalDeltaTranslation = Vector2.zero;
 					state = TKGestureRecognizerState.Began;
 				}
 			}
@@ -57,11 +66,20 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
+		var currentLocation = touchLocation();
+		deltaTranslation = currentLocation - _previousLocation;
+		_previousLocation = currentLocation;
+		totalDeltaTranslation += deltaTranslation;
+
+		if (state == TKGestureRecognizerState.Began)
 		{
-			var currentLocation = touchLocation();
-			deltaTranslation = currentLocation - _previousLocation;
-			_previousLocation = currentLocation;
+			if (totalDeltaTranslation.sqrMagnitude >= _minDistanceToPan)
+			{
+				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+			}
+		}
+		else
+		{
 			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
