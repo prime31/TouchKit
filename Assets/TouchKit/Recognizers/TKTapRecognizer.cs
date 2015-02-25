@@ -73,7 +73,7 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 			// did we move?
 			for( var i = 0; i < touches.Count; i++ )
 			{
-				if( touches[i].deltaPosition.sqrMagnitude > _maxDeltaMovementForTapConsideration )
+				if( (touches[i].position - touches[i].startPosition).sqrMagnitude > _maxDeltaMovementForTapConsideration )
 				{
 					state = TKGestureRecognizerState.FailedOrEnded;
 					break;
