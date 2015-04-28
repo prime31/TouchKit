@@ -17,7 +17,7 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 	
 	private float distanceBetweenTrackedTouches()
 	{
-		return Vector2.Distance( _trackingTouches[0].position, _trackingTouches[1].position );
+		return (Vector2.Distance(_trackingTouches[0].position, _trackingTouches[1].position) / TouchKit.instance.ScreenPixelsPerCm);
 	}
 	
 	
