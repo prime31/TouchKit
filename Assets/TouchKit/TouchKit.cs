@@ -52,6 +52,16 @@ public partial class TouchKit : MonoBehaviour
 	private List<TKTouch> _liveTouches = new List<TKTouch>( 2 );
 	private bool _shouldCheckForLostTouches = false; // used internally to ensure we dont check for lost touches too often
 
+	private const float inchesToCentimeters = 2.54f;
+
+	public float ScreenPixelsPerCm
+	{
+		get
+		{
+			float dpi = Screen.dpi;
+			return dpi == 0f ? 72f / inchesToCentimeters : dpi / inchesToCentimeters;
+		}
+	}
 
 	private static TouchKit _instance = null;
 	public static TouchKit instance
@@ -73,7 +83,7 @@ public partial class TouchKit : MonoBehaviour
 
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
 				var aCamera = Camera.main ?? Camera.allCameras[0];
-				if( aCamera.isOrthoGraphic )
+				if( aCamera.orthographic )
 				{
 					setupPixelsToUnityUnitsMultiplierWithCamera( aCamera );
 				}
@@ -206,7 +216,7 @@ public partial class TouchKit : MonoBehaviour
 	/// <param name="cam">Cam.</param>
 	public static void setupPixelsToUnityUnitsMultiplierWithCamera( Camera cam )
 	{
-		if( !cam.isOrthoGraphic )
+		if( !cam.orthographic )
 		{
 			Debug.LogError( "Attempting to setup unity pixel-to-units modifier with a non-orthographic camera" );
 			return;

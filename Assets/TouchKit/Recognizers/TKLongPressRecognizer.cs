@@ -14,7 +14,7 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 	public event Action<TKLongPressRecognizer> gestureCompleteEvent; // fired when after a successful long press the finger is lifted
 
 	public float minimumPressDuration = 0.5f;
-	public float allowableMovement = 10f;
+	public float allowableMovementCm = 1f;
 
 	private Vector2 _beginLocation;
 	private bool _waiting;
@@ -27,7 +27,7 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 	public TKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
 	{
 		this.minimumPressDuration = minimumPressDuration;
-		this.allowableMovement = allowableMovement * TouchKit.instance.runtimeDistanceModifier;
+		this.allowableMovementCm = allowableMovementCm;
 	}
 
 
@@ -78,8 +78,8 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 		if( state == TKGestureRecognizerState.Began || state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
 			// did we move too far?
-			var moveDistance = Vector2.Distance( touches[0].position, _beginLocation );
-			if( moveDistance > allowableMovement )
+			var moveDistance = Vector2.Distance(touches[0].position, _beginLocation) / TouchKit.instance.ScreenPixelsPerCm;
+			if (moveDistance > allowableMovementCm)
 			{
 				// fire the complete event if we had previously recognized a long press
 				if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing && gestureCompleteEvent != null )
