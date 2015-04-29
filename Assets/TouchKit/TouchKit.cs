@@ -58,8 +58,21 @@ public partial class TouchKit : MonoBehaviour
 	{
 		get
 		{
-			float dpi = Screen.dpi;
-			return dpi == 0f ? 72f / inchesToCentimeters : dpi / inchesToCentimeters;
+			float fallbackDpi = 72f;
+			#if UNITY_ANDROID
+				// Android MDPI setting fallback
+				// http://developer.android.com/guide/practices/screens_support.html
+				fallbackDpi = 160f;
+			#elif (UNITY_WP8 || UNITY_WP8_1 || UNITY_WSA || UNITY_WSA_8_0)
+				// Windows phone is harder to track down
+				// http://www.windowscentral.com/higher-resolution-support-windows-phone-7-dpi-262
+				fallbackDpi = 92f;
+			#elif UNITY_IPHONE
+				// iPhone 4-6 range
+				fallbackDpi = 326f;
+			#endif
+
+			return Screen.dpi == 0f ? fallbackDpi / inchesToCentimeters : Screen.dpi / inchesToCentimeters;
 		}
 	}
 
