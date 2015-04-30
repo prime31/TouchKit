@@ -24,9 +24,9 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	public float timeToSwipe = 0.5f;	
 	public float swipeVelocity { get; private set; }
 	public TKSwipeDirection completedSwipeDirection { get; private set; }
-	
-	private float _allowedVariance = 35.0f;
-	private float _minimumDistance = 40.0f;
+
+	private float _minimumDistance = 2f;
+	private float _allowedVariance = 1.5f;
 	private TKSwipeDirection _swipesToDetect = TKSwipeDirection.All;
 	
 	// swipe state info
@@ -50,25 +50,21 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 			return this._endPoint;
 		}
 	}
-	
-	
-	public TKSwipeRecognizer() : this( 40f, 35f )
-	{}
-	
-	
-	public TKSwipeRecognizer( TKSwipeDirection swipesToDetect ) : this( swipesToDetect, 40f, 35f )
-	{}
-	
-	
-	public TKSwipeRecognizer( float minimumDistance, float allowedVariance ) : this( TKSwipeDirection.All, minimumDistance, allowedVariance )
-	{}
-	
-	
-	public TKSwipeRecognizer( TKSwipeDirection swipesToDetect, float minimumDistance, float allowedVariance )
+
+	public TKSwipeRecognizer() : this(2f, 1.5f)
+	{ }
+
+	public TKSwipeRecognizer(TKSwipeDirection swipesToDetect) : this(swipesToDetect, 2f, 1.5f)
+	{ }
+
+	public TKSwipeRecognizer(float minimumDistance, float allowedVariance) : this(TKSwipeDirection.All, minimumDistance, allowedVariance)
+	{ }
+
+	public TKSwipeRecognizer(TKSwipeDirection swipesToDetect, float minimumDistanceCm, float allowedVarianceCm)
 	{
 		_swipesToDetect = swipesToDetect;
-		_minimumDistance = minimumDistance * TouchKit.instance.runtimeDistanceModifier;
-		_allowedVariance = allowedVariance * TouchKit.instance.runtimeDistanceModifier;
+		_minimumDistance = minimumDistanceCm;
+		_allowedVariance = allowedVarianceCm;
 	}
 
 	
@@ -105,9 +101,9 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 
         //Debug.Log( string.Format( "swipeStatus: {0}", swipeDetectionState ) );
 
-        // Grab the total distance moved in both directions
-        var xDeltaAbs = Mathf.Abs( _startPoint.x - touch.position.x );
-		var yDeltaAbs = Mathf.Abs( _startPoint.y - touch.position.y );
+		// Grab the total distance moved in both directions
+		var xDeltaAbsCm = Mathf.Abs(_startPoint.x - touch.position.x) / TouchKit.instance.ScreenPixelsPerCm;
+		var yDeltaAbsCm = Mathf.Abs(_startPoint.y - touch.position.y) / TouchKit.instance.ScreenPixelsPerCm;
 
 		_endPoint = touch.position;
 
@@ -115,12 +111,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// left check
 		if( ( _swipeDetectionState & TKSwipeDirection.Left ) != 0 )
 		{
-			if( xDeltaAbs > _minimumDistance )
+			if (xDeltaAbsCm > _minimumDistance)
 			{
-				if( yDeltaAbs < _allowedVariance )
+				if (yDeltaAbsCm < _allowedVariance)
 				{
 					completedSwipeDirection = TKSwipeDirection.Left;
-					swipeVelocity = xDeltaAbs / ( Time.time - _startTime );
+					swipeVelocity = xDeltaAbsCm / (Time.time - _startTime);
 					return true;
 				}
 				
@@ -132,12 +128,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// right check
 		if( ( _swipeDetectionState & TKSwipeDirection.Right ) != 0 )
 		{
-			if( xDeltaAbs > _minimumDistance )
+			if (xDeltaAbsCm > _minimumDistance)
 			{
-				if( yDeltaAbs < _allowedVariance )
+				if (yDeltaAbsCm < _allowedVariance)
 				{
 					completedSwipeDirection = TKSwipeDirection.Right;
-					swipeVelocity = xDeltaAbs / ( Time.time - _startTime );
+					swipeVelocity = xDeltaAbsCm / (Time.time - _startTime);
 					return true;
 				}
 				
@@ -149,12 +145,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// up check
 		if( ( _swipeDetectionState & TKSwipeDirection.Up ) != 0 )
 		{
-			if( yDeltaAbs > _minimumDistance )
+			if (yDeltaAbsCm > _minimumDistance)
 			{
-				if( xDeltaAbs < _allowedVariance )
+				if (xDeltaAbsCm < _allowedVariance)
 				{
 					completedSwipeDirection = TKSwipeDirection.Up;
-					swipeVelocity = yDeltaAbs / ( Time.time - _startTime );
+					swipeVelocity = yDeltaAbsCm / (Time.time - _startTime);
 					return true;
 				}
 				
@@ -166,12 +162,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 		// cown check
 		if( ( _swipeDetectionState & TKSwipeDirection.Down ) != 0 )
 		{
-			if( yDeltaAbs > _minimumDistance )
+			if (yDeltaAbsCm > _minimumDistance)
 			{
-				if( xDeltaAbs < _allowedVariance )
+				if (xDeltaAbsCm < _allowedVariance)
 				{
 					completedSwipeDirection = TKSwipeDirection.Down;
-					swipeVelocity = yDeltaAbs / ( Time.time - _startTime );
+					swipeVelocity = yDeltaAbsCm / (Time.time - _startTime);
 					return true;
 				}
 				

@@ -13,20 +13,18 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 
 	// taps that last longer than this duration will be ignored
 	private float _maxDurationForTapConsideration = 0.5f;
-	private float _maxDeltaMovementForTapConsideration = 5f;
+
+	private float _maxDeltaMovementForTapConsideration = 1f;
 
 	private float _touchBeganTime;
 
+	public TKTapRecognizer() : this(0.5f, 1f)
+	{ }
 
-
-	public TKTapRecognizer() : this( 0.5f, 5f )
-	{}
-
-
-	public TKTapRecognizer( float maxDurationForTapConsideration, float maxDeltaMovementForTapConsideration )
+	public TKTapRecognizer(float maxDurationForTapConsideration, float maxDeltaMovementForTapConsiderationCm)
 	{
 		_maxDurationForTapConsideration = maxDurationForTapConsideration;
-		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsideration * TouchKit.instance.runtimeDistanceModifier;
+		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsiderationCm;
 	}
 
 
@@ -73,7 +71,10 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 			// did we move?
 			for( var i = 0; i < touches.Count; i++ )
 			{
-				if( (touches[i].position - touches[i].startPosition).sqrMagnitude > _maxDeltaMovementForTapConsideration )
+				if (
+					((Math.Abs(touches[i].position.x - touches[i].startPosition.x) / TouchKit.instance.ScreenPixelsPerCm) > _maxDeltaMovementForTapConsideration) ||
+					((Math.Abs(touches[i].position.y - touches[i].startPosition.y) / TouchKit.instance.ScreenPixelsPerCm) > _maxDeltaMovementForTapConsideration)
+				)
 				{
 					state = TKGestureRecognizerState.FailedOrEnded;
 					break;

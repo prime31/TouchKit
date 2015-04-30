@@ -52,6 +52,29 @@ public partial class TouchKit : MonoBehaviour
 	private List<TKTouch> _liveTouches = new List<TKTouch>( 2 );
 	private bool _shouldCheckForLostTouches = false; // used internally to ensure we dont check for lost touches too often
 
+	private const float inchesToCentimeters = 2.54f;
+
+	public float ScreenPixelsPerCm
+	{
+		get
+		{
+			float fallbackDpi = 72f;
+			#if UNITY_ANDROID
+				// Android MDPI setting fallback
+				// http://developer.android.com/guide/practices/screens_support.html
+				fallbackDpi = 160f;
+			#elif (UNITY_WP8 || UNITY_WP8_1 || UNITY_WSA || UNITY_WSA_8_0)
+				// Windows phone is harder to track down
+				// http://www.windowscentral.com/higher-resolution-support-windows-phone-7-dpi-262
+				fallbackDpi = 92f;
+			#elif UNITY_IPHONE
+				// iPhone 4-6 range
+				fallbackDpi = 326f;
+			#endif
+
+			return Screen.dpi == 0f ? fallbackDpi / inchesToCentimeters : Screen.dpi / inchesToCentimeters;
+		}
+	}
 
 	private static TouchKit _instance = null;
 	public static TouchKit instance
@@ -73,7 +96,7 @@ public partial class TouchKit : MonoBehaviour
 
 				// prep the scalers. for the distance scaler we just use an average of the width and height scales
 				var aCamera = Camera.main ?? Camera.allCameras[0];
-				if( aCamera.isOrthoGraphic )
+				if( aCamera.orthographic )
 				{
 					setupPixelsToUnityUnitsMultiplierWithCamera( aCamera );
 				}
@@ -206,7 +229,7 @@ public partial class TouchKit : MonoBehaviour
 	/// <param name="cam">Cam.</param>
 	public static void setupPixelsToUnityUnitsMultiplierWithCamera( Camera cam )
 	{
-		if( !cam.isOrthoGraphic )
+		if( !cam.orthographic )
 		{
 			Debug.LogError( "Attempting to setup unity pixel-to-units modifier with a non-orthographic camera" );
 			return;
