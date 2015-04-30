@@ -49,6 +49,9 @@
     <SpacesBeforeBrackets>False</SpacesBeforeBrackets>
     <BlankLinesAfterUsings>2</BlankLinesAfterUsings>
     <BlankLinesBetweenTypes>2</BlankLinesBetweenTypes>
+    <ElseNewLinePlacement>NewLine</ElseNewLinePlacement>
+	<CatchNewLinePlacement>NewLine</CatchNewLinePlacement>
+	<FinallyNewLinePlacement>NewLine</FinallyNewLinePlacement>
   </CSharpFormattingPolicy>
   <TextStylePolicy inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain">
     <FileWidth>120</FileWidth>
