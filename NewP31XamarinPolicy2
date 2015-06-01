@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PolicySet name="NewP31XamarinPolicy.mdpolicy">
+<PolicySet name="POOP.mdpolicy">
   <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp">
     <FileWidth>120</FileWidth>
     <TabsToSpaces>False</TabsToSpaces>
@@ -49,14 +49,13 @@
     <SpacesBeforeBrackets>False</SpacesBeforeBrackets>
     <BlankLinesAfterUsings>2</BlankLinesAfterUsings>
     <BlankLinesBetweenTypes>2</BlankLinesBetweenTypes>
-    <ElseNewLinePlacement>NewLine</ElseNewLinePlacement>
+	<ElseNewLinePlacement>NewLine</ElseNewLinePlacement>
 	<CatchNewLinePlacement>NewLine</CatchNewLinePlacement>
 	<FinallyNewLinePlacement>NewLine</FinallyNewLinePlacement>
   </CSharpFormattingPolicy>
-  <TextStylePolicy inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain">
+  <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain">
     <FileWidth>120</FileWidth>
-	<TabsToSpaces>False</TabsToSpaces>
-    <TabWidth>4</TabWidth>
+    <TabsToSpaces>False</TabsToSpaces>
     <EolMarker>Unix</EolMarker>
   </TextStylePolicy>
   <DotNetNamingPolicy>
