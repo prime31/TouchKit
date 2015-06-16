@@ -67,7 +67,7 @@ public partial class TouchKit : MonoBehaviour
 				// Windows phone is harder to track down
 				// http://www.windowscentral.com/higher-resolution-support-windows-phone-7-dpi-262
 				fallbackDpi = 92f;
-			#elif UNITY_IPHONE
+			#elif UNITY_IOS
 				// iPhone 4-6 range
 				fallbackDpi = 326f;
 			#endif
