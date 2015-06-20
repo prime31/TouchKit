@@ -27,7 +27,7 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 	public TKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
 	{
 		this.minimumPressDuration = minimumPressDuration;
-		this.allowableMovementCm = allowableMovementCm;
+		this.allowableMovementCm = allowableMovement;
 	}
 
 
