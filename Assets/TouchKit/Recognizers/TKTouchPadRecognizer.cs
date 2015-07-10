@@ -13,7 +13,7 @@ public class TKTouchPadRecognizer : TKAbstractGestureRecognizer
 	public AnimationCurve inputCurve = AnimationCurve.Linear( 0.0f, 0.0f, 1.0f, 1.0f );
 	public Vector2 value;
 
-	private Vector2 _previousLocation;
+	// private Vector2 _previousLocation;
 
 
 	/// <summary>
