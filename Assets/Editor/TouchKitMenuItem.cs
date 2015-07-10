@@ -22,7 +22,7 @@ public class TouchKitMenuItem : Editor
 		var compileParams = new CompilerParameters();
 		compileParams.OutputAssembly = Path.Combine( System.Environment.GetFolderPath( System.Environment.SpecialFolder.Desktop ), kBuildTargetFilename );
 		compileParams.CompilerOptions = "/optimize";
-		compileParams.ReferencedAssemblies.Add( Path.Combine( EditorApplication.applicationContentsPath, "Frameworks/Managed/UnityEngine.dll" ) );
+		compileParams.ReferencedAssemblies.Add( Path.Combine( EditorApplication.applicationContentsPath, "Managed/UnityEngine.dll" ) );
 
 		var source = getSourceForStandardDLL( kSourcePath );
 
