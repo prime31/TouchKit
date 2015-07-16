@@ -67,24 +67,27 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		var currentLocation = touchLocation();
-		deltaTranslation = currentLocation - _previousLocation;
-		deltaTranslationCm = deltaTranslation.magnitude / TouchKit.instance.ScreenPixelsPerCm;
-		_previousLocation = currentLocation;
+		//do not engage with touch events if the number of touches is outside our desired constraints
+		if (_trackingTouches.Count >=minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches){
+			var currentLocation = touchLocation();
+			deltaTranslation = currentLocation - _previousLocation;
+			deltaTranslationCm = deltaTranslation.magnitude / TouchKit.instance.ScreenPixelsPerCm;
+			_previousLocation = currentLocation;
 
-		if (state == TKGestureRecognizerState.Began)
-		{
-			totalDeltaMovementInCm += deltaTranslationCm;
-			Debug.Log(totalDeltaMovementInCm);
+			if (state == TKGestureRecognizerState.Began)
+			{
+				totalDeltaMovementInCm += deltaTranslationCm;
+				Debug.Log(totalDeltaMovementInCm);
 
-			if (Math.Abs(totalDeltaMovementInCm) >= _minDistanceToPanCm)
+				if (Math.Abs(totalDeltaMovementInCm) >= _minDistanceToPanCm)
+				{
+					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+				}
+			}
+			else
 			{
 				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 			}
-		}
-		else
-		{
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 		}
 	}
 	
