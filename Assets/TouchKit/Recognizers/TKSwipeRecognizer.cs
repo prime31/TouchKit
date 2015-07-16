@@ -194,13 +194,13 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	{
 		if( state == TKGestureRecognizerState.Possible )
 		{
-			//add any touches on screen
-			for( int i = 0; i < touches.Count; i++ ){
+			// add any touches on screen
+			for( int i = 0; i < touches.Count; i++ )
 				_trackingTouches.Add( touches[i] );
-			}
 
-			//if the number of touches is within our constraints, begin tracking
-			if (_trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches){
+			// if the number of touches is within our constraints, begin tracking
+			if ( _trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches )
+			{
 				_swipeDetectionState = _swipesToDetect;
 				_startPoint = touches[0].position;
 				_startTime = Time.time;
@@ -214,12 +214,6 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if (_trackingTouches != null){
-			//do not engage with touch events if the number of touches is outside our desired constraints
-			if (Input.touchCount < minimumNumberOfTouches || Input.touchCount > maximumNumberOfTouches)
-				return;
-		}
-
 		if( state == TKGestureRecognizerState.Began )
 		{
 			if( checkForSwipeCompletion( touches[0] ) )

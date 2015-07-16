@@ -12,17 +12,15 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	
 	public Vector2 deltaTranslation;
 	public float deltaTranslationCm;
-
-	private float totalDeltaMovementInCm = 0f;
-
 	public int minimumNumberOfTouches = 1;
 	public int maximumNumberOfTouches = 2;
-	
-	private Vector2 _previousLocation;
 
+	private float totalDeltaMovementInCm = 0f;
+	private Vector2 _previousLocation;
 	private float _minDistanceToPanCm;
 
-	public TKPanRecognizer(float minPanDistanceCm = 0.5f)
+
+	public TKPanRecognizer( float minPanDistanceCm = 0.5f )
 	{
 		_minDistanceToPanCm = minPanDistanceCm;
 	}
@@ -69,12 +67,6 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if (_trackingTouches != null){
-			//do not engage with touch events if the number of touches is outside our desired constraints
-			if (Input.touchCount < minimumNumberOfTouches || Input.touchCount > maximumNumberOfTouches)
-				return;
-		}
-
 		var currentLocation = touchLocation();
 		deltaTranslation = currentLocation - _previousLocation;
 		deltaTranslationCm = deltaTranslation.magnitude / TouchKit.instance.ScreenPixelsPerCm;
