@@ -11,10 +11,25 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 	public event Action<TKPinchRecognizer> gestureCompleteEvent;
 	
 	public float deltaScale = 0;
-	private float _intialDistance;
-	private float _previousDistance;
+	private float _intialDistance = 0;//represents the distance between two fingers when gesture was first officially recognized
+	private float _firstDistance = 0;//first ever distance when two fingers hit the screen (not yet recognized)
+	private float _previousDistance = 0;
 	
 	
+
+	public float minimumScaleDistanceToRecognize = 0;//the minimum amount of distance the two fingers must
+												//move apart before the gesture is recognized
+
+	//calculated, read-only property.
+	//Represents the scale accumulated since the gesture was initially recognized
+	public float _accumulatedScale{
+		get{
+			var currentDistance = distanceBetweenTrackedTouches();
+			return currentDistance / _intialDistance;
+		}
+		private set{}
+	}
+
 	private float distanceBetweenTrackedTouches()
 	{
 		return (Vector2.Distance(_trackingTouches[0].position, _trackingTouches[1].position) / TouchKit.instance.ScreenPixelsPerCm);
@@ -48,10 +63,8 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 			
 			if( _trackingTouches.Count == 2 )
 			{
-				deltaScale = 0;
-				_intialDistance = distanceBetweenTrackedTouches();
-				_previousDistance = _intialDistance;
-				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+				//gesture cannot be recognized until the two touches exceed the minimum scale threshold
+				_firstDistance = distanceBetweenTrackedTouches();
 			}
 		}
 		
@@ -61,7 +74,17 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
-		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
+		//if the two fingers move far apart to exceed the minimum threshold, begin officially recognizing the gesture
+		if (_trackingTouches.Count ==2 && state == TKGestureRecognizerState.Possible){
+			if (Mathf.Abs(distanceBetweenTrackedTouches() - _firstDistance) >= minimumScaleDistanceToRecognize){
+				deltaScale = 0;
+				_intialDistance = distanceBetweenTrackedTouches();
+				_previousDistance = _intialDistance;
+				state = TKGestureRecognizerState.Began;
+			}
+		}
+
+		else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
 		{
 			var currentDistance = distanceBetweenTrackedTouches();
 			deltaScale = ( currentDistance - _previousDistance ) / _intialDistance;

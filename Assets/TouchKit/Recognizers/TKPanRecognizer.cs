@@ -52,7 +52,7 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 				}
 			} // end for
 			
-			if( _trackingTouches.Count >= minimumNumberOfTouches )
+			if( _trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches )
 			{
 				_previousLocation = touchLocation();
 				if( state != TKGestureRecognizerState.RecognizedAndStillRecognizing )
@@ -69,6 +69,12 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 	
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
+		if (_trackingTouches != null){
+			//do not engage with touch events if the number of touches is outside our desired constraints
+			if (Input.touchCount < minimumNumberOfTouches || Input.touchCount > maximumNumberOfTouches)
+				return;
+		}
+
 		var currentLocation = touchLocation();
 		deltaTranslation = currentLocation - _previousLocation;
 		deltaTranslationCm = deltaTranslation.magnitude / TouchKit.instance.ScreenPixelsPerCm;
