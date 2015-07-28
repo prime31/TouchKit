@@ -35,8 +35,10 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 
 
 	private float distanceBetweenTrackedTouches()
-	{
-		return ( Vector2.Distance( _trackingTouches[0].position, _trackingTouches[1].position ) / TouchKit.instance.ScreenPixelsPerCm );
+	{	
+		// prevent NaN when the distance between the touches is zero -- only happens in editor
+		var distance = Vector2.Distance( _trackingTouches[0].position, _trackingTouches[1].position );
+		return ( Mathf.Max(0.0001f, distance) / TouchKit.instance.ScreenPixelsPerCm );
 	}
 	
 	
@@ -70,11 +72,11 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 				// gesture cannot be recognized until the two touches exceed the minimum scale threshold
 				_firstDistance = distanceBetweenTrackedTouches();
 
-				if( minimumScaleDistanceToRecognize == 0 )
-				{
-					_intialDistance = _firstDistance;
-					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
-				}
+				// if( minimumScaleDistanceToRecognize == 0 )
+				// {
+				// 	_intialDistance = _firstDistance;
+				// 	state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+				// }
 			}
 		}
 		
@@ -85,22 +87,25 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
 		// if the two fingers move far apart to exceed the minimum threshold, begin officially recognizing the gesture
-		if( _trackingTouches.Count == 2 && state == TKGestureRecognizerState.Possible )
+		if( _trackingTouches.Count == 2 )
 		{
-			if( Mathf.Abs( distanceBetweenTrackedTouches() - _firstDistance ) >= minimumScaleDistanceToRecognize )
+			if ( state == TKGestureRecognizerState.Possible )
 			{
-				deltaScale = 0;
-				_intialDistance = distanceBetweenTrackedTouches();
-				_previousDistance = _intialDistance;
-				state = TKGestureRecognizerState.Began;
+				if( Mathf.Abs( distanceBetweenTrackedTouches() - _firstDistance ) >= minimumScaleDistanceToRecognize )
+				{
+					deltaScale = 0;
+					_intialDistance = distanceBetweenTrackedTouches();
+					_previousDistance = _intialDistance;
+					state = TKGestureRecognizerState.Began;
+				}
 			}
-		}
-		else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
-		{
-			var currentDistance = distanceBetweenTrackedTouches();
-			deltaScale = ( currentDistance - _previousDistance ) / _intialDistance;
-			_previousDistance = currentDistance;
-			state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+			else if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing || state == TKGestureRecognizerState.Began )
+			{
+				var currentDistance = distanceBetweenTrackedTouches();
+				deltaScale = ( currentDistance - _previousDistance ) / _intialDistance;
+				_previousDistance = currentDistance;
+				state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
+			}
 		}
 	}
 	
@@ -125,7 +130,7 @@ public class TKPinchRecognizer : TKAbstractGestureRecognizer
 		if( _trackingTouches.Count == 1 )
 		{
 			state = TKGestureRecognizerState.Possible;
-			deltaScale = 1;
+			deltaScale = 0; // I don't know why this would be 1 instead of 0
 		}
 		else
 		{
