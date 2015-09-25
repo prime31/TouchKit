@@ -39,6 +39,11 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
+		if (Time.time > _touchBeganTime + _maxDurationForTapConsideration && _preformedTapsCount !=  0 && _preformedTapsCount < numberOfTapsRequired)
+		{
+			state = TKGestureRecognizerState.FailedOrEnded;
+		}
+
 		if( state == TKGestureRecognizerState.Possible )
 		{
 			for( int i = 0; i < touches.Count; i++ )
