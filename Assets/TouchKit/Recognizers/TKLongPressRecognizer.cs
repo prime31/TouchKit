@@ -14,6 +14,7 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 	public event Action<TKLongPressRecognizer> gestureCompleteEvent; // fired when after a successful long press the finger is lifted
 
 	public float minimumPressDuration = 0.5f;
+	public int requiredTouchesCount = -1;
 	public float allowableMovementCm = 1f;
 
 	private Vector2 _beginLocation;
@@ -24,10 +25,11 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 	public TKLongPressRecognizer(){}
 
 
-	public TKLongPressRecognizer( float minimumPressDuration, float allowableMovement )
+	public TKLongPressRecognizer(float minimumPressDuration, float allowableMovement, int requiredTouchesCount)
 	{
 		this.minimumPressDuration = minimumPressDuration;
 		this.allowableMovementCm = allowableMovement;
+		this.requiredTouchesCount = requiredTouchesCount;
 	}
 
 
@@ -59,14 +61,18 @@ public class TKLongPressRecognizer : TKAbstractGestureRecognizer
 
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if( !_waiting && state == TKGestureRecognizerState.Possible )
+		if (!_waiting && state == TKGestureRecognizerState.Possible && (requiredTouchesCount == -1 || touches.Count == requiredTouchesCount))
 		{
 			_beginLocation = touches[0].position;
 			_waiting = true;
 
 			TouchKit.instance.StartCoroutine( beginGesture() );
-			_trackingTouches.Add( touches[0] );
+			_trackingTouches.Add(touches[0]);
 			state = TKGestureRecognizerState.Began;
+		}
+		else if (requiredTouchesCount != -1)
+		{
+			_waiting = false;
 		}
 
 		return false;
