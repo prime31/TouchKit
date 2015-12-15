@@ -67,7 +67,7 @@ public class TLKSwipeDetector : MonoBehaviour
 	}
 
 
-	private bool checkForSwipeCompletion( TKTouch touch )
+	private bool checkForSwipeCompletion( TKLTouch touch )
 	{
 		// if we have a time stipulation and we exceeded it stop listening for swipes
 		if( timeToSwipe > 0.0f && ( Time.time - _startTime ) > timeToSwipe )
