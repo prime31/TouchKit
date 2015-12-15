@@ -44,7 +44,7 @@ public class TouchKitLite : MonoBehaviour
 	{
 		get
 		{
-			if( !System.Object.Equals( _instance, null ) )
+			if( System.Object.Equals( _instance, null ) )
 				_instance = FindObjectOfType( typeof( TouchKitLite ) ) as TouchKitLite;
 
 			return _instance;
