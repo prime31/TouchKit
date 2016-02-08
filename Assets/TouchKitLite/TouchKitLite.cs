@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-
+T
 
 namespace Prime31 {
 		
@@ -11,8 +11,8 @@ public class TouchKitLite : MonoBehaviour
 	const int kTotalTouchesToProcess = 2;
 
 
-	public List<TKTouch> liveTouches = new List<TKTouch>( 2 );
-	TKTouch[] _touchCache;
+	public List<TKLTouch> liveTouches = new List<TKLTouch>( 2 );
+	TKLTouch[] _touchCache;
 	const float inchesToCentimeters = 2.54f;
 
 	public float screenPixelsPerCm
@@ -56,10 +56,10 @@ public class TouchKitLite : MonoBehaviour
 
 	void Awake()
 	{
-		// prep our TKTouch cache so we avoid excessive allocations
-		_touchCache = new TKTouch[kTotalTouchesToProcess];
+		// prep our TKLTouch cache so we avoid excessive allocations
+		_touchCache = new TKLTouch[kTotalTouchesToProcess];
 		for( int i = 0; i < kTotalTouchesToProcess; i++ )
-			_touchCache[i] = new TKTouch( i );
+			_touchCache[i] = new TKLTouch( i );
 	}
 
 
