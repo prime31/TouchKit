@@ -106,19 +106,19 @@ public class DemoOne : MonoBehaviour
 			TouchKit.addGestureRecognizer( recognizer );
 		}
 
-		if (GUILayout.Button ("Add Top-Right Swipe Recognizer")) 
+		if( GUILayout.Button( "Add Top-Right Swipe Recognizer" ) )
 		{
-			var recognizer = new TKAngleSwipeRecognizer ();
+			var recognizer = new TKAngleSwipeRecognizer();
 			recognizer.addAngleRecogizedEvents (
 				(TKAngleSwipeRecognizer r) => {
-					Debug.Log ("Top-Right angle swipe fired " + r);
-				}, 0, 90);
+					Debug.Log( "Top-Right angle swipe fired " + r );
+				}, 0, 90 );
 
-			recognizer.gestureRecognizedEvent += ( r) => {
+			recognizer.gestureRecognizedEvent += r => {
 				// You can also do ordinary event, which fires at any angle
 				// Debug.Log( "angle swipe recognizer fired: " + r );
 			};
-			TouchKit.addGestureRecognizer (recognizer);
+			TouchKit.addGestureRecognizer( recognizer );
 		}
 
 
