@@ -112,7 +112,7 @@ public class DemoOne : MonoBehaviour
 			recognizer.addAngleRecogizedEvents (
 				(TKAngleSwipeRecognizer r) => {
 					Debug.Log( "Top-Right angle swipe fired " + r );
-				}, 0, 90 );
+				}, new Vector2(1,1), 45);
 
 			recognizer.gestureRecognizedEvent += r => {
 				// You can also do ordinary event, which fires at any angle
