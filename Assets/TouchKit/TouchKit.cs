@@ -24,10 +24,19 @@ public partial class TouchKit : MonoBehaviour
 	/// </summary>
 	public bool shouldAutoUpdateTouches = true;
 
+	private Vector2 _designTimeResolution = new Vector2( 320, 180 ); // 16:9 is a decent starting point for aspect ratio
 	/// <summary>
 	/// all TKRect sizes should be based on this screen size. They will be adjusted at runtime if autoUpdateRects is true
 	/// </summary>
-	public Vector2 designTimeResolution = new Vector2( 320, 180 ); // 16:9 is a decent starting point for aspect ratio
+	public Vector2 designTimeResolution { 
+		get {
+			return _designTimeResolution;
+		} 
+		set {
+			_designTimeResolution = value;
+			setupRuntimeScale();
+		}	
+	}
 	public int maxTouchesToProcess = 2;
 
 	/// <summary>
@@ -105,20 +114,24 @@ public partial class TouchKit : MonoBehaviour
 					_instance.pixelsToUnityUnitsMultiplier = Vector2.one;
 				}
 
-				_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
-				_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
-
-				if( !_instance.autoScaleRectsAndDistances )
-				{
-					_instance.runtimeScaleModifier = Vector2.one;
-					_instance.runtimeDistanceModifier = 1f;
-				}
+				_instance.setupRuntimeScale();
 			}
 
 			return _instance;
 		}
 	}
 
+	protected void setupRuntimeScale()
+	{
+		_instance.runtimeScaleModifier = new Vector2( Screen.width / _instance.designTimeResolution.x, Screen.height / _instance.designTimeResolution.y );
+		_instance.runtimeDistanceModifier = ( _instance.runtimeScaleModifier.x + _instance.runtimeScaleModifier.y ) / 2f;
+
+		if( !_instance.autoScaleRectsAndDistances )
+		{
+			_instance.runtimeScaleModifier = Vector2.one;
+			_instance.runtimeDistanceModifier = 1f;
+		}
+	}
 
 	/// <summary>
 	/// Unity often misses the Ended phase of touches so this method will look out for that
