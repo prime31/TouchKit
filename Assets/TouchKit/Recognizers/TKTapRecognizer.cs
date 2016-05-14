@@ -12,18 +12,18 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 	public int numberOfTouchesRequired = 1;
 
 	// taps that last longer than this duration will be ignored
-	private float _maxDurationForTapConsideration = 0.5f;
+	float _maxDurationForTapConsideration = 0.5f;
 
-	private float _maxDeltaMovementForTapConsideration = 1f;
+	float _maxDeltaMovementForTapConsideration = 1f;
+	float _touchBeganTime;
+	int _preformedTapsCount = 0;
 
-	private float _touchBeganTime;
 
-	private int _preformedTapsCount = 0;
+	public TKTapRecognizer() : this( 0.5f, 1f )
+	{}
 
-	public TKTapRecognizer() : this(0.5f, 1f)
-	{ }
 
-	public TKTapRecognizer(float maxDurationForTapConsideration, float maxDeltaMovementForTapConsiderationCm)
+	public TKTapRecognizer( float maxDurationForTapConsideration, float maxDeltaMovementForTapConsiderationCm )
 	{
 		_maxDurationForTapConsideration = maxDurationForTapConsideration;
 		_maxDeltaMovementForTapConsideration = maxDeltaMovementForTapConsiderationCm;
@@ -39,10 +39,8 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
-		if (Time.time > _touchBeganTime + _maxDurationForTapConsideration && _preformedTapsCount !=  0 && _preformedTapsCount < numberOfTapsRequired)
-		{
+		if( Time.time > _touchBeganTime + _maxDurationForTapConsideration && _preformedTapsCount !=  0 && _preformedTapsCount < numberOfTapsRequired )
 			state = TKGestureRecognizerState.FailedOrEnded;
-		}
 
 		if( state == TKGestureRecognizerState.Possible )
 		{
@@ -94,16 +92,16 @@ public class TKTapRecognizer : TKAbstractGestureRecognizer
 
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
-		if (state == TKGestureRecognizerState.Began && (Time.time <= _touchBeganTime + _maxDurationForTapConsideration))
+		if( state == TKGestureRecognizerState.Began && ( Time.time <= _touchBeganTime + _maxDurationForTapConsideration ) )
 		{
 			++_preformedTapsCount;
-			if (_preformedTapsCount == numberOfTapsRequired)
-			{
+			if( _preformedTapsCount == numberOfTapsRequired )
 				state = TKGestureRecognizerState.Recognized;
-			}
 		}
 		else
+		{
 			state = TKGestureRecognizerState.FailedOrEnded;
+		}
 	}
 
 }

@@ -28,7 +28,7 @@ public class TKLTouch
 
 	public TKLTouch( int fingerId )
 	{
-		// lock this TKTouch to the fingerId
+		// lock this TKLTouch to the fingerId
 		this.fingerId = fingerId;
 	}
 
@@ -51,7 +51,7 @@ public class TKLTouch
 
 
 	/// <summary>
-	/// populates the TKTouch with either mouse or touch input
+	/// populates the TKLTouch with either mouse or touch input
 	/// </summary>
 	public void populate()
 	{

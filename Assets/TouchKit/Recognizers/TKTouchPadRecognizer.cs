@@ -13,8 +13,6 @@ public class TKTouchPadRecognizer : TKAbstractGestureRecognizer
 	public AnimationCurve inputCurve = AnimationCurve.Linear( 0.0f, 0.0f, 1.0f, 1.0f );
 	public Vector2 value;
 
-	// private Vector2 _previousLocation;
-
 
 	/// <summary>
 	/// the constructor ensures we have a frame to work with for this recognizer
@@ -36,13 +34,11 @@ public class TKTouchPadRecognizer : TKAbstractGestureRecognizer
 	{
 		if( state == TKGestureRecognizerState.Possible )
 		{
-			for( int i = 0; i < touches.Count; i++ )
+			for( var i = 0; i < touches.Count; i++ )
 			{
 				// only add touches in the Began phase
 				if( touches[i].phase == TouchPhase.Began )
-				{
 					_trackingTouches.Add( touches[i] );
-				}
 			}
 
 			if( _trackingTouches.Count > 0 )
@@ -81,7 +77,7 @@ public class TKTouchPadRecognizer : TKAbstractGestureRecognizer
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		// remove any completed touches
-		for( int i = 0; i < touches.Count; i++ )
+		for( var i = 0; i < touches.Count; i++ )
 		{
 			if( touches[i].phase == TouchPhase.Ended )
 				_trackingTouches.Remove( touches[i] );
@@ -90,9 +86,8 @@ public class TKTouchPadRecognizer : TKAbstractGestureRecognizer
 		// if we had previously been recognizing fire our complete event
 		if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 		{
-			if( gestureCompleteEvent != null ) {
+			if( gestureCompleteEvent != null )
 				gestureCompleteEvent( this );
-			}
 		}
 
 		value = Vector2.zero;
