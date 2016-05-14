@@ -103,10 +103,14 @@ public class TKTouch
 		// do we have some input to work with?
 		if( Input.GetMouseButtonUp( 0 ) || Input.GetMouseButton( 0 ) )
 		{
-			TouchPhase phase = TouchPhase.Moved;
-			if( Input.GetMouseButtonUp( 0 ) )
+			var phase = TouchPhase.Moved;
+
+			// guard against down and up being called in the same frame
+			if( Input.GetMouseButtonDown( 0 ) && Input.GetMouseButtonUp( 0 ) )
+				phase = TouchPhase.Canceled;
+			else if( Input.GetMouseButtonUp( 0 ) )
 				phase = TouchPhase.Ended;
-			if( Input.GetMouseButtonDown( 0 ) )
+			else if( Input.GetMouseButtonDown( 0 ) )
 				phase = TouchPhase.Began;
 
 			var currentMousePosition = new Vector2( Input.mousePosition.x, Input.mousePosition.y );
