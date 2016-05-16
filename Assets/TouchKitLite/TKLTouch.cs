@@ -18,7 +18,7 @@ public class TKLTouch
 		get { return position - deltaPosition; }
 	}
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
 	// used to track mouse movement and fake touches
 	private Vector2? _lastPosition;
 	private double _lastClickTime;
@@ -55,7 +55,7 @@ public class TKLTouch
 	/// </summary>
 	public void populate()
 	{
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
 		populateFromMouse();
 #else
 		populateWithTouch( Input.touches[0] );
@@ -69,7 +69,7 @@ public class TKLTouch
 	}
 
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
 	public TKLTouch populateWithPosition( Vector3 currentPosition, TouchPhase touchPhase )
 	{
 		var currentPosition2d = new Vector2( currentPosition.x, currentPosition.y );
