@@ -151,22 +151,21 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 
     internal override void touchesMoved(List<TKTouch> touches)
     {
-        // if we have a time stipulation and we exceeded it stop listening for swipes, fail
-        if (timeToSwipe > 0.0f && (Time.time - startTime) > timeToSwipe)
+        if(state == TKGestureRecognizerState.Began)
         {
-            state = TKGestureRecognizerState.FailedOrEnded;
-        }
-        else if (state == TKGestureRecognizerState.Began)
-        {
-            points.Add(touches[0].position);
+            // if we have a time stipulation and we exceeded it, fail
+            if (timeToSwipe > 0.0f && (Time.time - startTime) > timeToSwipe)
+                state = TKGestureRecognizerState.FailedOrEnded;
+            else
+                points.Add(touches[0].position);
         }
     }
 
     internal override void touchesEnded(List<TKTouch> touches)
     {
-        // if we haven't failed yet, add the final point and then check for swipe completion
         if (state == TKGestureRecognizerState.Began)
         {
+            // if we haven't failed yet, add the final point and then check for swipe completion
             points.Add(touches[0].position);
 
             if (checkForSwipeCompletion(touches[0]))
