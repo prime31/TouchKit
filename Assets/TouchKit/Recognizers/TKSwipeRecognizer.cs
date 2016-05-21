@@ -1,238 +1,185 @@
 using UnityEngine;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 
 [System.Flags]
 public enum TKSwipeDirection
 {
-    Left 		= ( 1 << 0 ),
-    Right 		= ( 1 << 1 ),
-    Up 			= ( 1 << 2 ),
-    Down 		= ( 1 << 4 ),
-    Horizontal 	= ( Left | Right ),
-    Vertical 	= ( Up | Down ),
-    All 		= ( Horizontal | Vertical )
-}
+    Left = (1 << 0),
+    Right = (1 << 1),
+    Up = (1 << 2),
+    Down = (1 << 3),
 
+    UpLeft = (1 << 4),
+    DownLeft = (1 << 5),
+    UpRight = (1 << 6),
+    DownRight = (1 << 7),
+
+    Horizontal = (Left | Right),
+    Vertical = (Up | Down),
+    Cardinal = (Horizontal | Vertical),
+
+    DiagonalUp = (UpLeft | UpRight),
+    DiagonalDown = (DownLeft | DownRight),
+    DiagonalLeft = (UpLeft | DownLeft),
+    DiagonalRight = (UpRight | DownRight),
+    Diagonal = (DiagonalUp | DiagonalDown),
+
+    RightSide = (Right | DiagonalRight),
+    LeftSide = (Left | DiagonalLeft),
+    TopSide = (Up | DiagonalUp),
+    BottomSide = (Down | DiagonalDown),
+
+    All = (Cardinal | Diagonal)
+}
 
 public class TKSwipeRecognizer : TKAbstractGestureRecognizer
 {
-	public event Action<TKSwipeRecognizer> gestureRecognizedEvent;
-	
-	public float timeToSwipe = 0.5f;	
-	public float swipeVelocity { get; private set; }
-	public TKSwipeDirection completedSwipeDirection { get; private set; }
-	public int minimumNumberOfTouches = 1;
-	public int maximumNumberOfTouches = 2;
+    public event System.Action<TKSwipeRecognizer> gestureRecognizedEvent;
 
-	private float _minimumDistance = 2f;
-	private float _allowedVariance = 1.5f;
-	private TKSwipeDirection _swipesToDetect = TKSwipeDirection.All;
-	
-	// swipe state info
-	private Vector2 _startPoint;
-	private Vector2 _endPoint;
-	private float _startTime;
-	private TKSwipeDirection _swipeDetectionState; // the current swipes that are still possibly valid
-	
-	public Vector2 startPoint
-	{
-		get
-		{
-			return this._startPoint;
-		}
-	}
+    public float timeToSwipe = 0.5f;
+    public float swipeVelocity { get; private set; }
+    public TKSwipeDirection completedSwipeDirection { get; private set; }
+    public int minimumNumberOfTouches = 1;
+    public int maximumNumberOfTouches = 2;
 
-	public Vector2 endPoint
-	{
-		get
-		{
-			return this._endPoint;
-		}
-	}
+    private float _minimumDistance = 2f;
 
-	public TKSwipeRecognizer() : this(2f, 1.5f)
-	{ }
+    // swipe state info
+    private List<Vector2> points = new List<Vector2>();
+    private float startTime;
 
-	public TKSwipeRecognizer(TKSwipeDirection swipesToDetect) : this(swipesToDetect, 2f, 1.5f)
-	{ }
+    public Vector2 startPoint
+    {
+        get { return this.points.FirstOrDefault(); }
+    }
 
-	public TKSwipeRecognizer(float minimumDistance, float allowedVariance) : this(TKSwipeDirection.All, minimumDistance, allowedVariance)
-	{ }
+    public Vector2 endPoint
+    {
+        get { return this.points.LastOrDefault(); }
+    }
 
-	public TKSwipeRecognizer(TKSwipeDirection swipesToDetect, float minimumDistanceCm, float allowedVarianceCm)
-	{
-		_swipesToDetect = swipesToDetect;
-		_minimumDistance = minimumDistanceCm;
-		_allowedVariance = allowedVarianceCm;
-	}
+    public TKSwipeRecognizer() : this(2f)
+    { }
 
-	
-	private bool checkForSwipeCompletion( TKTouch touch )
-	{
-		// if we have a time stipulation and we exceeded it stop listening for swipes
-		if( timeToSwipe > 0.0f && ( Time.time - _startTime ) > timeToSwipe )
-		{
-			state = TKGestureRecognizerState.FailedOrEnded;
-			return false;
-		}
+    public TKSwipeRecognizer(float minimumDistanceCm)
+    {
+        _minimumDistance = minimumDistanceCm;
+    }
 
+    private bool checkForSwipeCompletion(TKTouch touch)
+    {
+        // the ideal distance in pixels from the start to the finish
+        float idealDistance = Vector2.Distance(startPoint, endPoint);
 
-        // when dealing with standalones (non touch-based devices) we need to be careful what we examaine
-        // we filter out all touches (mouse movements really) that didnt move
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
-        if ( touch.deltaPosition.x != 0.0f || touch.deltaPosition.y != 0.0f )
-		{
-#endif
-			// check the delta move positions.  We can rule out at least 2 directions
-			if( touch.deltaPosition.x > 0.0f )
-				_swipeDetectionState &= ~TKSwipeDirection.Left;
-			if( touch.deltaPosition.x < 0.0f )
-				_swipeDetectionState &= ~TKSwipeDirection.Right;
-			
-			if( touch.deltaPosition.y < 0.0f )
-				_swipeDetectionState &= ~TKSwipeDirection.Up;			
-			if( touch.deltaPosition.y > 0.0f )
-				_swipeDetectionState &= ~TKSwipeDirection.Down;
+        // the ideal distance in centimeters, based on the screen pixel density
+        float idealDistanceCM = idealDistance / TouchKit.instance.ScreenPixelsPerCm;
 
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+        // if the distance moved in cm was less than the minimum,
+        // or if we don't have at least two points in the motion to test, then fail
+        if (idealDistanceCM < _minimumDistance || points.Count < 2)
+            return false;
+
+        // add up all of the point-to-point distances sampled during the swipe motion
+        float totalPointToPointDistance = 0f;
+
+        for (int i = 1; i < points.Count; i++)
+            totalPointToPointDistance += Vector2.Distance(points[i], points[i - 1]);
+
+        // if the cumulative point-to-point distance is 10% greater than the ideal distance, fail
+        if (totalPointToPointDistance > (idealDistance * 1.1f))
+            return false;
+
+        // the speed in cm/s of the swipe
+        swipeVelocity = idealDistanceCM / (Time.time - startTime);
+
+        // turn the slope of the ideal swipe line into an angle in degrees
+        Vector2 v2 = (endPoint - startPoint).normalized;
+        float swipeAngle = Mathf.Atan2(v2.y, v2.x) * Mathf.Rad2Deg;
+        if (swipeAngle < 0)
+            swipeAngle = 360 + swipeAngle;
+        swipeAngle = 360 - swipeAngle;
+
+        // depending on the angle of the line, give a logical swipe direction
+        if (swipeAngle >= 337.5f || swipeAngle <= 22.5f)
+            completedSwipeDirection = TKSwipeDirection.Right;
+        else if (swipeAngle >= 292.5f && swipeAngle <= 337.5f)
+            completedSwipeDirection = TKSwipeDirection.UpRight;
+        else if (swipeAngle >= 247.5f && swipeAngle <= 292.5f)
+            completedSwipeDirection = TKSwipeDirection.Up;
+        else if (swipeAngle >= 202.5f && swipeAngle <= 247.5f)
+            completedSwipeDirection = TKSwipeDirection.UpLeft;
+        else if (swipeAngle >= 157.5f && swipeAngle <= 202.5f)
+            completedSwipeDirection = TKSwipeDirection.Left;
+        else if (swipeAngle >= 112.5f && swipeAngle <= 157.5f)
+            completedSwipeDirection = TKSwipeDirection.DownLeft;
+        else if (swipeAngle >= 67.5f && swipeAngle <= 112.5f)
+            completedSwipeDirection = TKSwipeDirection.Down;
+        else if (swipeAngle >= 22.5f && swipeAngle <= 67.5f)
+            completedSwipeDirection = TKSwipeDirection.DownRight;
+
+        return true;
+    }
+
+    internal override void fireRecognizedEvent()
+    {
+        if (gestureRecognizedEvent != null)
+            gestureRecognizedEvent(this);
+    }
+
+    internal override bool touchesBegan(List<TKTouch> touches)
+    {
+        if (state == TKGestureRecognizerState.Possible)
+        {
+            // add any touches on screen
+            for (int i = 0; i < touches.Count; i++)
+                _trackingTouches.Add(touches[i]);
+
+            // if the number of touches is within our constraints, begin tracking
+            if (_trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches)
+            {
+                points.Clear();
+                points.Add(touches[0].position);
+
+                startTime = Time.time;
+                state = TKGestureRecognizerState.Began;
+            }
         }
-#endif
+        return false;
+    }
 
-        //Debug.Log( string.Format( "swipeStatus: {0}", swipeDetectionState ) );
+    internal override void touchesMoved(List<TKTouch> touches)
+    {
+        if(state == TKGestureRecognizerState.Began)
+        {
+            // if we have a time stipulation and we exceeded it, fail
+            if (timeToSwipe > 0.0f && (Time.time - startTime) > timeToSwipe)
+                state = TKGestureRecognizerState.FailedOrEnded;
+            else
+                points.Add(touches[0].position);
+        }
+    }
 
-		// Grab the total distance moved in both directions
-		var xDeltaAbsCm = Mathf.Abs(_startPoint.x - touch.position.x) / TouchKit.instance.ScreenPixelsPerCm;
-		var yDeltaAbsCm = Mathf.Abs(_startPoint.y - touch.position.y) / TouchKit.instance.ScreenPixelsPerCm;
+    internal override void touchesEnded(List<TKTouch> touches)
+    {
+        if (state == TKGestureRecognizerState.Began)
+        {
+            // if we haven't failed yet, add the final point and then check for swipe completion
+            points.Add(touches[0].position);
 
-		_endPoint = touch.position;
+            if (checkForSwipeCompletion(touches[0]))
+            {
+                state = TKGestureRecognizerState.Recognized;
+                return;
+            }
+        }
+        state = TKGestureRecognizerState.FailedOrEnded;
+    }
 
-		// only check for swipes in directions that havent been ruled out yet
-		// left check
-		if( ( _swipeDetectionState & TKSwipeDirection.Left ) != 0 )
-		{
-			if (xDeltaAbsCm > _minimumDistance)
-			{
-				if (yDeltaAbsCm < _allowedVariance)
-				{
-					completedSwipeDirection = TKSwipeDirection.Left;
-					swipeVelocity = xDeltaAbsCm / (Time.time - _startTime);
-					return true;
-				}
-				
-				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~TKSwipeDirection.Left;
-			}
-		}
-
-		// right check
-		if( ( _swipeDetectionState & TKSwipeDirection.Right ) != 0 )
-		{
-			if (xDeltaAbsCm > _minimumDistance)
-			{
-				if (yDeltaAbsCm < _allowedVariance)
-				{
-					completedSwipeDirection = TKSwipeDirection.Right;
-					swipeVelocity = xDeltaAbsCm / (Time.time - _startTime);
-					return true;
-				}
-				
-				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~TKSwipeDirection.Right;
-			}
-		}
-		
-		// up check
-		if( ( _swipeDetectionState & TKSwipeDirection.Up ) != 0 )
-		{
-			if (yDeltaAbsCm > _minimumDistance)
-			{
-				if (xDeltaAbsCm < _allowedVariance)
-				{
-					completedSwipeDirection = TKSwipeDirection.Up;
-					swipeVelocity = yDeltaAbsCm / (Time.time - _startTime);
-					return true;
-				}
-				
-				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~TKSwipeDirection.Up;
-			}
-		}
-		
-		// cown check
-		if( ( _swipeDetectionState & TKSwipeDirection.Down ) != 0 )
-		{
-			if (yDeltaAbsCm > _minimumDistance)
-			{
-				if (xDeltaAbsCm < _allowedVariance)
-				{
-					completedSwipeDirection = TKSwipeDirection.Down;
-					swipeVelocity = yDeltaAbsCm / (Time.time - _startTime);
-					return true;
-				}
-				
-				// We exceeded our variance so this swipe is no longer allowed
-				_swipeDetectionState &= ~TKSwipeDirection.Down;
-			}
-		}
-		
-		return false;
-	}
-	
-	
-	internal override void fireRecognizedEvent()
-	{
-		if( gestureRecognizedEvent != null )
-			gestureRecognizedEvent( this );
-	}
-	
-	
-
-	internal override bool touchesBegan( List<TKTouch> touches )
-	{
-		if( state == TKGestureRecognizerState.Possible )
-		{
-			// add any touches on screen
-			for( int i = 0; i < touches.Count; i++ )
-				_trackingTouches.Add( touches[i] );
-
-			// if the number of touches is within our constraints, begin tracking
-			if ( _trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches )
-			{
-				_swipeDetectionState = _swipesToDetect;
-				_startPoint = touches[0].position;
-				_startTime = Time.time;
-				state = TKGestureRecognizerState.Began;
-			}
-		}
-		
-		return false;
-	}
-	
-	
-	internal override void touchesMoved( List<TKTouch> touches )
-	{
-		if( state == TKGestureRecognizerState.Began )
-		{
-			if( checkForSwipeCompletion( touches[0] ) )
-			{
-				state = TKGestureRecognizerState.Recognized;
-			}
-		}
-	}
-	
-	
-	internal override void touchesEnded( List<TKTouch> touches )
-	{
-		state = TKGestureRecognizerState.FailedOrEnded;
-	}
-	
-	
-	public override string ToString()
-	{
-		return string.Format( "{0}, swipe direction: {1}, swipe velocity: {2}, start point: {3}, end point: {4}",
-			base.ToString(), completedSwipeDirection, swipeVelocity, startPoint, endPoint );
-	}
+    public override string ToString()
+    {
+        return string.Format("{0}, swipe direction: {1}, swipe velocity: {2}, start point: {3}, end point: {4}",
+            base.ToString(), completedSwipeDirection, swipeVelocity, startPoint, endPoint);
+    }
 }
