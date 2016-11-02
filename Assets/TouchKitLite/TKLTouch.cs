@@ -56,6 +56,7 @@ public class TKLTouch
 	public void populate()
 	{
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_WEBGL
+	if (!UnityEditor.EditorApplication.isRemoteConnected)
 		populateFromMouse();
 #else
 		populateWithTouch( Input.touches[0] );

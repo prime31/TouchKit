@@ -18,7 +18,7 @@ public enum SwipeDirection
 }
 
 
-public class TLKSwipeDetector : MonoBehaviour
+public class TKLSwipeDetector : MonoBehaviour
 {
 	public event Action<SwipeDirection> onSwipeDeteced;
 
