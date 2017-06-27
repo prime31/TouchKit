@@ -167,7 +167,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 				case TouchPhase.Moved:
 				{
 					// limit touches sent to those that are being tracked
-					if( !_sentTouchesMoved && populateSubsetOfTouchesBeingTracked( touches ) )
+					if( !_sentTouchesMoved && populateSubsetOfTouchesBeingTracked( touches ) && _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Contains(touch) )
 					{
 						touchesMoved( _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer );
 						_sentTouchesMoved = true;
@@ -178,7 +178,7 @@ public abstract class TKAbstractGestureRecognizer : IComparable<TKAbstractGestur
 				case TouchPhase.Canceled:
 				{
 					// limit touches sent to those that are being tracked
-					if( !_sentTouchesEnded && populateSubsetOfTouchesBeingTracked( touches ) )
+					if( !_sentTouchesEnded && populateSubsetOfTouchesBeingTracked( touches ) && _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer.Contains(touch) )
 					{
 						touchesEnded( _subsetOfTouchesBeingTrackedApplicableToCurrentRecognizer );
 						_sentTouchesEnded = true;
