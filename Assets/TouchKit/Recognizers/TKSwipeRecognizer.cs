@@ -85,6 +85,12 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
     private float _minimumDistance = 2f;
 
     /// <summary>
+    /// The maximum distance in centimeters that the gesture has to make to be considered 
+    /// a proper swipe.
+    /// </summary>
+    private float _maximumDistance = 5f;
+
+    /// <summary>
     /// The individual points that make up the gesture, recorded every frame from when a
     /// finger is first pressed to the screen until it's lifted. Only tracks the first touch
     /// on the screen, in the case of multiple touches.
@@ -115,12 +121,13 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
     }
 
 
-    public TKSwipeRecognizer() : this(2f)
+    public TKSwipeRecognizer() : this(2f, 10f)
     { }
 
-    public TKSwipeRecognizer(float minimumDistanceCm)
+    public TKSwipeRecognizer(float minimumDistanceCm, float maximumDistanceCm)
     {
         this._minimumDistance = minimumDistanceCm;
+        this._maximumDistance = maximumDistanceCm;
     }
 
 
@@ -141,7 +148,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
         float idealDistanceCM = idealDistance / TouchKit.instance.ScreenPixelsPerCm;
 
         // if the distance moved in cm was less than the minimum,
-        if (idealDistanceCM < this._minimumDistance)
+        if (idealDistanceCM < this._minimumDistance || idealDistanceCM > this.maximumDistance)
             return false;
 
         // add up distances between all points sampled during the gesture to get the real distance
