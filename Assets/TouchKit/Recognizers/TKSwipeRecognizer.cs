@@ -88,7 +88,7 @@ public class TKSwipeRecognizer : TKAbstractGestureRecognizer
     /// The maximum distance in centimeters that the gesture has to make to be considered 
     /// a proper swipe.
     /// </summary>
-    private float _maximumDistance = 5f;
+    private float _maximumDistance = 10f;
 
     /// <summary>
     /// The individual points that make up the gesture, recorded every frame from when a
