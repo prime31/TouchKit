@@ -16,3 +16,5 @@ Assembly-CSharp-*
 *.userprefs
 Assembly-CSharp.csproj
 *.pidb
+.vscode/*
+obj/*
