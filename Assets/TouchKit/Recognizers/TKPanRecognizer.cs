@@ -50,12 +50,12 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 		if( gestureRecognizedEvent != null )
 			gestureRecognizedEvent( this );
 	}
-	
+
 
 	internal override bool touchesBegan( List<TKTouch> touches )
 	{
 		// extra touches abort gesture
-		if (_trackingTouches.Count + touches.Count > maximumNumberOfTouches)
+		if( _trackingTouches.Count + touches.Count > maximumNumberOfTouches )
 		{
 			state = TKGestureRecognizerState.FailedOrEnded;
 			return false;
@@ -71,12 +71,12 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 				{
 					_trackingTouches.Add( touches[i] );
 					_startPoint = touches[0].position;
-					
+
 					if( _trackingTouches.Count == maximumNumberOfTouches )
 						break;
 				}
 			} // end for
-			
+
 			if( _trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches )
 			{
 				_previousLocation = touchLocation();
@@ -87,25 +87,26 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
-	
+
+
 	internal override void touchesMoved( List<TKTouch> touches )
 	{
 		//do not engage with touch events if the number of touches is outside our desired constraints
-		if (_trackingTouches.Count >=minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches){
+		if( _trackingTouches.Count >= minimumNumberOfTouches && _trackingTouches.Count <= maximumNumberOfTouches )
+		{
 			var currentLocation = touchLocation();
 			deltaTranslation = currentLocation - _previousLocation;
 			deltaTranslationCm = deltaTranslation.magnitude / TouchKit.instance.ScreenPixelsPerCm;
 			_previousLocation = currentLocation;
 
-			if (state == TKGestureRecognizerState.Began)
+			if( state == TKGestureRecognizerState.Began )
 			{
 				totalDeltaMovementInCm += deltaTranslationCm;
 
-				if (Math.Abs(totalDeltaMovementInCm) >= _minDistanceToPanCm)
+				if( Math.Abs( totalDeltaMovementInCm ) >= _minDistanceToPanCm )
 				{
 					state = TKGestureRecognizerState.RecognizedAndStillRecognizing;
 				}
@@ -116,8 +117,8 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			}
 		}
 	}
-	
-	
+
+
 	internal override void touchesEnded( List<TKTouch> touches )
 	{
 		_endPoint = touchLocation();
@@ -140,7 +141,8 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			// if we had previously been recognizing fire our complete event
 			if( state == TKGestureRecognizerState.RecognizedAndStillRecognizing )
 			{
-				if( gestureCompleteEvent != null ) {
+				if( gestureCompleteEvent != null )
+				{
 					gestureCompleteEvent( this );
 				}
 			}
@@ -148,8 +150,8 @@ public class TKPanRecognizer : TKAbstractGestureRecognizer
 			state = TKGestureRecognizerState.FailedOrEnded;
 		}
 	}
-	
-	
+
+
 	public override string ToString()
 	{
 		return string.Format( "[{0}] state: {1}, location: {2}, deltaTranslation: {3}", this.GetType(), state, touchLocation(), deltaTranslation );
