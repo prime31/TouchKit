@@ -95,8 +95,67 @@ public class DemoOne : MonoBehaviour
 			TouchKit.addGestureRecognizer( recognizer );
 		}
 
+        if(GUILayout.Button("Add Analog Recognizer"))
+        {
+            var recognizer = new TKAnalogRecognizer(new TKRect(0f, 0f, 125f, 125f));
+            recognizer.inputCurve = touchPadInputCurve;
 
-		if( GUILayout.Button( "Add Horizontal Swipe Recognizer" ) )
+            //change the default analog radius
+            recognizer.touchPadRadius = 100f;
+
+            recognizer.gestureRecognizedEvent += (r) =>
+            {
+                Debug.Log("analog recognizer fired: " + r);
+            };
+
+            // continuous gestures have a complete event so that we know when they are done recognizing
+            recognizer.gestureCompleteEvent += r =>
+            {
+                Debug.Log("analog gesture complete");
+            };
+
+            TouchKit.addGestureRecognizer(recognizer);
+        }
+
+        if (GUILayout.Button("Add Analog and Tap Recognizer"))
+        {
+            var analog = new TKAnalogRecognizer(new TKRect(0f, 0f, 125f, 125f), true);
+            analog.inputCurve = touchPadInputCurve;
+
+            //change the default analog radius
+            analog.touchPadRadius = 100f;
+
+            analog.gestureRecognizedEvent += (r) =>
+            {
+                Debug.Log("analog recognizer fired: " + r);
+            };
+
+            // continuous gestures have a complete event so that we know when they are done recognizing
+            analog.gestureCompleteEvent += r =>
+            {
+                Debug.Log("analog gesture complete");
+            };
+
+            TouchKit.addGestureRecognizer(analog);
+
+            var tap = new TKTapRecognizer();
+
+            // setting the rect to the same as the analog
+            tap.boundaryFrame = new TKRect(0, 0, 125f, 125f);
+
+            // we can also set the number of touches required for the gesture
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
+                tap.numberOfTouchesRequired = 2;
+
+            tap.gestureRecognizedEvent += (r) =>
+            {
+                Debug.Log("tap recognizer fired: " + r);
+            };
+            TouchKit.addGestureRecognizer(tap);
+        }
+
+
+        if ( GUILayout.Button( "Add Horizontal Swipe Recognizer" ) )
 		{
 			var recognizer = new TKSwipeRecognizer();
 			recognizer.gestureRecognizedEvent += ( r ) =>

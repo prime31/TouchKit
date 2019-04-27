@@ -15,6 +15,7 @@ TouchKit comes with a few built in recognizers to get you started and to serve a
 * **Button Recognizer**: generic button recognizer designed to work with any 2D sprite system at all
 * **Pan Recognizer**: detects a pan gesture (one or more fingers down and moving around the screen)
 * **TouchPad Recognizer**: detects and tracks a touch in an area and maps the location from -1 to 1 on the x and y axis based on the touches distance from the center of the area
+* **Analog Recognizer**: detects and tracks a touch in an area and maps the location from -1 to 1 on the x and y axis based on the analog's radius and distance from the initial tap position
 * **Swipe Recognizer**: detects swipes in the four cardinal directions
 * **Pinch Recognizer**: detects pinches and reports back the delta scale
 * **Rotation Recognizer**: detects two finger rotation and reports back the delta rotation
